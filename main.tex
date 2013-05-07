@@ -1,11 +1,11 @@
 %% Draft document mode
 %% Final document
 %\documentclass[11pt,a4paper,bibtotoc,idxtotoc,headsepline,footsepline,footexclude,BCOR12mm,DIV13]{scrbook}
-%\documentclass[11pt,a4paper,bibtotoc,idxtotoc,headsepline,footsepline,footexclude,BCOR20mm,DIV10]{scrbook}
+\documentclass[11pt,a4paper,bibtotoc,idxtotoc,headsepline,footsepline,footexclude,BCOR20mm,DIV10]{scrbook}
 
 %\documentclass[11pt,a4paper,twoside=false]{scrbook}
 
-\documentclass[11pt,a4paper,bibliography=totoc,index=totoc,headsepline=true,footsepline=true,footinclude=false,twoside=semi,BCOR=0mm,DIV=9]{scrbook}
+%\documentclass[11pt,a4paper,bibliography=totoc,index=totoc,headsepline=true,footsepline=true,footinclude=false,twoside=semi,BCOR=0mm,DIV=9]{scrbook}
 
 %\setlength{\oddsidemargin}{-30mm}
 %\setlength{\evensidemargin}{-30mm}
@@ -71,15 +71,27 @@
 \addcontentsline{toc}{chapter}{List of Tables}
 
 %% remove in final version
-\input{components/outline}
-\input{components/notes}
+%\input{components/outline}
+%\input{components/notes}
 
 
 \mainmatter
 
         \input{chapters/introduction}
 
+        \input{chapters/related_work}
+
+        \input{chapters/background}
+
+		\input{chapters/textureless}
+		
+		\input{chapters/recognition}
+		
+		\input{chapters/ipl}
+
+
 		\input{chapters/conclusion}
+		
 		
 
         \appendix
