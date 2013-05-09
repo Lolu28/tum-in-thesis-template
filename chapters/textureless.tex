@@ -4,11 +4,378 @@
 
 \section{System Pipeline}
 \subsection{Static Segmentation - Preprocessing}
+ Our approach  
+ consists of five main steps as depicted in REF%\figref{pipeline}
+  and demonstrated in an accompanying video\footnote{\url{http://youtu.be/Bu4LayrGC1s}}.
+ In the first step we obtain an RGBD point cloud from the Kinect sensor. In the second step we perform static object
+ pre-segmentation which results in a set of categorized object hypotheses $O$,
+ with the category being either flat or round, and a list of object parts $P_{o}$ that every object 
+ $o \in O$ consists of. Having obtained the object hypotheses $O$ we infer which hypothesis
+ is segmented  correctly. For
+ that we count the  number of parts that the respective object hypotheses $O$ 
+ consists of and then sample from the Poisson distribution according to the REF%\equref{poisson}.
+ After obtaining the probability of the scene being segmented correctly we 
+decide if the interactive segmentation algorithm should be used or not.
+
+ We use categorization of the objects as a prior for tracking by 
+ extracting and tracking line and corner RGBD features on the flat object hypotheses 
+ and circle and cylinder RGBD features on the round ones in the third step. Finally, we 
+ execute the arm motion movement in $1cm$ intervals until we reached a maximum of $5$ 
+  pushes. All of the features are being tracked during the interaction 
+ and the trajectories of feature centroids  are being  saved.  
+%In sixth  row of  \figref{scenes} the
+% relative distances between centroids over the time are depicted. 
+Based  on  relative  distances between the feature centroids, the graph-based algorithm for the trajectory clustering is
+ applied.  The  output  of  the  algorithm is  the  number  of  objects
+ belonging  to a certain  object hypothesis $o$ and  the association  between the object
+ number and the parts $p_{1},  \dots, p_{n} \in P_{o}$ that belong to it (fourth step).
+ In the fifth and the last step the dense model is reconstructed using the region growing algorithm 
+where the tracked and clustered RGBD features are
+used as seed points.
+
+
+\subsection{Static Pre-segmentation of Objects}
+\label{sec:static-seg}
+
+% As a first step we want to to segment our static scene in flat and round objects.
+In order to achieve a pre-segmentation we make use of the classification method presented 
+in~\cite{marton12SC} based on part-graph-based hashing.
+The basic idea is that segmenting objects accurately 
+in a cluttered scene does not always yield the expected result, as seen in %\figref{scenes} 
+column 4, and can lead to classification failures, 
+but over-segmenting is easily realizable~\cite{soupofsegments,Lai_Fox_2010,mozos11furniture}. 
+We use the classification approach described in~\cite{marton12SC} 
+for categorizing over-segmented object parts in cluttered scenes
+by considering combinations of these parts to compute features
+and classify these efficiently with the aid of hashing.
+The result is a set of labeled parts with geometric categories
+that can be grouped in order to obtain object hypotheses.
+Based on statistics computed from the training data on single objects, 
+we can estimate how likely it is that an object hypothesis is
+correct.
+
+%\textbf{Why using a categorization algorithm for pre-segmentation?}
+%In \figref{segmentation_comparison} we have alluded to the fact that it
+%is close to impossible to recover the failure cases since the graph-based
+%segmentation algorithm as well as the region growing one work on the level
+%of pixels and points in the point cloud. Part-graph-based hashing algorithm on
+%the other hand is a learning-based algorithm that bears the semantic of the 
+%object categories with it. In this particular case we are thus able to collect
+%the statistics about the probable number of parts one object is composed of in 
+%the training stage and then deduce whether the categorization of a given scene is 
+%likely correct or not.
+
+In the rest of the section we summarize the part-graph-based 
+hashing algorithm briefly and show how we use it to guide
+%turn it into a ``rich'' pre-segmentation algorithm that guides
+the interactive segmentation.
+
+\subsubsection{Decomposition into Part Graphs}
+\label{sec:part-graphs}
+In order to find the parts ($p_{1}, \dots, p_{n} \in P_{o}$) 
+in the point clouds we use the clustering criteria presented in~\cite{mozos11furniture},
+such that patches with a small curvature are considered, as shown in
+%\figref{scenes} 
+REF
+column 3.  For each part we subsequently compute GRSD- (Global Radius-based 
+Surface Descriptor~\cite{irosws11vosch}) feature and store it for later use. We then 
+extract the part neighborhoods by checking if the physical distance between two 
+parts falls below a threshold of $2cm$ (considering Kinect noise level~\cite{kinect_accuracy}), and build a connectivity matrix. 
+Starting at each vertex of the connectivity matrix, we create all the possible groupings up to a certain size 
+(eight parts in the case of single objects and four in the case of cluttered scenes) 
+in order to obtain the ``soup of segments'', and create the groups' hash codes
+using isomorphic graph metrics. The hash codes are then used to further split the feature 
+space ending up with a separate classifier (nearest neighbors in our case) for each hash code. 
+During the classification phase we obtain confidence votes only from those classifiers,
+which were created for the hash codes that are found in our scene. Based on these votes
+a decision is made upon the class of the segments. For a detailed description of this approach 
+please refer to~\cite{marton12SC}.
+
+% For the hash codes, apart from the number of vertices/parts, we chose to concatenate the 
+% sorted list of vertex degrees as well to form a second level of keys. As an alternative 
+% for this second level of keys we experimented with using the eigen values of the graph's 
+% Laplacian matrix, but found that the results upon evaluation were the same. 
+% For this reason, in the upcoming testings and evaluations we used the sorted list of vertex 
+% degrees, as they are simpler to compute. This degree order is unique for isomorph graphs, 
+% however different graphs can have the same degree order.
+
+% We use a region-growing approach, that starts at a random point
+% and grows the segment until the deviation from the seed normal does not exceed 45 degrees.
+% This way, selecting different seed points result in multiple segmentations of the point cloud into parts.
+% This process is not completely reproducible, therefore authors in \cite{marton12SC} rely on the
+% large amount of training data to cover all possible cases. 
+% Since we are dealing with tabletop scenes, the supporting plane 
+% can be removed prior to processing, and only points above it 
+% considered as in \cite{marton11ijrr}. 
+
+% Note that since the graph vertices can be sorted, it is possible to efficiently 
+% enumerate all sub-graphs containing a given vertex without repeating already generated ones.
+
+\subsubsection{Object Part Categorization}
+\label{sec:part-feature}
+The classifier was trained on a subset of the dataset from~\cite{lai11db} 
+as presented in~\cite{marton12SC}.
+The choice of the feature determined for each part, namely the GRSD- is motivated 
+by the fact that we are dealing with novel objects not seen before 
+by the classifier, so in order to successfully categorize them we need to use geometric features.
+% As described in \cite{irosws11vosch}, we adapted the GRSD feature to be additive, 
+% by simplifying it to simple histogram of neighborhoods of surfaces of different type,
+% neglecting the ray-tracing step. We evaluated the GRSD- feature on the same dataset 
+% and in the same manner as described in~\cite{marton12SC}.
+Additionally, the low dimensionality and additive property\footnote{If the feature is additive,
+the descriptor that would be computed for the object is the same as the sum of the features of its segments.} make GRSD- a suitable choice for such task.
+
+Objects ($o_{1}, \dots, o_{n} \in O$) are categorized in six geometrical categories: sphere, box, rectangular/flat, cylinder, disk/plate and other.
+Doing this we get a better a discrimination between different objects. After having the results for the 
+six geometrical classes, we merge them together into different \emph{object types} considering everything spherical and cylindrical being
+\emph{round}, and disks/plates, flats and boxes as \emph{flat} objects.
+With the category \emph{other} we thus get three object types, whereas most
+household objects fall into the first two~\cite{marton11ijrr}.
+
+In this paper we omit the category \emph{other} and use the other two in order
+to determine if the interactive segmentation is needed, and if yes, which RGBD features 
+to extract and track in the respective part of the point cloud in the given scene.
+
+
+\subsection{Verification of Correctness of Segmentation}
+\label{sec:probabilities}
+
+Since the geometric categorization of parts does not give the correct grouping of these parts to form objects,
+simply grouping the parts of the same category together does not always separate the objects, especially if classification errors occur too.
+A method of voting for object centroids followed by a model fitting step was described in~\cite{mozos11furniture},
+but we assume having no CAD models for test objects in this paper. We would also have to consider 6DOF poses, complicating the approach considerably.
+
+Whereas the segmentation of objects is not uniquely defined, there are still regularities in the number of parts they are broken up into.
+As shown in REF%\figref{poisson}
+, the distribution of the number of different object parts, generated in the training stage of the part-graph-based hashing algorithm, can be modeled as a Poisson distribution,
+with an average error of 1.7\% (and at most roughly 9\%).
+
+
+The Poisson distribution described by REF%\equref{poisson} 
+describes the probability of different number of events occurring
+in a given interval, which we interpret here as the number of part boundaries encountered over the surface of the scanned object.
+The parameter $\lambda$ is the mean of number of parts, which in our case is 0.876 for flat, 2.166 for round, and 3.317 for other object types.
+\begin{equation}
+\label{eq:poisson}
+P(k~parts~forming~a~single~object) = \lambda^k \exp{-\lambda} / k!
+\end{equation}
+
+This simple model is used to judge if a group of parts of the same geometric category forms a single object or if the robot
+should try to interact with it. We cut the probabilities at $0.3$ for flat and $0.15$ for round objects.
+
+\textbf{Example:} To demonstrate this, from the right part of %\figref{poisson} 
+we can deduce that the 
+flat object is most likely to consist of 1 or 2 parts. The test scene with 
+2 boxes REF %(\figref{scenes}) 
+was categorized as one object (column 4), but in column
+3 we notice that there are 6 parts in the scene. The probability for 1 object consisting of 6 parts is below the $0.3$ value
+according to the Poisson distribution and clearly indicates an over-segmentation 
+error and the need for the robot to segment this region interactively.
+
 \subsection{Push Point Estimation}
+\label{sec:push-point}
+Once the over or under segmented region of interest has been identified 
+according to the above generated distribution, the  appropriate contact
+points  between the objects in   the   scene  and   the   robot's   end   
+effector  must   be determined. Furthermore, the  direction   the robot's  end
+effector should move must be chosen.
+
+In  this paper we apply our previously developed approach based on 
+the local concavities~\cite{bersch12interactive}. Since most
+commonly  encountered  household   items  have  convex  outlines  when
+observed  from  above,  our  system  uses  local
+concavities in the  2D contour of an object group  as an indicator for
+boundaries between the objects.  The robot separates objects from each
+other by pushing its end effector in between these boundaries. 
+As the implementation details of the corner-based pushing go beyond the scope of 
+this paper, we refer the reader to~\cite{bersch12interactive} for details.
+
+
 \subsection{Feature Extraction}
+
+\section{Textureless Object Segmentation}
+\label{sec:textureless}
+In this section we describe the selected RGBD features suitable for the 
+tracking of textureless objects and the particle filtering-based tracking library. 
+The features are estimated on the above classified list of object hypotheses $O$ from the RGBD point cloud. 
+RGB and the depth measurements in the point cloud are time synchronized and registered.
+We employ 3D circle and 3D cylinder point cloud features for 
+the round objects and 3D line and 3D corner point cloud features for the flat
+objects. The rationale behind this selection of features is that they are all fast to compute 
+and yet distinctive enough for tracking with the proposed tracking algorithm. The latter
+uses a combination of the visual appearance and the geometrical structure of the feature
+to compute the likelihood function of the feature hypothesis.
+
+\subsection{RGBD Features}
+\label{sec:3dfeatures}
+In order to obtain a 3D line point cloud we first find object edge candidates
+in the cluttered scene using curvature values computed in the input
+point cloud from the Kinect sensor. Next we fit a line model to the object edge
+candidates using RANSAC ~\cite{ransac} and finally pad the line with neighboring
+points on the object within a radius of $5cm$. 3D corner point clouds are
+determined using the 3D variant of the Harris corner detector as implemented in the Point
+Cloud Library (PCL)(\url{pointclouds.org}) and padded with neighboring
+points on the object within a radius of $5cm$ as well. Padding of both
+features is necessary in order to guarantee computation of a better
+likelihood function needed by the tracker as explained in the following subsection.
+The features are shown in %\figref{scenes} 
+columns 2 and 5, 1st row.
+
+To obtain a 3D cylinder point cloud, we also use a RANSAC model which is
+based on the fact that on a cylinder surface, all normals are both orthogonal
+to the cylinder axis and intersect it. We consider the two lines
+defined by two sample points and their corresponding normals as two skew lines,
+and the shortest connecting line segment as the axis.
+Determining the radius is then a matter of computing the distance of one of the
+sample points to the axis. By setting the cylinder axis perpendicular to the table results are more
+robust, but is not mandatory. Finally, the generation of the 3D circle  is also
+done using RANSAC by projecting a sample point into the 
+3D circle's plane and computing the distance between this point and 
+the point obtained as an intersection of the line from the circle's center with the 
+circle's boundary, whereas the line is passing through the projected sample point.
+The features are shown in the 2nd row of REF%\figref{scenes} 
+columns 2 and 5.
 \subsection{Feature Tracking}
+
+\subsection{Particle Filtering-based Tracking of RGBD Pointclouds}
+\label{sec:tracking}
+The feature point clouds extracted above are then passed to the
+particle filter-based tracker as reference models. The tracker 
+consists of four steps: i) the above described reference model
+selection, ii) pose update and re-sampling, iii) computation of the
+likelihood and iv)
+weight normalization. In the pose update step we use a ratio between
+a constant position and a constant velocity motion model which allows
+us to achieve efficient tracking with a lesser number of the
+particles. In the re-sampling phase we utilize Walker’s Alias Method
+\cite{Walker}. The likelihood function $l_{j}$ of the hypotheses in the third
+step is computed as in REF%\equref{likelihood}
+ and is based on the similarity  between the nearest points
+pair of the reference point ($p_{j}$) cloud and the input data ($q_{j}$). Similarity is
+defined as a product of a term describing the points pair's euclidean distance $l_{euclidean}$ 
+and a term describing points pair's match in the $HSV$ (Hue, Saturation, Value) color
+space $l_{color}$. $\alpha$ and $\beta$ are the weight factors set to $0.5$ in our case.
+\begin{eqnarray}
+  l_{j} = l_{euclidean}(p_{j},q_{j})l_{color}(p_{j},q_{j}) \nonumber \\
+  l_{euclidean}(p_{j},q_{j}) = \frac{1}{1+\alpha|p_{j}-q_{j}|^2} \nonumber \\
+  l_{color}(p_{j},q_{j}) = \frac{1}{1+\beta|p_{j,hsv}-q_{j,hsv}|^2} 
+  \label{eq:likelihood}
+\end{eqnarray}
+To obtain the model's weight we sum over likelihood values for
+every points pair in the reference model as follows: $w_{i} = \sum\limits_{j}l_{j}$. This likelihood function assures a combined
+matching of model's structure and visual appearance. In the final step we normalize the 
+previously computed model weight by applying a relative normalization as
+described in~\cite{AzadMAD11}. The real-time operation of the algorithm
+is made possible through various optimization techniques such as
+downsampling of the point clouds, openMP parallelization and KLD-based 
+(Kullback-Leibler Divergence) 
+sampling~\cite{Fox01KLD} to select the optimal number of particles.
+
+
+\textbf{Why not to track object parts?} To answer this question we refer the reader 
+to scene 1 in %\figref{scenes},
+ column 3 where top surfaces of both boxes were grouped into one segment.
+Had we taken this segment as a reference cloud the tracking algorithm would fail due
+to its limitation to generate multiple reference clouds during tracking.
+
+
 \subsection{Feature Clustering}
+
+\subsection{Trajectory Clustering}
+\label{sec:clustering}
+The tracked features' 3D trajectories (see %\figref{scenes} 
+column 6) are clustered using %\algref{cluster_trajectories}
+in order to find the feature-object associations.
+We treat each of the $n$ RGBD features as a node in a graph, where edge weights represent the maximum number of consecutive violations of the relative distance variation threshold ($d_{threshold}$), i.e. \emph{breaks} (optionally, also pose changes can be checked for better performance).
+The final connection matrix is obtained by removing the edges which have weights that exceed a given percentage ($p_{threshold}$) of the theoretic maximum number of frames.
+%This way those features are connected whose distance did not vary too much for significantly long.
+The distance between features which did not vary are then clustered together.
+
+%\begin{algorithm}[htb!]\footnotesize
+%  \tcc{\footnotesize{number of tracked features $n$ and number of time steps $m$,
+%		     relative distance variation threshold $d_{threshold}$,
+%		     max allowed percent of consecutive \emph{breaks} $p_{threshold}$,
+%		     and the set of positions of each feature $T$}}
+ % \KwIn{$n$, $m$, $d_{threshold}$, $p_{threshold}$, $T$ = \{$t_1...t_m$\}}
+%   \tcc{\footnotesize{number of tracked features and number of time steps}}
+%   $n$, $m$ \\
+%   \tcc{\footnotesize{relative distance variation threshold}}
+%   $d_{threshold}$ \\
+%   \tcc{\footnotesize{max allowed percent of consecutive \emph{breaks}}}
+%   $p_{threshold}$ \\
+%   \tcc{\footnotesize{position of each feature at each time step}}
+%   $T$ = \{$t_0...t_m$\} \\
+%  \tcc{\footnotesize{relative distances at $t_1$}}
+%  $D_{reference}$ = pairwiseL2($t_1$) \\
+%  \tcc{\footnotesize{nr of consecutive \emph{breaks} between features}}
+%  $C_{breaks}$ = zeros($n$,$n$) \\
+%  \tcc{\footnotesize{relative distances at $t_1$}}
+%  $T_{breaks}$ = zeros($m$,$n$,$n$) \\
+%  \tcc{\footnotesize{count number of consecutive \emph{breaks}}}
+%  \ForEach{$t_i \in T$}
+%  {
+%    \tcc{\footnotesize{relative distances at $t_i$}}
+%    $D_{i}$ = pairwiseL2($t_i$) \\
+%    \tcc{\footnotesize{deviation of distances}}
+%    $E_{i}$ = $|D_{i} - D_{reference}|$ \\
+%    \tcc{\footnotesize{\emph{breaking} feature pairs}}
+%    $B_{i} = \{ (f_1,f_2) | E_{i}[f_1,f_2] > d_{threshold} \}$ \\
+%    \ForEach{$(f_1,f_2) \in B_{i}$}
+%    {
+%      $C_{breaks}[f_1,f_2]++$ \tcc{\footnotesize{increment counter}}
+%    }
+%    \ForEach{$(f_1,f_2) \not \in B_{i}$}
+%    {
+%      $C_{breaks}[f_1,f_2] = 0$ \tcc{\footnotesize{reset counter}}
+%    }
+%    $T_{breaks}[i]$ = $C_{breaks}$ \tcc{\footnotesize{save counter}}
+%  }
+%  \tcc{\footnotesize{maximum percentage of consecutive \emph{breaks}}}
+%  $M_{breaks}$ = max($T_{breaks}$)/$m$ \\
+%  \tcc{\footnotesize{final adjacency matrix}}
+%  $A$ = getConnections($M_{breaks} <= p_{threshold}$) \\
+%  \tcc{\footnotesize{number of clusters based on Laplacian}}
+%  $nr_{clusters}$ = nrZeros(eigenValues(diag(degrees($A$)) - $A$)) \\
+
+%  \tcc{\footnotesize{get features clustered by connectivity}}
+%  \KwOut{$F_{clusters}$ = connectedComponents($A$)}
+%  \caption{Graph-based trajectory clustering algorithm. 
+%A \emph{break} between features means that the relative distance between them exceeded the %given threshold.}
+  \label{alg:cluster_trajectories}
+%\end{algorithm}
+
+
+REF% \figref{clustering} 
+shows an evaluation of the clustering algorithm on 17 scenes from %\figref{evaluation1}.
+ The use of $p_{threshold}$ is clearly advantageous, and the method works well for a range of the $p_{threshold}$ and the $d_{threshold}$ parameters. 
+ Since too low values for $d_{threshold}$ over-segment the features, values over $1.5cm$ are used, and the possible under-segmentations solved
+ by applying the whole method iteratively until all the objects are clearly separated.
+ 
+ 
+ 
 \subsection{Dense Model Reconstruction}
+
+\subsection{Dense Model Reconstruction}
+\label{sec:dense_model}
+
+Considering the connected features $F_{clusters}$ as being part of the same object, we reconstruct 
+the dense model of the object using region growing in normal space, which also makes use of the 
+borders found at depth discontinuities, as shown in %\algref{region_growing}. 
+The idea for the region growing 
+constraints is based on the segmentation described by Mishra et al.~\cite{asICCV2009}, 
+where the authors make use of a predefined fixation point and a border map. Since we already 
+know the features that are part of the object, we can easily define a seed point for the
+region growing. In order to find the best possible seed point, we separate the connected 
+features using euclidean clustering, calculate each of the resulting clusters' centroid, and 
+then start growing from these. An important condition of the region growing is the 
+assumption that objects are often composed of convex parts~\cite{Pogor}.
+Therefore, we make sure that during region growing two points are assigned to the same region $R_{i}$
+if the angle $eps_{thresh}$ between the vector connecting them and the points normal is close to obtuse
+(considering the sensor noise level\cite{kinect_accuracy}, 89$^\circ$ were used).
+Once all region-feature pairs have been identified, we reconstruct the dense model.
+Since in the trajectory clustering step we already identified the features that belong to the same object,
+having multiple regions for the same object is easily dealt with
+by merging those regions for which the corresponding features belong to the same object into dense models $R_{j}$.
 
 \section{Results}
 
