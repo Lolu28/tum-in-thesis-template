@@ -3,10 +3,10 @@
 
 
 \section{System Pipeline}
-\subsection{Static Segmentation - Preprocessing}
- Our approach  
+%\subsection{Static Segmentation - Preprocessing}
+ The approach taken to segment textureless objects   
  consists of five main steps as depicted in REF%\figref{pipeline}
-  and demonstrated in an accompanying video\footnote{\url{http://youtu.be/Bu4LayrGC1s}}.
+  and demonstrated in a video\footnote{\url{http://youtu.be/Bu4LayrGC1s}}.
  In the first step we obtain an RGBD point cloud from the Kinect sensor. In the second step we perform static object
  pre-segmentation which results in a set of categorized object hypotheses $O$,
  with the category being either flat or round, and a list of object parts $P_{o}$ that every object 
@@ -15,23 +15,20 @@
  that we count the  number of parts that the respective object hypotheses $O$ 
  consists of and then sample from the Poisson distribution according to the REF%\equref{poisson}.
  After obtaining the probability of the scene being segmented correctly we 
-decide if the interactive segmentation algorithm should be used or not.
+decide if the interactive segmentation algorithm should be used or not. It is worth mentioning that the system is able to perform with a different static segmentation algorithm that could be used as an indicator if we need to use the interactive segmentation algorithm.
 
- We use categorization of the objects as a prior for tracking by 
- extracting and tracking line and corner RGBD features on the flat object hypotheses 
- and circle and cylinder RGBD features on the round ones in the third step. Finally, we 
- execute the arm motion movement in $1cm$ intervals until we reached a maximum of $5$ 
+ The information obtained from the categorization algorithm is also used in the next step - based on the object category we decide what kind of RGBD feature needs to be extracted and tracked afterwards. Having obtained one of the categories being flat or round, we extract different RGBD features: lines and corners for the flat objects or cylinders and circles for the round ones. As the next step we look for the best point to push the objects by looking at concave and convex corners in a top-down image of the scene and we execute the arm motion movement at the previously found corner. We move the arm in $1cm$ intervals until we reached a maximum of $5$ 
   pushes. All of the features are being tracked during the interaction 
- and the trajectories of feature centroids  are being  saved.  
+ and the trajectories of feature centroids  are being  saved as 6 degrees of freedom transformations. 
+ 
+  
 %In sixth  row of  \figref{scenes} the
 % relative distances between centroids over the time are depicted. 
-Based  on  relative  distances between the feature centroids, the graph-based algorithm for the trajectory clustering is
- applied.  The  output  of  the  algorithm is  the  number  of  objects
- belonging  to a certain  object hypothesis $o$ and  the association  between the object
- number and the parts $p_{1},  \dots, p_{n} \in P_{o}$ that belong to it (fourth step).
+In the fourth step we apply a graph-based algorithm for trajectory clustering that operates on the saved centroids mentioned above. At the end of this step we obtain a set of grouped features where each group of features is considered to belong to the same object. In this way features that have moved in the same manner are clustered as one feature. 
+
  In the fifth and the last step the dense model is reconstructed using the region growing algorithm 
-where the tracked and clustered RGBD features are
-used as seed points.
+where the centroids of tracked and clustered RGBD features are
+used as seed points. As an output we obtain a dense representation of the objects in the scene that may be further used for grasping or object recognition algorithms.
 
 
 \subsection{Static Pre-segmentation of Objects}
@@ -136,10 +133,8 @@ In this paper we omit the category \emph{other} and use the other two in order
 to determine if the interactive segmentation is needed, and if yes, which RGBD features 
 to extract and track in the respective part of the point cloud in the given scene.
 
-
-\subsection{Verification of Correctness of Segmentation}
-\label{sec:probabilities}
-
+\subsubsection{Verification of Correctness of Segmentation}
+\label{sec:probabilities}	
 Since the geometric categorization of parts does not give the correct grouping of these parts to form objects,
 simply grouping the parts of the same category together does not always separate the objects, especially if classification errors occur too.
 A method of voting for object centroids followed by a model fitting step was described in~\cite{mozos11furniture},
@@ -180,64 +175,148 @@ points  between the objects in   the   scene  and   the   robot's   end
 effector  must   be determined. Furthermore, the  direction   the robot's  end
 effector should move must be chosen.
 
-In  this paper we apply our previously developed approach based on 
-the local concavities~\cite{bersch12interactive}. Since most
+The contact points where the objects are pushed should
+be such that the push results in different objects moving
+differently resulting in different optical flows.
+In  this thesis we apply our previously developed approach based on 
+the local concavities~\cite{bersch12interactive}. The outcome
+of a push depends largely on the arrangement of objects but
+intuition suggests that pushing at corners of objects should
+result in not only translation but also rotation of the object
+directly being pushed. On the other hand, pushing at the
+sides of an object may result only in translation and any
+neighboring objects may also move together with it as a
+rigid body. Object corners are, therefore, good candidates for
+contact points for pushes irrespective of the object configura-
+tion. Also, since most
 commonly  encountered  household   items  have  convex  outlines  when
 observed  from  above,  our  system  uses  local
 concavities in the  2D contour of an object group  as an indicator for
-boundaries between the objects.  The robot separates objects from each
-other by pushing its end effector in between these boundaries. 
-As the implementation details of the corner-based pushing go beyond the scope of 
-this paper, we refer the reader to~\cite{bersch12interactive} for details.
+boundaries between the objects.
+We use this heuristic to select our push points and later
+validate the accuracy of this heuristic through simulations in
+section REF.
+
+In order to detect concave and convex corners we developed the following algorithm. Firstly we artificially translate and rotate the camera image such that it looks as taken directly from above the scene. From this point an image and a point cloud are taken to determine potential push points for the robot. Having the point cloud information we use Plane Segmentation algorithm from PCL REF to segment the biggest plane in the scene - a table. We refine the images by using simple morphological operations - opening and closing. After these steps we obtain black and white images where everything but objects is black, an example is depicted in Figure REF. 
+
+Taking this image as an output we use Shi-Tomasi corner detector to determine corner positions and their orientation. As the implementation details of the corner-based pushing go beyond the scope of this thesis, we refer the reader to~\cite{bersch12interactive} for details.
+
+\subsubsection{Push Point Heuristic Validation}
+We carried  out several simulations  in physics-based simulator Gazebo\footnote{\url{http://gazebosim.org/}} to validate  our corner
+pushing heuristic. To verify that  pushing at corners is  indeed more
+effective, we  spawned different  scenes in Gazebo  with two  or three
+closely  placed objects. Objects were flat and round, in different orientations 
+and arranged such that they were in solid contact or in single point contact.
+We  then simulated  pushing at  these objects
+with a PR2 gripper at many different contact points along the bounding
+box of the  objects and in many different  directions. More precisely,
+we chose points along the bounding box spaced $2cm$ apart and for every
+such  point,  the  gripper simulated  a  sequence  of  2 pushes  in  7
+different directions {15\textdegree}  apart (See Fig.~\ref{fig:scshots}). The starting gripper pose
+and the object  poses before and after every  push were recorded. Then
+Shi-Tomasi features with known but randomly determined  locations were spawned artificially on
+the objects. Based on the  recorded object poses, the locations of all
+the  features were  computed  after  every push.  This  enabled us  to
+compute the simulated optical flows. The feature trajectories  so obtained were
+then clustered using our previously developed segmentation for textured objects algorithm.
+We used this algorithm because of the character of the features - there are many different forms of textureless features and it is difficult to come up with a general solution whereas Shi and Tomasi features are a good representatives for many textured tracking algorithms.  The contact points for the
+pushes  which resulted in  a successful  segmentation of  objects were
+then  observed  and  the  number  of  successful  corner  pushes  were
+counted. A push  was classified as a corner push  if the contact point
+is less than $1cm$ away from an object corner.
+
+We carried out 5 runs\footnote{Please mind that since Gazebo uses an ODE engine 
+which is based on linear complementarity problem constraint formulation and since the
+simulation is defendant on the CPU load, the runs are not fully deterministic.} 
+on every of 24 different  scenes (11 scenes  with 2
+objects, 13  scenes with  3 objects), which resulted in an average  of 381.5
+push sequences for a scene out of which an average of 14.9 pushes were
+successful in segmenting  all the objects in the  scene correctly. Out
+of these, 7.25  pushes were corner pushes. There were an average  of 10
+object corners in each scene. From this it follows that there were on average
+70 corner pushes and 311.5 other pushes. This gives the segmentation success of $10\%$
+for the corner pushes and $2.4\%$ for the non-corner ones. The reason for the low
+overall segmentation result compared to the real scenes above is on the one hand in that the scenes in the simulation
+included the single contact points between the objects and on the other hand in 
+that various non-favorable orientations per contact point were computed and executed.
+We observed  that corner pushing was successful  in all  the scenes while  side pushing  was successful
+only  when  the  objects were in single point contact. 
+When the  objects were next to each other  and similar in size,
+pushing  at the sides  resulted in  the objects  moving together  as a
+single rigid body, thus making the algorithm fail. In such cases, only
+corner  pushes succeeded.  These simulations  thus prove the benefits of
+corner pushing irrespective of object arrangement.
+
 
 
 \subsection{Feature Extraction}
 
 \section{Textureless Object Segmentation}
 \label{sec:textureless}
-In this section we describe the selected RGBD features suitable for the 
-tracking of textureless objects and the particle filtering-based tracking library. 
-The features are estimated on the above classified list of object hypotheses $O$ from the RGBD point cloud. 
-RGB and the depth measurements in the point cloud are time synchronized and registered.
-We employ 3D circle and 3D cylinder point cloud features for 
-the round objects and 3D line and 3D corner point cloud features for the flat
-objects. The rationale behind this selection of features is that they are all fast to compute 
-and yet distinctive enough for tracking with the proposed tracking algorithm. The latter
-uses a combination of the visual appearance and the geometrical structure of the feature
-to compute the likelihood function of the feature hypothesis.
 
-\subsection{RGBD Features}
+The main challenge in dealing with textureless objects is finding good and stable features. In our approach we decided to take use of the information we have from the previous steps namely the category of the object. Since there is no texture on the object we have to base our features on mainly the depth information. We employ 3d features provided by PCL REF but we seek for different features in respective categories. In the flat category it is more likely that an object would have sharp edges and would be more box-like, therefore we use 3D lines and 3D corners on this category of objects. In the round category it is more likely to have cylindrical objects as a mug or a bowl, therefore, we employ 3D circles and 3D cylinders as the features in this case.
+
+Feature extraction part of our algorithm acts as an input for the feature tracking part which is a crucial part of the system. Therefore, it is very important to extract stable features that can be tracked over the time of interaction with a robot.
+
+
+
+%In this section we describe the selected RGBD features suitable for the 
+%tracking of textureless objects and the particle filtering-based tracking library. 
+%The features are estimated on the above classified list of object hypotheses $O$ from the RGBD point cloud. 
+%RGB and the depth measurements in the point cloud are time synchronized and registered.
+%We employ 3D circle and 3D cylinder point cloud features for 
+%the round objects and 3D line and 3D corner point cloud features for the flat
+%objects. The rationale behind this selection of features is that they are all fast to compute 
+%and yet distinctive enough for tracking with the proposed tracking algorithm. The latter
+%uses a combination of the visual appearance and the geometrical structure of the feature
+%to compute the likelihood function of the feature hypothesis.
+
+\subsubsection{RGBD Features}
 \label{sec:3dfeatures}
-In order to obtain a 3D line point cloud we first find object edge candidates
-in the cluttered scene using curvature values computed in the input
-point cloud from the Kinect sensor. Next we fit a line model to the object edge
-candidates using RANSAC ~\cite{ransac} and finally pad the line with neighboring
-points on the object within a radius of $5cm$. 3D corner point clouds are
-determined using the 3D variant of the Harris corner detector as implemented in the Point
-Cloud Library (PCL)(\url{pointclouds.org}) and padded with neighboring
-points on the object within a radius of $5cm$ as well. Padding of both
-features is necessary in order to guarantee computation of a better
-likelihood function needed by the tracker as explained in the following subsection.
-The features are shown in %\figref{scenes} 
-columns 2 and 5, 1st row.
+In order to reduce our regions of interests and improve finding of the feature we look only at these parts of a point cloud with a high curvature value. 3D line extraction algorithm takes as an input all the edges extracted from the initial point cloud. As the next step we use RANSAC REF algorithm to find the best fit between the line model and the input point cloud. Once the best fit is found we delete these points from the point cloud and repeat the algorithm until we cannot find lines that consist of number of points smaller than a certain threshold. Having extracted set of lines we pad each of them with neighbouring points that are within a radius of $5cm$. After this process we employ one additional check to eliminate lines consisting of multiple lines, namely we use Plane Segmentation Algorithm from PCL REF to determine how many planes the line consists of. If the number of planes is bigger than 2 then we eliminate the line from the tracking set.
 
-To obtain a 3D cylinder point cloud, we also use a RANSAC model which is
-based on the fact that on a cylinder surface, all normals are both orthogonal
-to the cylinder axis and intersect it. We consider the two lines
-defined by two sample points and their corresponding normals as two skew lines,
-and the shortest connecting line segment as the axis.
-Determining the radius is then a matter of computing the distance of one of the
-sample points to the axis. By setting the cylinder axis perpendicular to the table results are more
-robust, but is not mandatory. Finally, the generation of the 3D circle  is also
-done using RANSAC by projecting a sample point into the 
-3D circle's plane and computing the distance between this point and 
-the point obtained as an intersection of the line from the circle's center with the 
-circle's boundary, whereas the line is passing through the projected sample point.
-The features are shown in the 2nd row of REF%\figref{scenes} 
-columns 2 and 5.
-\subsection{Feature Tracking}
+In addition to 3D lines we use 3D corners as features on the flat objects category. 3D corners are extracted by using a 3D implementation of Harris Corner Detector from PCL REF. In this case instead of taking pixel values into consideration and forming a Harris matrix, depth information of the points is used. Therefore, we are able to detect 3D corners in the scene that are not necessarily the same as their 2D Harris corners equivalents. We use similar technique as in the 3D lines detection which means we subtract        the corners that we found from the point cloud and start searching again. We pad found corners with the neighbouring point as well and we use additional plane segmentation check where we check if a padded corner consists of exactly 3 planes.
 
-\subsection{Particle Filtering-based Tracking of RGBD Pointclouds}
+In the round object category we look for 3D cylinders and circles because they are much more stable and easier to find than previous features on this kind of objects. We take advantage of PCL REF implementations of both of these features. 3D cylinder extraction algorithm is based on RANSAC and similarly to 3D line approach looks for the best fit to the cylinder model. 3D circle extraction algorithm is implemented using the same idea but with the cirlce model. Also this time we use padding and subtracting already found parts from the point cloud methods to obtain the final features. There is also a possibility to add additional constraints to the 3D circle and 3D cylinder algorithms such as a specific range of ratio of a found feature or a direction of the cylinder/circle axis. These constraints and make the features more robust but are not necessary to extract the features. 
+
+At the end of this step we have up to 4 sets of different features depending on the categories that were found in the scene. All of the point clouds are padded since it significantly improves the likelihood function of the tracker that is described in the next section. The features are depicted in Figure REF. 
+
+
+
+
+
+
+
+%In order to obtain a 3D line point cloud we first find object edge candidates
+%in the cluttered scene using curvature values computed in the input
+%point cloud from the Kinect sensor. Next we fit a line model to the object edge
+%candidates using RANSAC ~\cite{ransac} and finally pad the line with neighboring
+%points on the object within a radius of $5cm$. 3D corner point clouds are
+%determined using the 3D variant of the Harris corner detector as implemented in the Point
+%Cloud Library (PCL)(\url{pointclouds.org}) and padded with neighboring
+%points on the object within a radius of $5cm$ as well. Padding of both
+%features is necessary in order to guarantee computation of a better
+%likelihood function needed by the tracker as explained in the following subsection.
+%The features are shown in %\figref{scenes} 
+%columns 2 and 5, 1st row.
+
+%To obtain a 3D cylinder point cloud, we also use a RANSAC model which is
+%based on the fact that on a cylinder surface, all normals are both orthogonal
+%to the cylinder axis and intersect it. We consider the two lines
+%defined by two sample points and their corresponding normals as two skew lines,
+%and the shortest connecting line segment as the axis.
+%Determining the radius is then a matter of computing the distance of one of the
+%sample points to the axis. By setting the cylinder axis perpendicular to the table results are more
+%robust, but is not mandatory. Finally, the generation of the 3D circle  is also
+%done using RANSAC by projecting a sample point into the 
+%3D circle's plane and computing the distance between this point and 
+%the point obtained as an intersection of the line from the circle's center with the 
+%circle's boundary, whereas the line is passing through the projected sample point.
+%The features are shown in the 2nd row of REF%\figref{scenes} 
+%columns 2 and 5.
+%\subsection{Feature Tracking}
+
+\subsubsection{Particle Filtering-based Tracking of RGBD Pointclouds}
 \label{sec:tracking}
 The feature point clouds extracted above are then passed to the
 particle filter-based tracker as reference models. The tracker 
