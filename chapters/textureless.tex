@@ -318,57 +318,30 @@ At the end of this step we have up to 4 sets of different features depending on 
 
 \subsubsection{Particle Filtering-based Tracking of RGBD Pointclouds}
 \label{sec:tracking}
-The feature point clouds extracted above are then passed to the
-particle filter-based tracker as reference models. The tracker 
-consists of four steps: i) the above described reference model
-selection, ii) pose update and re-sampling, iii) computation of the
-likelihood and iv)
-weight normalization. In the pose update step we use a ratio between
-a constant position and a constant velocity motion model which allows
-us to achieve efficient tracking with a lesser number of the
-particles. In the re-sampling phase we utilize Walker’s Alias Method
-\cite{Walker}. The likelihood function $l_{j}$ of the hypotheses in the third
-step is computed as in REF%\equref{likelihood}
- and is based on the similarity  between the nearest points
-pair of the reference point ($p_{j}$) cloud and the input data ($q_{j}$). Similarity is
-defined as a product of a term describing the points pair's euclidean distance $l_{euclidean}$ 
-and a term describing points pair's match in the $HSV$ (Hue, Saturation, Value) color
-space $l_{color}$. $\alpha$ and $\beta$ are the weight factors set to $0.5$ in our case.
+The tracked feature from the previous step are used as a reference models for the Particle Filtering-based Tracker that is implemented in PCL REF. The tracking algorithm itself consists of various steps. At the beginning the reference model is passed and multiple hypotheses are being generated. In order to generate a probable hypothesis two different motion models are being weighted and used as a prediction of the point position: constant velocity model and constant position model. Based on the ratio between these two models different particles are being spawned where each of the particles represents a hypothesis of the object's position. At the end of this step a re-sampling technique described in REF is being applied. 
+
+In the next step the similarity between pairs of the data points is computed. Pairs are being selected by searching for the nearest neighbours between the reference point cloud and the real time point cloud obtained by the tracker. Similarity between the point pairs depends on two factors that describe the surface and the color of the point: i)the euclidean distance between two points and ii) Distance in HSV (Hue, Saturation, Value) color space between the two neighbours. In order to obtain the likelihood of a given particle the similarity factors are being computed and weighted - 0.5 in our case. The likelihood is computed as shown below.
+
 \begin{eqnarray}
   l_{j} = l_{euclidean}(p_{j},q_{j})l_{color}(p_{j},q_{j}) \nonumber \\
   l_{euclidean}(p_{j},q_{j}) = \frac{1}{1+\alpha|p_{j}-q_{j}|^2} \nonumber \\
   l_{color}(p_{j},q_{j}) = \frac{1}{1+\beta|p_{j,hsv}-q_{j,hsv}|^2} 
   \label{eq:likelihood}
-\end{eqnarray}
-To obtain the model's weight we sum over likelihood values for
-every points pair in the reference model as follows: $w_{i} = \sum\limits_{j}l_{j}$. This likelihood function assures a combined
-matching of model's structure and visual appearance. In the final step we normalize the 
-previously computed model weight by applying a relative normalization as
-described in~\cite{AzadMAD11}. The real-time operation of the algorithm
-is made possible through various optimization techniques such as
-downsampling of the point clouds, openMP parallelization and KLD-based 
-(Kullback-Leibler Divergence) 
-sampling~\cite{Fox01KLD} to select the optimal number of particles.
+\end{eqnarray} 
 
-
-\textbf{Why not to track object parts?} To answer this question we refer the reader 
-to scene 1 in %\figref{scenes},
- column 3 where top surfaces of both boxes were grouped into one segment.
-Had we taken this segment as a reference cloud the tracking algorithm would fail due
-to its limitation to generate multiple reference clouds during tracking.
+Having calculated the likelihood for each pair, we sum the up in order to obtain the model weight $w_{i} = \sum\limits_{j}l_{j}$. In the last step of the algorithm the model is being normalized based on REF. It is worth highlighting that the algorithm runs on multiple CPU's and uses various optimization techniques such as KLD-based 
+(Kullback-Leibler Divergence) sampling REF which enables the real time performance of the tracker.
 
 
 \subsection{Feature Clustering}
 
 \subsection{Trajectory Clustering}
 \label{sec:clustering}
-The tracked features' 3D trajectories (see %\figref{scenes} 
-column 6) are clustered using %\algref{cluster_trajectories}
-in order to find the feature-object associations.
-We treat each of the $n$ RGBD features as a node in a graph, where edge weights represent the maximum number of consecutive violations of the relative distance variation threshold ($d_{threshold}$), i.e. \emph{breaks} (optionally, also pose changes can be checked for better performance).
-The final connection matrix is obtained by removing the edges which have weights that exceed a given percentage ($p_{threshold}$) of the theoretic maximum number of frames.
-%This way those features are connected whose distance did not vary too much for significantly long.
-The distance between features which did not vary are then clustered together.
+
+Having tracked multiple features where some of them may belong to the same object we need an algorithm to cluster these features together. One of the requirements that makes this problem non-trivial is that one feature on an object should be enough to generate a hypothesis about this object. We developed a graph-based solution that clusters the features clusters features that moved in the similar manner and separates the features that varied too much for a long time. In the graph every feature is represented by a node and an edge between two features(nodes) symbolizes the features that can be clustered together. An edge is based on the euclidean distance between the features centroids and the distance between quaternions describing their orientation. At the beginning of the interaction the graph has full connectivity but during the actions taken by the robot some of the edges can be broken - features can move in a different manner.
+The full algorithm is presented in REF.
+
+There are two important parameters used in the above described graph-based clustering algorithm: i) $d_{threshold}$ - maximum number of consecutive violations of the relative distance violations threshold and ii) $p_{threshold}$ - percentage of number of violations to the theoretic maximum number of frames.
 
 %\begin{algorithm}[htb!]\footnotesize
 %  \tcc{\footnotesize{number of tracked features $n$ and number of time steps $m$,
