@@ -603,7 +603,7 @@ the  segmentation becomes.  Our
 algorithm  performs extremely well in the  'on top'  arrangement which  is very
 challenging for the static segmentation techniques.
 
-\begin{table}\scriptsize
+\begin{table}[h!]\scriptsize
 \hspace*{-2.5cm} 
 \begin{tabular}{|c|c| c| c| c| c| c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline    Scene   number    &1   &    2    &   3    &4   &5&6&7&    8&
@@ -615,7 +615,7 @@ challenging for the static segmentation techniques.
       \label{tab:chart_result}
 \end{table}
 
-\begin{table}\scriptsize
+\begin{table}[h!]\scriptsize
 \hspace*{-4cm} 
 \begin{tabular}{|c |c| c| c| c| c| c|c|c|c|}
 \hline    &all    results   &    different    size    &   same    size
@@ -628,26 +628,7 @@ solid contact) & on top\\ \hline Success rate[\%] & 82,4 & 93,9 & 61,1
 \label{tab:result_percentage}
 \end{table}
 
-We would  like to draw the  reader's attention to all  the scenes with
-the round objects. 
-It can be noted that
-the Kinect sensor from the used viewpoint (mounted on the head of the human size PR2 robot) always
-captures mugs as two spatially non-connected parts.
-In order to robustly merge these two parts using segmentation
-algorithms operating on point clouds or images of static scenes, 
-model-based segmentation algorithms are required. While that constitutes a feasible solution,
-the system presented in this
-paper can easily deal with such scenes without a model by clustering the two
-parts of the mug since they move rigidly with respect to each other.
-
- For  the scene in  bottom row  of Fig. \ref{fig:scenes}  we can  observe that
- there is only one feature on the left object.  All   the  clustering  algorithms  trying  to
- explicitly cluster  at least one  pair of features with  the constant
- relative  distance over  time would  fail  in this  case.  Using  the
- graph-based clustering method we are able to disconnect the two nodes
- of  the  graph  and infer  that  there  is a single feature-object association.
-\begin{figure*}[]  %\renewcommand*{\thesubfigure}{}
-  \begin{centering}
+\begin{figure}[h!]  %\renewcommand*{\thesubfigure}{}
   \hspace*{-4.3cm}  
     \begin{tabular}{ccccccccc}
       \hline
@@ -714,8 +695,27 @@ parts of the mug since they move rigidly with respect to each other.
           Image after the push for scenes.  3rd/6th: Point cloud
           after dense model reconstruction for scenes.}
     \label{fig:evaluation1}
-  \end{centering}
-\end{figure*}
+\end{figure}
+
+We would  like to draw the  reader's attention to all  the scenes with
+the round objects. 
+It can be noted that
+the Kinect sensor from the used viewpoint (mounted on the head of the human size PR2 robot) always
+captures mugs as two spatially non-connected parts.
+In order to robustly merge these two parts using segmentation
+algorithms operating on point clouds or images of static scenes, 
+model-based segmentation algorithms are required. While that constitutes a feasible solution,
+the system presented in this
+paper can easily deal with such scenes without a model by clustering the two
+parts of the mug since they move rigidly with respect to each other.
+
+ For  the scene in  bottom row  of Fig. \ref{fig:scenes}  we can  observe that
+ there is only one feature on the left object.  All   the  clustering  algorithms  trying  to
+ explicitly cluster  at least one  pair of features with  the constant
+ relative  distance over  time would  fail  in this  case.  Using  the
+ graph-based clustering method we are able to disconnect the two nodes
+ of  the  graph  and infer  that  there  is a single feature-object association.
+
 
 
 \section{Conclusion}
