@@ -4,8 +4,54 @@
 
 \section{System Pipeline}
 %\subsection{Static Segmentation - Preprocessing}
+
+\begin{figure}[h!]
+\centering
+  \includegraphics[width=\columnwidth]{figures/segmentation_pipeline.pdf}
+  \caption{System pipeline.}
+  \label{fig:pipeline}
+\end{figure}
+
+
+\begin{figure*}[ht!]  %\renewcommand*{\thesubfigure}{}
+  \begin{centering} 
+    \begin{tabular}{p{0.166\textwidth}p{0.166\textwidth}p{0.166\textwidth}p{0.166\textwidth}p{0.166\textwidth}p{0.166\textwidth}}
+    \includegraphics[height=1.65cm]{figures/scene1/image_before.jpg}
+&    \includegraphics[height=1.65cm]{figures/scene1/pcl_before.png}
+&    \includegraphics[height=1.65cm]{figures/scene1/segments.png}
+&    \includegraphics[height=1.65cm]{figures/scene1/labels.png}
+&    \includegraphics[height=1.65cm]{figures/scene1/pcl_after.png}    
+&    \includegraphics[height=1.65cm]{figures/scene1/distances.png}\\
+
+    \includegraphics[height=1.65cm]{figures/scene2/image_before1.jpg}
+&    \includegraphics[height=1.65cm]{figures/scene2/pcl_before1.png}
+&    \includegraphics[height=1.65cm]{figures/scene2/segments1.png}    
+&    \includegraphics[height=1.65cm]{figures/scene2/labels1.png}
+&    \includegraphics[height=1.65cm]{figures/scene2/pcl_after1.png}  
+&    \includegraphics[height=1.65cm]{figures/scene2/distances.png}
+
+%     \includegraphics[height=1.65cm]{scene3/image_before.jpg}
+% &    \includegraphics[height=1.65cm]{scene3/pcl_before.png}
+% &    \includegraphics[height=1.65cm]{scene3/segments.png}
+% &    \includegraphics[height=1.65cm]{scene3/labels.png}
+% &    \includegraphics[height=1.65cm]{scene3/pcl_after.png}    
+% &    \includegraphics[height=1.65cm]{scene3/distances.png}
+  \end{tabular}
+		\vspace{-2ex}
+    \caption{Two test scenes in the top and bottom row respectively. First column:
+      original scenes; second column: extracted RGBD features before the
+      interaction; third column: parts $P$ from the static segmentation;
+      fourth column: object hypotheses $O$ from the static segmentation; fifth column:
+      tracked RGBD features after interaction; sixth column: relative
+      distances between the tracked features. Plots with the ramp denote distances between features on different objects 
+      and plots with the constant values denote distance between features on the same object.}
+    \label{fig:scenes}
+  \end{centering}
+\end{figure*}
+
+
  The approach taken to segment textureless objects   
- consists of five main steps as depicted in REF%\figref{pipeline}
+ consists of five main steps as depicted in Fig. \ref{fig:pipeline}
   and demonstrated in a video\footnote{\url{http://youtu.be/Bu4LayrGC1s}}.
  In the first step we obtain an RGBD point cloud from the Kinect sensor. In the second step we perform static object
  pre-segmentation which results in a set of categorized object hypotheses $O$,
@@ -13,9 +59,11 @@
  $o \in O$ consists of. Having obtained the object hypotheses $O$ we infer which hypothesis
  is segmented  correctly. For
  that we count the  number of parts that the respective object hypotheses $O$ 
- consists of and then sample from the Poisson distribution according to the REF%\equref{poisson}.
+ consists of and then sample from the Poisson distribution according to the Eq. \ref{eq:poisson}.
  After obtaining the probability of the scene being segmented correctly we 
 decide if the interactive segmentation algorithm should be used or not. It is worth mentioning that the system is able to perform with a different static segmentation algorithm that could be used as an indicator if we need to use the interactive segmentation algorithm.
+
+
 
  The information obtained from the categorization algorithm is also used in the next step - based on the object category we decide what kind of RGBD feature needs to be extracted and tracked afterwards. Having obtained one of the categories being flat or round, we extract different RGBD features: lines and corners for the flat objects or cylinders and circles for the round ones. As the next step we look for the best point to push the objects by looking at concave and convex corners in a top-down image of the scene and we execute the arm motion movement at the previously found corner. We move the arm in $1cm$ intervals until we reached a maximum of $5$ 
   pushes. All of the features are being tracked during the interaction 
@@ -29,6 +77,8 @@ In the fourth step we apply a graph-based algorithm for trajectory clustering th
  In the fifth and the last step the dense model is reconstructed using the region growing algorithm 
 where the centroids of tracked and clustered RGBD features are
 used as seed points. As an output we obtain a dense representation of the objects in the scene that may be further used for grasping or object recognition algorithms.
+
+\section{Pre-processing Steps}
 
 
 \subsection{Static Pre-segmentation of Objects}
@@ -167,6 +217,14 @@ was categorized as one object (column 4), but in column
 according to the Poisson distribution and clearly indicates an over-segmentation 
 error and the need for the robot to segment this region interactively.
 
+\begin{figure}[h!]
+\centering
+  \includegraphics[width=0.98\columnwidth, trim=0ex 0ex 53ex 0ex, clip]{figures/dataset_stats.pdf}
+	\vspace{-2ex}
+  \caption{Distribution of number of parts (see REF column 3) per object and their approximation with a Poisson distribution.}
+  \label{fig:poisson}
+\end{figure}
+
 \subsection{Push Point Estimation}
 \label{sec:push-point}
 Once the over or under segmented region of interest has been identified 
@@ -195,9 +253,18 @@ concavities in the  2D contour of an object group  as an indicator for
 boundaries between the objects.
 We use this heuristic to select our push points and later
 validate the accuracy of this heuristic through simulations in
-section REF.
+the next section.
 
-In order to detect concave and convex corners we developed the following algorithm. Firstly we artificially translate and rotate the camera image such that it looks as taken directly from above the scene. From this point an image and a point cloud are taken to determine potential push points for the robot. Having the point cloud information we use Plane Segmentation algorithm from PCL REF to segment the biggest plane in the scene - a table. We refine the images by using simple morphological operations - opening and closing. After these steps we obtain black and white images where everything but objects is black, an example is depicted in Figure REF. 
+\begin{figure}[tb!]
+   \begin{center}
+     \includegraphics[width=.9\columnwidth]{figures/corners.png}
+		\vspace{-2ex}
+   \caption{Corners and their directions after morphological operations. 1st row - image of the scene. 2nd row, 1st column - Corners detected from the top-view image. 2nd row, 2nd column - Directions detected from the top-down image. }
+   \label{fig:corners}
+ \end{center}
+ \end{figure}
+
+In order to detect concave and convex corners we developed the following algorithm. Firstly we artificially translate and rotate the camera image such that it looks as taken directly from above the scene. From this point an image and a point cloud are taken to determine potential push points for the robot. Having the point cloud information we use Plane Segmentation algorithm from the Point Cloud Library(pointclouds.org) to segment the biggest plane in the scene - a table. We refine the images by using simple morphological operations - opening and closing. After these steps we obtain black and white images where everything but objects is black, an example is depicted in Fig. \ref{fig:corners}. 
 
 Taking this image as an output we use Shi-Tomasi corner detector to determine corner positions and their orientation. As the implementation details of the corner-based pushing go beyond the scope of this thesis, we refer the reader to~\cite{bersch12interactive} for details.
 
@@ -212,7 +279,7 @@ with a PR2 gripper at many different contact points along the bounding
 box of the  objects and in many different  directions. More precisely,
 we chose points along the bounding box spaced $2cm$ apart and for every
 such  point,  the  gripper simulated  a  sequence  of  2 pushes  in  7
-different directions {15\textdegree}  apart (See Fig.~\ref{fig:scshots}). The starting gripper pose
+different directions {15\textdegree}  apart (See Fig.~\ref{fig:simulations}). The starting gripper pose
 and the object  poses before and after every  push were recorded. Then
 Shi-Tomasi features with known but randomly determined  locations were spawned artificially on
 the objects. Based on the  recorded object poses, the locations of all
@@ -224,6 +291,23 @@ pushes  which resulted in  a successful  segmentation of  objects were
 then  observed  and  the  number  of  successful  corner  pushes  were
 counted. A push  was classified as a corner push  if the contact point
 is less than $1cm$ away from an object corner.
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=0.2\textwidth]{figures/push_directions.pdf}  
+    \includegraphics[width=0.2\textwidth]{figures/rviz_empty9_crop.pdf} 
+    \caption{Screenshots from  the Gazebo  simulation of a  two object
+      scene (left)   and  the   corresponding  visualization   of  the
+      segmentation result. The black arrows in the left image show the
+      7 push  directions for a single  contact point. The  dots on the
+      objects in  the right image represent features  and their colors
+      represent  the cluster they  were assigned  to for  a particular
+      successful push sequence. The red arrows represent the starting gripper positions
+      and  directions  of  all  the  successful push  sequences  in  a
+      simulation run. }
+         \label{fig:simulations}
+  \end{center}
+\end{figure}
 
 We carried out 5 runs\footnote{Please mind that since Gazebo uses an ODE engine 
 which is based on linear complementarity problem constraint formulation and since the
@@ -249,76 +333,32 @@ corner pushing irrespective of object arrangement.
 
 
 
-\subsection{Feature Extraction}
-
 \section{Textureless Object Segmentation}
 \label{sec:textureless}
 
-The main challenge in dealing with textureless objects is finding good and stable features. In our approach we decided to take use of the information we have from the previous steps namely the category of the object. Since there is no texture on the object we have to base our features on mainly the depth information. We employ 3d features provided by PCL REF but we seek for different features in respective categories. In the flat category it is more likely that an object would have sharp edges and would be more box-like, therefore we use 3D lines and 3D corners on this category of objects. In the round category it is more likely to have cylindrical objects as a mug or a bowl, therefore, we employ 3D circles and 3D cylinders as the features in this case.
+The main challenge in dealing with textureless objects is finding good and stable features. In our approach we decided to take use of the information we have from the previous steps namely the category of the object. Since there is no texture on the object we have to base our features on mainly the depth information. We employ 3d features provided by the PCL(Point Cloud Library) but we seek for different features in respective categories. In the flat category it is more likely that an object would have sharp edges and would be more box-like, therefore we use 3D lines and 3D corners on this category of objects. In the round category it is more likely to have cylindrical objects as a mug or a bowl, therefore, we employ 3D circles and 3D cylinders as the features in this case.
 
 Feature extraction part of our algorithm acts as an input for the feature tracking part which is a crucial part of the system. Therefore, it is very important to extract stable features that can be tracked over the time of interaction with a robot.
 
 
 
-%In this section we describe the selected RGBD features suitable for the 
-%tracking of textureless objects and the particle filtering-based tracking library. 
-%The features are estimated on the above classified list of object hypotheses $O$ from the RGBD point cloud. 
-%RGB and the depth measurements in the point cloud are time synchronized and registered.
-%We employ 3D circle and 3D cylinder point cloud features for 
-%the round objects and 3D line and 3D corner point cloud features for the flat
-%objects. The rationale behind this selection of features is that they are all fast to compute 
-%and yet distinctive enough for tracking with the proposed tracking algorithm. The latter
-%uses a combination of the visual appearance and the geometrical structure of the feature
-%to compute the likelihood function of the feature hypothesis.
 
-\subsubsection{RGBD Features}
+\subsection{RGBD Features}
 \label{sec:3dfeatures}
-In order to reduce our regions of interests and improve finding of the feature we look only at these parts of a point cloud with a high curvature value. 3D line extraction algorithm takes as an input all the edges extracted from the initial point cloud. As the next step we use RANSAC REF algorithm to find the best fit between the line model and the input point cloud. Once the best fit is found we delete these points from the point cloud and repeat the algorithm until we cannot find lines that consist of number of points smaller than a certain threshold. Having extracted set of lines we pad each of them with neighbouring points that are within a radius of $5cm$. After this process we employ one additional check to eliminate lines consisting of multiple lines, namely we use Plane Segmentation Algorithm from PCL REF to determine how many planes the line consists of. If the number of planes is bigger than 2 then we eliminate the line from the tracking set.
+In order to reduce our regions of interests and improve finding of the feature we look only at these parts of a point cloud with a high curvature value. 3D line extraction algorithm takes as an input all the edges extracted from the initial point cloud. As the next step we use RANSAC ~\cite{ransac} algorithm to find the best fit between the line model and the input point cloud. Once the best fit is found we delete these points from the point cloud and repeat the algorithm until we cannot find lines that consist of number of points smaller than a certain threshold. Having extracted set of lines we pad each of them with neighbouring points that are within a radius of $5cm$. After this process we employ one additional check to eliminate lines consisting of multiple lines, namely we use Plane Segmentation Algorithm from PCL to determine how many planes the line consists of. If the number of planes is bigger than 2 then we eliminate the line from the tracking set.
 
-In addition to 3D lines we use 3D corners as features on the flat objects category. 3D corners are extracted by using a 3D implementation of Harris Corner Detector from PCL REF. In this case instead of taking pixel values into consideration and forming a Harris matrix, depth information of the points is used. Therefore, we are able to detect 3D corners in the scene that are not necessarily the same as their 2D Harris corners equivalents. We use similar technique as in the 3D lines detection which means we subtract        the corners that we found from the point cloud and start searching again. We pad found corners with the neighbouring point as well and we use additional plane segmentation check where we check if a padded corner consists of exactly 3 planes.
+In addition to 3D lines we use 3D corners as features on the flat objects category. 3D corners are extracted by using a 3D implementation of Harris Corner Detector from PCL. In this case instead of taking pixel values into consideration and forming a Harris matrix, depth information of the points is used. Therefore, we are able to detect 3D corners in the scene that are not necessarily the same as their 2D Harris corners equivalents. We use similar technique as in the 3D lines detection which means we subtract the corners that we found from the point cloud and start searching again. We pad found corners with the neighbouring point as well and we use additional plane segmentation check where we check if a padded corner consists of exactly 3 planes.
 
-In the round object category we look for 3D cylinders and circles because they are much more stable and easier to find than previous features on this kind of objects. We take advantage of PCL REF implementations of both of these features. 3D cylinder extraction algorithm is based on RANSAC and similarly to 3D line approach looks for the best fit to the cylinder model. 3D circle extraction algorithm is implemented using the same idea but with the cirlce model. Also this time we use padding and subtracting already found parts from the point cloud methods to obtain the final features. There is also a possibility to add additional constraints to the 3D circle and 3D cylinder algorithms such as a specific range of ratio of a found feature or a direction of the cylinder/circle axis. These constraints and make the features more robust but are not necessary to extract the features. 
+In the round object category we look for 3D cylinders and circles because they are much more stable and easier to find than previous features on this kind of objects. We take advantage of PCL implementations of both of these features. 3D cylinder extraction algorithm is based on RANSAC and similarly to 3D line approach looks for the best fit to the cylinder model. 3D circle extraction algorithm is implemented using the same idea but with the cirlce model. Also this time we use padding and subtracting already found parts from the point cloud methods to obtain the final features. There is also a possibility to add additional constraints to the 3D circle and 3D cylinder algorithms such as a specific range of ratio of a found feature or a direction of the cylinder/circle axis. These constraints and make the features more robust but are not necessary to extract the features. 
 
-At the end of this step we have up to 4 sets of different features depending on the categories that were found in the scene. All of the point clouds are padded since it significantly improves the likelihood function of the tracker that is described in the next section. The features are depicted in Figure REF. 
-
-
+At the end of this step we have up to 4 sets of different features depending on the categories that were found in the scene. All of the point clouds are padded since it significantly improves the likelihood function of the tracker that is described in the next section. The features are depicted in Fig. \ref{fig:scenes}, columns 2 and 5, 1st and 2nd row. 
 
 
 
 
-
-%In order to obtain a 3D line point cloud we first find object edge candidates
-%in the cluttered scene using curvature values computed in the input
-%point cloud from the Kinect sensor. Next we fit a line model to the object edge
-%candidates using RANSAC ~\cite{ransac} and finally pad the line with neighboring
-%points on the object within a radius of $5cm$. 3D corner point clouds are
-%determined using the 3D variant of the Harris corner detector as implemented in the Point
-%Cloud Library (PCL)(\url{pointclouds.org}) and padded with neighboring
-%points on the object within a radius of $5cm$ as well. Padding of both
-%features is necessary in order to guarantee computation of a better
-%likelihood function needed by the tracker as explained in the following subsection.
-%The features are shown in %\figref{scenes} 
-%columns 2 and 5, 1st row.
-
-%To obtain a 3D cylinder point cloud, we also use a RANSAC model which is
-%based on the fact that on a cylinder surface, all normals are both orthogonal
-%to the cylinder axis and intersect it. We consider the two lines
-%defined by two sample points and their corresponding normals as two skew lines,
-%and the shortest connecting line segment as the axis.
-%Determining the radius is then a matter of computing the distance of one of the
-%sample points to the axis. By setting the cylinder axis perpendicular to the table results are more
-%robust, but is not mandatory. Finally, the generation of the 3D circle  is also
-%done using RANSAC by projecting a sample point into the 
-%3D circle's plane and computing the distance between this point and 
-%the point obtained as an intersection of the line from the circle's center with the 
-%circle's boundary, whereas the line is passing through the projected sample point.
-%The features are shown in the 2nd row of REF%\figref{scenes} 
-%columns 2 and 5.
-%\subsection{Feature Tracking}
-
-\subsubsection{Particle Filtering-based Tracking of RGBD Pointclouds}
+\subsection{Particle Filtering-based Tracking of RGBD Pointclouds}
 \label{sec:tracking}
-The tracked feature from the previous step are used as a reference models for the Particle Filtering-based Tracker that is implemented in PCL REF. The tracking algorithm itself consists of various steps. At the beginning the reference model is passed and multiple hypotheses are being generated. In order to generate a probable hypothesis two different motion models are being weighted and used as a prediction of the point position: constant velocity model and constant position model. Based on the ratio between these two models different particles are being spawned where each of the particles represents a hypothesis of the object's position. At the end of this step a re-sampling technique described in REF is being applied. 
+The tracked feature from the previous step are used as a reference models for the Particle Filtering-based Tracker that is implemented in PCL. The tracking algorithm itself consists of various steps. At the beginning the reference model is passed and multiple hypotheses are being generated. In order to generate a probable hypothesis two different motion models are being weighted and used as a prediction of the point position: constant velocity model and constant position model. Based on the ratio between these two models different particles are being spawned where each of the particles represents a hypothesis of the object's position. At the end of this step a re-sampling technique described in \cite{Walker} is being applied. 
 
 In the next step the similarity between pairs of the data points is computed. Pairs are being selected by searching for the nearest neighbours between the reference point cloud and the real time point cloud obtained by the tracker. Similarity between the point pairs depends on two factors that describe the surface and the color of the point: i)the euclidean distance between two points and ii) Distance in HSV (Hue, Saturation, Value) color space between the two neighbours. In order to obtain the likelihood of a given particle the similarity factors are being computed and weighted - 0.5 in our case. The likelihood is computed as shown below.
 
@@ -329,86 +369,145 @@ In the next step the similarity between pairs of the data points is computed. Pa
   \label{eq:likelihood}
 \end{eqnarray} 
 
-Having calculated the likelihood for each pair, we sum the up in order to obtain the model weight $w_{i} = \sum\limits_{j}l_{j}$. In the last step of the algorithm the model is being normalized based on REF. It is worth highlighting that the algorithm runs on multiple CPU's and uses various optimization techniques such as KLD-based 
-(Kullback-Leibler Divergence) sampling REF which enables the real time performance of the tracker.
+Having calculated the likelihood for each pair, we sum the up in order to obtain the model weight $w_{i} = \sum\limits_{j}l_{j}$. In the last step of the algorithm the model is being normalized based on ~\cite{AzadMAD11}. It is worth highlighting that the algorithm runs on multiple CPU's and uses various optimization techniques such as KLD-based 
+(Kullback-Leibler Divergence) sampling ~\cite{Fox01KLD} which enables the real time performance of the tracker.
 
 
 \subsection{Feature Clustering}
 
-\subsection{Trajectory Clustering}
 \label{sec:clustering}
 
+\begin{algorithm}[htb!]\footnotesize
+  \tcc{\footnotesize{number of tracked features $n$ and number of time steps $m$,
+		     relative distance variation threshold $d_{threshold}$,
+		     max allowed percent of consecutive \emph{breaks} $p_{threshold}$,
+		     and the set of positions of each feature $T$}}
+  \KwIn{$n$, $m$, $d_{threshold}$, $p_{threshold}$, $T$ = \{$t_1...t_m$\}}
+
+  \tcc{\footnotesize{relative distances at $t_1$}}
+  $D_{reference}$ = pairwiseL2($t_1$) \\
+  \tcc{\footnotesize{nr of consecutive \emph{breaks} between features}}
+  $C_{breaks}$ = zeros($n$,$n$) \\
+  \tcc{\footnotesize{relative distances at $t_1$}}
+  $T_{breaks}$ = zeros($m$,$n$,$n$) \\
+  \tcc{\footnotesize{count number of consecutive \emph{breaks}}}
+  \ForEach{$t_i \in T$}
+  {
+    \tcc{\footnotesize{relative distances at $t_i$}}
+    $D_{i}$ = pairwiseL2($t_i$) \\
+    \tcc{\footnotesize{deviation of distances}}
+    $E_{i}$ = $|D_{i} - D_{reference}|$ \\
+    \tcc{\footnotesize{\emph{breaking} feature pairs}}
+    $B_{i} = \{ (f_1,f_2) | E_{i}[f_1,f_2] > d_{threshold} \}$ \\
+    \ForEach{$(f_1,f_2) \in B_{i}$}
+    {
+      $C_{breaks}[f_1,f_2]++$ \tcc{\footnotesize{increment counter}}
+    }
+    \ForEach{$(f_1,f_2) \not \in B_{i}$}
+    {
+      $C_{breaks}[f_1,f_2] = 0$ \tcc{\footnotesize{reset counter}}
+    }
+    $T_{breaks}[i]$ = $C_{breaks}$ \tcc{\footnotesize{save counter}}
+  }
+  \tcc{\footnotesize{maximum percentage of consecutive \emph{breaks}}}
+  $M_{breaks}$ = max($T_{breaks}$)/$m$ \\
+  \tcc{\footnotesize{final adjacency matrix}}
+  $A$ = getConnections($M_{breaks} <= p_{threshold}$) \\
+  \tcc{\footnotesize{number of clusters based on Laplacian}}
+  $nr_{clusters}$ = nrZeros(eigenValues(diag(degrees($A$)) - $A$)) \\
+
+  \tcc{\footnotesize{get features clustered by connectivity}}
+  \KwOut{$F_{clusters}$ = connectedComponents($A$)}
+  \caption{Graph-based trajectory clustering algorithm. A \emph{break} between features means that the relative distance between them exceeded the given threshold.}
+  \label{alg:cluster_trajectories}
+\end{algorithm}
+
+
 Having tracked multiple features where some of them may belong to the same object we need an algorithm to cluster these features together. One of the requirements that makes this problem non-trivial is that one feature on an object should be enough to generate a hypothesis about this object. We developed a graph-based solution that clusters the features clusters features that moved in the similar manner and separates the features that varied too much for a long time. In the graph every feature is represented by a node and an edge between two features(nodes) symbolizes the features that can be clustered together. An edge is based on the euclidean distance between the features centroids and the distance between quaternions describing their orientation. At the beginning of the interaction the graph has full connectivity but during the actions taken by the robot some of the edges can be broken - features can move in a different manner.
-The full algorithm is presented in REF.
+The full algorithm is presented in Alg. \ref{alg:cluster_trajectories}.
 
 There are two important parameters used in the above described graph-based clustering algorithm: i) $d_{threshold}$ - maximum number of consecutive violations of the relative distance violations threshold and ii) $p_{threshold}$ - percentage of number of violations to the theoretic maximum number of frames.
 
-%\begin{algorithm}[htb!]\footnotesize
-%  \tcc{\footnotesize{number of tracked features $n$ and number of time steps $m$,
-%		     relative distance variation threshold $d_{threshold}$,
-%		     max allowed percent of consecutive \emph{breaks} $p_{threshold}$,
-%		     and the set of positions of each feature $T$}}
- % \KwIn{$n$, $m$, $d_{threshold}$, $p_{threshold}$, $T$ = \{$t_1...t_m$\}}
-%   \tcc{\footnotesize{number of tracked features and number of time steps}}
-%   $n$, $m$ \\
-%   \tcc{\footnotesize{relative distance variation threshold}}
-%   $d_{threshold}$ \\
-%   \tcc{\footnotesize{max allowed percent of consecutive \emph{breaks}}}
-%   $p_{threshold}$ \\
-%   \tcc{\footnotesize{position of each feature at each time step}}
-%   $T$ = \{$t_0...t_m$\} \\
-%  \tcc{\footnotesize{relative distances at $t_1$}}
-%  $D_{reference}$ = pairwiseL2($t_1$) \\
-%  \tcc{\footnotesize{nr of consecutive \emph{breaks} between features}}
-%  $C_{breaks}$ = zeros($n$,$n$) \\
-%  \tcc{\footnotesize{relative distances at $t_1$}}
-%  $T_{breaks}$ = zeros($m$,$n$,$n$) \\
-%  \tcc{\footnotesize{count number of consecutive \emph{breaks}}}
-%  \ForEach{$t_i \in T$}
-%  {
-%    \tcc{\footnotesize{relative distances at $t_i$}}
-%    $D_{i}$ = pairwiseL2($t_i$) \\
-%    \tcc{\footnotesize{deviation of distances}}
-%    $E_{i}$ = $|D_{i} - D_{reference}|$ \\
-%    \tcc{\footnotesize{\emph{breaking} feature pairs}}
-%    $B_{i} = \{ (f_1,f_2) | E_{i}[f_1,f_2] > d_{threshold} \}$ \\
-%    \ForEach{$(f_1,f_2) \in B_{i}$}
-%    {
-%      $C_{breaks}[f_1,f_2]++$ \tcc{\footnotesize{increment counter}}
-%    }
-%    \ForEach{$(f_1,f_2) \not \in B_{i}$}
-%    {
-%      $C_{breaks}[f_1,f_2] = 0$ \tcc{\footnotesize{reset counter}}
-%    }
-%    $T_{breaks}[i]$ = $C_{breaks}$ \tcc{\footnotesize{save counter}}
-%  }
-%  \tcc{\footnotesize{maximum percentage of consecutive \emph{breaks}}}
-%  $M_{breaks}$ = max($T_{breaks}$)/$m$ \\
-%  \tcc{\footnotesize{final adjacency matrix}}
-%  $A$ = getConnections($M_{breaks} <= p_{threshold}$) \\
-%  \tcc{\footnotesize{number of clusters based on Laplacian}}
-%  $nr_{clusters}$ = nrZeros(eigenValues(diag(degrees($A$)) - $A$)) \\
 
-%  \tcc{\footnotesize{get features clustered by connectivity}}
-%  \KwOut{$F_{clusters}$ = connectedComponents($A$)}
-%  \caption{Graph-based trajectory clustering algorithm. 
-%A \emph{break} between features means that the relative distance between them exceeded the %given threshold.}
-  \label{alg:cluster_trajectories}
-%\end{algorithm}
-
-
-REF% \figref{clustering} 
-shows an evaluation of the clustering algorithm on 17 scenes from %\figref{evaluation1}.
+ Fig. \ref{fig:clustering} 
+shows an evaluation of the clustering algorithm on 17 scenes from Fig. \ref{fig:evaluation1}.
  The use of $p_{threshold}$ is clearly advantageous, and the method works well for a range of the $p_{threshold}$ and the $d_{threshold}$ parameters. 
  Since too low values for $d_{threshold}$ over-segment the features, values over $1.5cm$ are used, and the possible under-segmentations solved
  by applying the whole method iteratively until all the objects are clearly separated.
  
+
+\begin{figure}[tb!]
+   \begin{center}
+     \includegraphics[width=.9\columnwidth]{figures/distribution.png}
+		\vspace{-2ex}
+   \caption{Clustering success rate on 17 scenes for different values of $p_{threshold}$ (see legend) as a function of $d_{threshold}$ (in meters).}
+   \label{fig:clustering}
+ \end{center}
+ \end{figure}
+
+
  
- 
-\subsection{Dense Model Reconstruction}
 
 \subsection{Dense Model Reconstruction}
 \label{sec:dense_model}
+
+\begin{algorithm}[htb!]\footnotesize
+   \tcc{\footnotesize{set of features $F_{clusters}$,
+		      distance threshold $d_{roi\_thresh}$,
+		      angle threshold $eps_{thresh}$,
+		      seed queue $sq$,
+		      regions list $R$,
+		      current region $R_i$,
+		      list of processed points $processed$} }
+   \KwIn{$F_{clusters}$, $d_{roi\_thresh}$, $eps_{thresh}$}
+   \ForEach {$f_i \in F_{clusters}$}
+   {
+    $p_{s,i} $:= centroid($f_i$)
+    $sq.add(p_{s,i})$
+    \tcc{\footnotesize{select a seed point and add it to a queue}}
+    $processed(p_{s,i})$ = $true$ \\
+    $R_i := \{p_{s,i}\}$
+    \tcc{\footnotesize{initialize region}}
+    \While {$sq.notempty()$}
+    {
+      $N := \{q_j \| dist(q_j, R_i[c]) < d_{roi\_thresh}\}$\\
+      \tcc{\footnotesize{select neighborhood}}
+      \ForEach {$q_j \in N$}
+      {
+	\If {$processed(q_j)$ = $true$} 
+	{
+	$continue$
+	}
+	\If {$boundary(q_j)$ = $true$} 
+	{
+	$stopgrowing =true$\\
+	$R_i \leftarrow R_i \cup \{q_j\}$
+	$processed(q_j)$ = $true$ \\
+	$break$
+	}
+		\If { deg ($\vec{p_{s,i}q_j} , norm(q_j)$) $>$ $eps_{thresh}$   }
+	{
+	 $R_i \leftarrow R_i \cup \{q_j\}$\\
+	 $processed(q_j)$ = $true$ \\
+	}
+	\Else {$break$}
+      }
+      \If{$stopgrowing = false$ $\&\&$ $\forall q_j \in N\ $boundary($q_j$) = false   }
+	{
+	$sq \leftarrow N$
+	}
+    }
+    {$R \leftarrow R_i$}
+   }
+  \ForEach {$R_i, R_j \in R $ }
+  {
+    \If {$f_i f_j \in $ same object }
+	{$R_i \leftarrow R_i \cup \{R_j\}$}
+  }
+  \KwOut{Dense models $R_{j}$}
+  \caption{Region growing with normals \& boundaries.}
+  \label{alg:region_growing}
+\end{algorithm}
 
 Considering the connected features $F_{clusters}$ as being part of the same object, we reconstruct 
 the dense model of the object using region growing in normal space, which also makes use of the 
@@ -429,6 +528,206 @@ Since in the trajectory clustering step we already identified the features that 
 having multiple regions for the same object is easily dealt with
 by merging those regions for which the corresponding features belong to the same object into dense models $R_{j}$.
 
-\section{Results}
+
+
+\section{Evaluation}
+\label{sec:evaluation}
+\subsection{Experimental Setup}
+The system was evaluated on 17 scenes in different configurations
+as illustrated in Fig. \ref{fig:evaluation1}. The   scenes  are   
+numbered  1-17 and arranged according to the legend shown in Fig. \ref{fig:table_scenes}.
+Though our system can iteratively
+cope with multi-object scenes, we performed the evaluation on two-object
+scenes with the  finite number  of scene
+configurations that  can occur. These configurations  can be split in  three different
+ways, namely: i)  size, ii) shape, and iii)  arrangement.  A scene may
+consist  of two  objects  of different  sizes  or the  same size.  The
+objects may  be either both  flat or round  or a combination  of these
+two.  They  may  also  occur  in  different  arrangements;  completely
+separated, only  touching, one on  top of the other,  or in solid
+contact. Solid  contact refers to  both objects being in  contact with
+each  other,  whereby  the  contact  area  is  larger  than  a  single
+line (scene   number  4 in Fig. \ref{fig:evaluation1}). Some configurations are
+infeasible for our approach.  For example a flat  object and a
+round  object cannot  be of the  same  size, or  round object  on top  of
+another  round object  cannot be  pushed (one  mug on  top  of another
+mug). It is also not possible to  have a round object that is in solid
+contact with  another round  object. For this  case we  consider solid
+contact as  being two objects touching  with more than  one line, for
+example in scene number 17 where also  the handle of the mug  touches the juice box.  
+
+\begin{figure}[ht!]
+  \centering \includegraphics[width=0.8\columnwidth]{figures/table_scenes.png}
+  \vspace{-2ex}
+  \caption{Legend for the different scene configurations. The scenes are shown in Fig. \ref{fig:evaluation1}.
+  }
+  \label{fig:table_scenes}
+\end{figure}
+
+It is  important to  emphasize that the above  devised conventions 
+refer to  the scenes after a  push. The scenes  before interaction were
+designed such that it is difficult or impossible to segment
+them using static segmentation techniques.
+ 
+Average time to segment one scene from Fig. \ref{fig:evaluation1} amounted to $12.5s$ 
+with the pre-segmentation taking $1.5s$, feature extraction $3.5s$, pushing 
+$6s$ (tracking runs at $25fps$ for up to 10 features) and dense model reconstruction $1.5s$.
+Apart from tracking all modules perform linearly with the
+number of  features and objects  respectively and can thus  easily be
+used for larger and more complex  scenes. For all the scenes the push
+point estimation algorithm was used, the only exception being the 'on
+top'  arrangements for which the algorithm does not generalize. 
+For this reason and since the scope of the paper is on the priors from
+the static segmentation, RGBD features for
+textureless objects and the final dense model reconstruction, we performed
+the experiments by manually inducing motions into the corners of the scenes.
+In  our  future work we  will address  finding a generalized  push point algorithm.
+\vspace{-0.5ex}
+\subsection{Results}
+All  the  experiments were  performed  three  times  for each  of  the
+17    scenes.    All    the    results   are    presented    in Tab.
+\ref{tab:chart_result} which  shows the segmentation success rate  for every scene. 
+The  corresponding figures for this data  can be found in  Fig. \ref{fig:evaluation1}. 
+The algorithm was never able to segment the scene number 8 and performed poorly for scenes
+6 and 13. In these cases the contact surface of the two objects is large and the objects are of the same size.
+Erroneous reconstruction happens due to a lack of a sufficiently good boundary estimation
+near the touching surface, and therefore the region growing does not terminate.
+This could be alleviated by integrating texture/color-based segmentation methods,
+which we plan to investigate in the future.
+
+It  is  important to  note  that  the  overall
+segmentation   was    successful   in   more   than    82\%   of   the
+experiments.  Tab.\ref{tab:result_percentage}  shows that the more
+objects differ  and the less in  contact they are  the more successful
+the  segmentation becomes.  Our
+algorithm  performs extremely well in the  'on top'  arrangement which  is very
+challenging for the static segmentation techniques.
+
+\begin{table}\scriptsize
+\hspace*{-2.5cm} 
+\begin{tabular}{|c|c| c| c| c| c| c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline    Scene   number    &1   &    2    &   3    &4   &5&6&7&    8&
+9&10&11&12&13&14&15&16&17\\ \hline  Success rate[\%] & 100  & 100 &100
+&100&100&33,3  & 100  &  0  & 100&  100&  66,7& 100&33,3  &100&100&100
+&66,7\\\hline
+\end{tabular}
+\caption{Segmentation results for  all 17 scenes.  For each scene there  were 3 experiments conducted.}
+      \label{tab:chart_result}
+\end{table}
+
+\begin{table}\scriptsize
+\hspace*{-4cm} 
+\begin{tabular}{|c |c| c| c| c| c| c|c|c|c|}
+\hline    &all    results   &    different    size    &   same    size
+&flat-flat&round-round&round-flat & apart & in contact (touching or in
+solid contact) & on top\\ \hline Success rate[\%] & 82,4 & 93,9 & 61,1
+&79,2&80,0&91,7 & 100 & 66,7 & 91,7\\\hline
+\end{tabular}
+\caption{Segmentation success rates of different scene configurations.
+}
+\label{tab:result_percentage}
+\end{table}
+
+We would  like to draw the  reader's attention to all  the scenes with
+the round objects. 
+It can be noted that
+the Kinect sensor from the used viewpoint (mounted on the head of the human size PR2 robot) always
+captures mugs as two spatially non-connected parts.
+In order to robustly merge these two parts using segmentation
+algorithms operating on point clouds or images of static scenes, 
+model-based segmentation algorithms are required. While that constitutes a feasible solution,
+the system presented in this
+paper can easily deal with such scenes without a model by clustering the two
+parts of the mug since they move rigidly with respect to each other.
+
+ For  the scene in  bottom row  of Fig. \ref{fig:scenes}  we can  observe that
+ there is only one feature on the left object.  All   the  clustering  algorithms  trying  to
+ explicitly cluster  at least one  pair of features with  the constant
+ relative  distance over  time would  fail  in this  case.  Using  the
+ graph-based clustering method we are able to disconnect the two nodes
+ of  the  graph  and infer  that  there  is a single feature-object association.
+\begin{figure*}[]  %\renewcommand*{\thesubfigure}{}
+  \begin{centering}
+  \hspace*{-4.3cm}  
+    \begin{tabular}{ccccccccc}
+      \hline
+      1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 \\
+      \hline
+      \hline
+    \includegraphics[height=1.5cm]{pictures/11.jpg}&
+    \includegraphics[height=1.5cm]{pictures/21.jpg}&
+    \includegraphics[height=1.5cm]{pictures/31.jpg}&
+    \includegraphics[height=1.5cm]{pictures/41.jpg}&
+    \includegraphics[height=1.5cm]{pictures/51.jpg}&
+    \includegraphics[height=1.5cm]{pictures/61.jpg}&
+    \includegraphics[height=1.5cm]{pictures/71.jpg}&
+    \includegraphics[height=1.5cm]{pictures/81.jpg}&
+    \includegraphics[height=1.5cm]{pictures/91.jpg}\\ \includegraphics[height=1.5cm]{pictures/12.jpg}&
+    \includegraphics[height=1.5cm]{pictures/22.jpg}&
+    \includegraphics[height=1.5cm]{pictures/32.jpg}&
+    \includegraphics[height=1.5cm]{pictures/42.jpg}&
+    \includegraphics[height=1.5cm]{pictures/52.jpg}&
+    \includegraphics[height=1.5cm]{pictures/62.jpg}&
+    \includegraphics[height=1.5cm]{pictures/72.jpg}&
+    \includegraphics[height=1.5cm]{pictures/82.jpg}&
+    \includegraphics[height=1.5cm]{pictures/92.jpg}\\ \includegraphics[height=1.5cm]{pictures/13.png}&
+    \includegraphics[height=1.5cm]{pictures/23.png}&
+    \includegraphics[height=1.5cm]{pictures/33.png}&
+    \includegraphics[height=1.5cm]{pictures/43.png}&
+    \includegraphics[height=1.5cm]{pictures/53.png}&
+    \includegraphics[height=1.5cm]{pictures/63.png}&
+    \includegraphics[height=1.5cm]{pictures/73.png}&
+    \includegraphics[height=1.5cm]{pictures/83.png}&
+    \includegraphics[height=1.5cm]{pictures/93.png}\\
+    \end{tabular}
+      \hspace*{-3.7cm}  
+    \begin{tabular}{cccccccc}
+      \hline
+      10 & 11 & 12 & 13 & 14 & 15 & 16 & 17\\
+      \hline
+      \hline
+    \includegraphics[height=1.5cm]{pictures/101.jpg}&
+    \includegraphics[height=1.5cm]{pictures/111.jpg}&
+    \includegraphics[height=1.5cm]{pictures/121.jpg}&
+    \includegraphics[height=1.5cm]{pictures/131.jpg}&
+    \includegraphics[height=1.5cm]{pictures/141.jpg}&
+    \includegraphics[height=1.5cm]{pictures/151.jpg}&
+    \includegraphics[height=1.5cm]{pictures/161.jpg}&
+    \includegraphics[height=1.5cm]{pictures/171.jpg}\\ \includegraphics[height=1.5cm]{pictures/102.jpg}&
+    \includegraphics[height=1.5cm]{pictures/112.jpg}&
+    \includegraphics[height=1.5cm]{pictures/122.jpg}&
+    \includegraphics[height=1.5cm]{pictures/132.jpg}&
+    \includegraphics[height=1.5cm]{pictures/142.jpg}&
+    \includegraphics[height=1.5cm]{pictures/152.jpg}&
+    \includegraphics[height=1.5cm]{pictures/162.jpg}&
+    \includegraphics[height=1.5cm]{pictures/172.jpg}\\ \includegraphics[height=1.5cm]{pictures/103.png}&
+    \includegraphics[height=1.5cm]{pictures/113.png}&
+    \includegraphics[height=1.5cm]{pictures/123.png}&
+    \includegraphics[height=1.5cm]{pictures/133.png}&
+    \includegraphics[height=1.5cm]{pictures/143.png}&
+    \includegraphics[height=1.5cm]{pictures/153.png}&
+    \includegraphics[height=1.5cm]{pictures/163.png}&
+    \includegraphics[height=1.5cm]{pictures/173.png}\\
+    \end{tabular}
+    	\caption{Results  of the  segmentation for  17  scenes.  1st/4th
+          image row:  Image before  the push  for scenes.   2nd/5th:
+          Image after the push for scenes.  3rd/6th: Point cloud
+          after dense model reconstruction for scenes.}
+    \label{fig:evaluation1}
+  \end{centering}
+\end{figure*}
+
 
 \section{Conclusion}
+\label{sec:conclusion}
+We have  presented a novel interactive segmentation  system suitable for
+the segmentation of textureless  objects in cluttered tabletop scenes.
+Integrated  in the  system are  the static  pre-segmentation  based on
+geometrical   categorization,  a  push   point and direction estimation, 
+RGBD features  suitable for tracking of
+textureless objects,  the graph-based trajectory  clustering algorithm
+and the  dense model reconstruction.  A rigorous  evaluation of the
+system on a  set of 17 scenes showed successful segmentation in $82\%$ of the cases.  
+The results show the applicability of our system
+for objects of similar colors,  shapes and sizes on predominantly flat
+and  round surfaces.  
