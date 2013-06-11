@@ -84,22 +84,52 @@ used as seed points. As an output we obtain a dense representation of the object
 \subsection{Static Pre-segmentation of Objects}
 \label{sec:static-seg}
 
+In order to determine if the use of the interactive segmentation algorithm is necessary we need to deploy a static segmentation algorithm that will return the probability of the scene being segmented correctly. With the aid of static segmentation we can then verify if a scene can be considered as recognized or a robot has to investigate further in order to segment the objects of interests. Due to our requirement of the likelihood of an object being segmented correctly we decided to use the classification method presented in \cite{marton12SC} based on part-graph-based hashing.
+
+The basic idea of the classification method we use is that
+segmenting objects accurately does not always work
+robustly, but over-segmentation is easily realizable ~\cite{soupofsegments,Lai_Fox_2010,mozos11furniture}.
+These segments that represent parts of objects can be used
+to compute features, and their combinations build up the
+objects. If the used feature is additive, the feature that
+would be computed for the object is the same as the sum
+of the features of its parts.
+There are of course multiple ways of combining parts
+and not all of them create a valid object. However, it can
+tested if a combination is correct by checking if the
+combined feature vector is known. 
+
+In order to obtain a final object hypothesis we group the resulting labelled parts with geometric categories together and compare the results with the training data. By using above mentioned method not only we retrieve the classification result and the its probability but also we gain important information regarding the class of objects we deal with. The further use of this information is explained in section \ref{sec:3dfeatures}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 % As a first step we want to to segment our static scene in flat and round objects.
-In order to achieve a pre-segmentation we make use of the classification method presented 
-in~\cite{marton12SC} based on part-graph-based hashing.
-The basic idea is that segmenting objects accurately 
-in a cluttered scene does not always yield the expected result, as seen in %\figref{scenes} 
-column 4, and can lead to classification failures, 
-but over-segmenting is easily realizable~\cite{soupofsegments,Lai_Fox_2010,mozos11furniture}. 
-We use the classification approach described in~\cite{marton12SC} 
-for categorizing over-segmented object parts in cluttered scenes
-by considering combinations of these parts to compute features
-and classify these efficiently with the aid of hashing.
-The result is a set of labeled parts with geometric categories
-that can be grouped in order to obtain object hypotheses.
-Based on statistics computed from the training data on single objects, 
-we can estimate how likely it is that an object hypothesis is
-correct.
+%In order to achieve a pre-segmentation we make use of the classification method presented 
+%in~\cite{marton12SC} based on part-graph-based hashing.
+%The basic idea is that segmenting objects accurately 
+%in a cluttered scene does not always yield the expected result, as seen in %\figref{scenes} 
+%column 4, and can lead to classification failures, 
+%but over-segmenting is easily realizable~\cite{soupofsegments,Lai_Fox_2010,mozos11furniture}. 
+%We use the classification approach described in~\cite{marton12SC} 
+%for categorizing over-segmented object parts in cluttered scenes
+%by considering combinations of these parts to compute features
+%and classify these efficiently with the aid of hashing.
+%The result is a set of labeled parts with geometric categories
+%that can be grouped in order to obtain object hypotheses.
+%Based on statistics computed from the training data on single objects, 
+%we can estimate how likely it is that an object hypothesis is
+%correct.
 
 %\textbf{Why using a categorization algorithm for pre-segmentation?}
 %In \figref{segmentation_comparison} we have alluded to the fact that it
@@ -112,76 +142,22 @@ correct.
 %the training stage and then deduce whether the categorization of a given scene is 
 %likely correct or not.
 
-In the rest of the section we summarize the part-graph-based 
-hashing algorithm briefly and show how we use it to guide
+%In the rest of the section we summarize the part-graph-based 
+%hashing algorithm briefly and show how we use it to guide
 %turn it into a ``rich'' pre-segmentation algorithm that guides
-the interactive segmentation.
+%the interactive segmentation.
 
-\subsubsection{Decomposition into Part Graphs}
+\subsubsection{Part Graphs-based Classification}
 \label{sec:part-graphs}
-In order to find the parts ($p_{1}, \dots, p_{n} \in P_{o}$) 
-in the point clouds we use the clustering criteria presented in~\cite{mozos11furniture},
-such that patches with a small curvature are considered, as shown in
-%\figref{scenes} 
-REF
-column 3.  For each part we subsequently compute GRSD- (Global Radius-based 
-Surface Descriptor~\cite{irosws11vosch}) feature and store it for later use. We then 
-extract the part neighborhoods by checking if the physical distance between two 
-parts falls below a threshold of $2cm$ (considering Kinect noise level~\cite{kinect_accuracy}), and build a connectivity matrix. 
-Starting at each vertex of the connectivity matrix, we create all the possible groupings up to a certain size 
-(eight parts in the case of single objects and four in the case of cluttered scenes) 
-in order to obtain the ``soup of segments'', and create the groups' hash codes
-using isomorphic graph metrics. The hash codes are then used to further split the feature 
-space ending up with a separate classifier (nearest neighbors in our case) for each hash code. 
-During the classification phase we obtain confidence votes only from those classifiers,
-which were created for the hash codes that are found in our scene. Based on these votes
-a decision is made upon the class of the segments. For a detailed description of this approach 
+
+This section briefly describes the algorithm behind the above mentioned work \cite{marton12SC}.
+As the first step of the Part Graphs-based Classification algorithm the scene is split into parts based on the low curvature of the points. The result of this step can be seen in Fig. \ref{fig:scenes} column 3. For each of the parts the GRSD- feature(Global Radius-based Surface Descriptor~\cite{irosws11vosch}) is computed. 
+ As described in \cite{irosws11vosch}, the authors adapted the GRSD feature to be additive, by simplifying it to simple histogram of neighborhoods of surfaces of different type, neglecting the ray-tracing step. After computing the GRSD features the authors created a connectivity matrix based on the distance between the previously extracted parts. Authors created then the groups' hash codes by using all possible groupings in the connectivity matrix and the isomorphic graph metrics. Eventually, based on the hash code the classifier is chosen. For a detailed description of this approach 
 please refer to~\cite{marton12SC}.
+ 
+The authors trained the classifier on a subset of the dataset from~\cite{lai11db}. Based on that the objects are classified into six categories :  sphere, box, rectangular/flat, cylinder, disk/plate and other.
+Having obtained these results from the algorithm we merge categories together such that we end up only with 3 of them: i)boxes and flats being considered as \emph{flat} category ii)cylinders, spheres, disks being considered as \emph{round} and iii)\emph{other}. 
 
-% For the hash codes, apart from the number of vertices/parts, we chose to concatenate the 
-% sorted list of vertex degrees as well to form a second level of keys. As an alternative 
-% for this second level of keys we experimented with using the eigen values of the graph's 
-% Laplacian matrix, but found that the results upon evaluation were the same. 
-% For this reason, in the upcoming testings and evaluations we used the sorted list of vertex 
-% degrees, as they are simpler to compute. This degree order is unique for isomorph graphs, 
-% however different graphs can have the same degree order.
-
-% We use a region-growing approach, that starts at a random point
-% and grows the segment until the deviation from the seed normal does not exceed 45 degrees.
-% This way, selecting different seed points result in multiple segmentations of the point cloud into parts.
-% This process is not completely reproducible, therefore authors in \cite{marton12SC} rely on the
-% large amount of training data to cover all possible cases. 
-% Since we are dealing with tabletop scenes, the supporting plane 
-% can be removed prior to processing, and only points above it 
-% considered as in \cite{marton11ijrr}. 
-
-% Note that since the graph vertices can be sorted, it is possible to efficiently 
-% enumerate all sub-graphs containing a given vertex without repeating already generated ones.
-
-\subsubsection{Object Part Categorization}
-\label{sec:part-feature}
-The classifier was trained on a subset of the dataset from~\cite{lai11db} 
-as presented in~\cite{marton12SC}.
-The choice of the feature determined for each part, namely the GRSD- is motivated 
-by the fact that we are dealing with novel objects not seen before 
-by the classifier, so in order to successfully categorize them we need to use geometric features.
-% As described in \cite{irosws11vosch}, we adapted the GRSD feature to be additive, 
-% by simplifying it to simple histogram of neighborhoods of surfaces of different type,
-% neglecting the ray-tracing step. We evaluated the GRSD- feature on the same dataset 
-% and in the same manner as described in~\cite{marton12SC}.
-Additionally, the low dimensionality and additive property\footnote{If the feature is additive,
-the descriptor that would be computed for the object is the same as the sum of the features of its segments.} make GRSD- a suitable choice for such task.
-
-Objects ($o_{1}, \dots, o_{n} \in O$) are categorized in six geometrical categories: sphere, box, rectangular/flat, cylinder, disk/plate and other.
-Doing this we get a better a discrimination between different objects. After having the results for the 
-six geometrical classes, we merge them together into different \emph{object types} considering everything spherical and cylindrical being
-\emph{round}, and disks/plates, flats and boxes as \emph{flat} objects.
-With the category \emph{other} we thus get three object types, whereas most
-household objects fall into the first two~\cite{marton11ijrr}.
-
-In this paper we omit the category \emph{other} and use the other two in order
-to determine if the interactive segmentation is needed, and if yes, which RGBD features 
-to extract and track in the respective part of the point cloud in the given scene.
 
 \subsubsection{Verification of Correctness of Segmentation}
 \label{sec:probabilities}	
