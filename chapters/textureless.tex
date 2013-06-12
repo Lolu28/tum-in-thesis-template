@@ -160,44 +160,29 @@ Having obtained these results from the algorithm we merge categories together su
 
 
 \subsubsection{Verification of Correctness of Segmentation}
-\label{sec:probabilities}	
-Since the geometric categorization of parts does not give the correct grouping of these parts to form objects,
-simply grouping the parts of the same category together does not always separate the objects, especially if classification errors occur too.
-A method of voting for object centroids followed by a model fitting step was described in~\cite{mozos11furniture},
-but we assume having no CAD models for test objects in this paper. We would also have to consider 6DOF poses, complicating the approach considerably.
+\label{sec:probabilities}
 
-Whereas the segmentation of objects is not uniquely defined, there are still regularities in the number of parts they are broken up into.
-As shown in REF%\figref{poisson}
-, the distribution of the number of different object parts, generated in the training stage of the part-graph-based hashing algorithm, can be modeled as a Poisson distribution,
-with an average error of 1.7\% (and at most roughly 9\%).
+Taking into consideration the number of parts described in the previous section we come up with a method that classifies the objects based on the parts they consist of. Also, if an object was categorized as belonging to a certain category we can estimate how probable the result of this categorization is. This way in addition to information of the object category being round or flat we obtain the probability of an object being classified correctly.
 
+In order to specify the average number of parts that a certain category of objects consist of we present a distribution \ref{fig:poisson} of the number of different object parts, generated in the training stage. It can be noticed that this distribution can be approximate with a Poisson distribution which results in an average error of 1.7\% (and at most roughly 9\%). Eq. \ref{eq:poisson} describes how the probability of being an object of a certain category is dependent on the number of parts the object is broken up into. 
+In Eq. \ref{eq:poisson} $\lambda$ describes the mean of number of parts.
 
-The Poisson distribution described by REF%\equref{poisson} 
-describes the probability of different number of events occurring
-in a given interval, which we interpret here as the number of part boundaries encountered over the surface of the scanned object.
-The parameter $\lambda$ is the mean of number of parts, which in our case is 0.876 for flat, 2.166 for round, and 3.317 for other object types.
 \begin{equation}
 \label{eq:poisson}
 P(k~parts~forming~a~single~object) = \lambda^k \exp{-\lambda} / k!
 \end{equation}
 
-This simple model is used to judge if a group of parts of the same geometric category forms a single object or if the robot
-should try to interact with it. We cut the probabilities at $0.3$ for flat and $0.15$ for round objects.
+With the aid of above described probability we can take the classification result from the Part Graph-based Classification algorithm and the number of parts that the object of interest consists of in the current scene into consideration and obtain the probability of the object being classified correctly. With this simple method we use classification probability as an indicator if the interactive segmentation algorithm should be deployed.  
 
-\textbf{Example:} To demonstrate this, from the right part of %\figref{poisson} 
-we can deduce that the 
-flat object is most likely to consist of 1 or 2 parts. The test scene with 
-2 boxes REF %(\figref{scenes}) 
-was categorized as one object (column 4), but in column
-3 we notice that there are 6 parts in the scene. The probability for 1 object consisting of 6 parts is below the $0.3$ value
-according to the Poisson distribution and clearly indicates an over-segmentation 
-error and the need for the robot to segment this region interactively.
+In order to better explain the algorithm we would to point reader's attention to an example shown in the first row of Fig.\ref{fig:scenes}. In the column 4 it can be noticed that the category of the object is flat. We can also notice that there is 6 parts that the object consists of (column 3). Looking up the probability from the Poisson distribution explained before we see that that the probability of a flat object consisting of 6 part is below the threshold - $0.3$, thus it is an indicator to use our interactive segmentation algorithm
+
+
 
 \begin{figure}[h!]
 \centering
   \includegraphics[width=0.98\columnwidth, trim=0ex 0ex 53ex 0ex, clip]{figures/dataset_stats.pdf}
 	\vspace{-2ex}
-  \caption{Distribution of number of parts (see REF column 3) per object and their approximation with a Poisson distribution.}
+  \caption{Distribution of number of parts per object and their approximation with a Poisson distribution.}
   \label{fig:poisson}
 \end{figure}
 
