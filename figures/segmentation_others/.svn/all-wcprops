@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/iros2011containers/!svn/ver/710/src/conferences/13-ICRA-textureless-segmentation/figures/segmentation_others
+END
+graph-based.png
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/iros2011containers/!svn/ver/710/src/conferences/13-ICRA-textureless-segmentation/figures/segmentation_others/graph-based.png
+END
+part-graph-hashing.png
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/iros2011containers/!svn/ver/710/src/conferences/13-ICRA-textureless-segmentation/figures/segmentation_others/part-graph-hashing.png
+END
+region_growing_rgb.png
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/iros2011containers/!svn/ver/710/src/conferences/13-ICRA-textureless-segmentation/figures/segmentation_others/region_growing_rgb.png
+END
