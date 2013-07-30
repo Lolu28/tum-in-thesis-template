@@ -2,15 +2,8 @@
 \label{chapter:Introduction}
 
 
-
-Here starts the thesis with an introduction. Please use nice latex and bibtex entries \cite{latex}. Do not spend time on formating your thesis, but on its content. 
  
 \section{Motivation}
-\itemize 
-\item Object recognition by manipulation
-\item Leverage on manipulation capabilities
-\item Perception in Clutter
-
 \label{sec:intro}
 One of the main challenges for nowadays robotics is to bring robots into people's homes and make them help us to perform simple tasks. However, what we consider as a simple task might be very complex for an autonomous system. For example, when setting a table~\cite{iros10kcopman} the robot is likely to be
 confronted with a cluttered unstructured scene\footnote{Following the discussion at the Clutter12
@@ -20,10 +13,12 @@ in \ref{fig:tracking_dists}. In order to interact with an environment like that 
 
 
 As the initial step for the system we developed an interactive segmentation pipeline that is meant to be used for objects without any texture. In order to show that this is a challenging task that can not be solved with the state-of-the-art perception algorithms we point reader's attention to Fig. \ref{fig:tracking_dists} where we tested three object segmentation algorithms that operate in the RGDB space. Looking at the results we believe that the performance of robot's perception algorithms can be improved, especially in case of: 
-a) textureless objects (all objects in the scene)
-b) objects of the same color (a coffee mug and a saucer), 
-c) similar shape objects and occlusions (a white and a blue box) 
 
+\begin{itemize} 
+\item textureless objects (all objects in the scene)
+\item objects of the same color (a coffee mug and a saucer), 
+\item similar shape objects and occlusions (a white and a blue box) 
+\end{itemize}
 
 In order to improve the existing algorithms we decided to take use of other properties of the robot. It is easier and arguably more natural to exploit the robot's embodiment
 and interaction capabilities in order to obtain a better understanding of its environment.
@@ -40,11 +35,8 @@ factor in the infant's understanding of objects at that stage \cite{infants}.
 \multicolumn{2}{c}{\multirow{-6}{*}{\includegraphics[width=0.5\columnwidth]{figures/teaser/IMG_0395.JPG}
 }} & \includegraphics[width=0.23\columnwidth]{figures/segmentation_others/region_growing_rgb.png} 
 &\includegraphics[width=0.23\columnwidth]{figures/segmentation_others/part-graph-hashing.png} \\
-\multicolumn{2}{c}{} & \includegraphics[width=0.23\columnwidth]{figures/segmentation_others/graph-based.png} 
-&\includegraphics[width=0.23\columnwidth]{pictures/teaser_egg_result-cropped.png} \\
+\multicolumn{2}{c}{} & \includegraphics[width=0.23\columnwidth]{figures/segmentation_others/graph-based.png} &\includegraphics[width=0.23\columnwidth]{pictures/teaser_egg_result-cropped.png} 
 %\multicolumn{2}{c}{\includegraphics[width=0.38\columnwidth]{pictures/113-cropped.png}} 
-\multicolumn{2}{c}{\includegraphics[width=0.45\columnwidth]{figures/3objects/after_push.jpg}}
-& \multicolumn{2}{c}{\includegraphics[width=0.45\columnwidth]{figures/3objects/segmented.png}}
 \end{tabular}
 \caption{Top-left: The service robot PR2 aiming to segment the scene
   consisting of textureless object. Results  of  the   scene segmentation
@@ -52,8 +44,7 @@ factor in the infant's understanding of objects at that stage \cite{infants}.
   Hashing~\cite{marton12SC} method (top-right, NE) and Graph-based  
   segmentation method~\cite{Felzenszwalb}   (top-right, SW). These methods work in depth, RGB and RGBD 
   space respectively and all underachieve due to the complexity of this challenging task. 
-  On the other hand blue egg on the blue plate was correctly segmented using the interactive approach presented in this paper (top-right, SE)
-  Bottom row: 3 white objects segmented correctly showing the generality of the apporach for multiple objects.}
+  On the other hand blue egg on the blue plate was correctly segmented using the interactive approach presented in this paper (top-right, SE)}
 \label{fig:tracking_dists}
 \end{figure}
 
@@ -65,41 +56,78 @@ factor in the infant's understanding of objects at that stage \cite{infants}.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 \section{Problem definition and goals}
-\item Segmentation in clutter
-\item Recognition in clutter
 
-\section{Approach}
-\item More details
-\item General approach on clustering and so on	 
+\subsection{Object Segmentation} 
 
-\textbf{Our approach:} In this work we focus on proposing a solution for the cases a), b) and c) from above.
-Similar  to Katz  et al.~\cite{Katz-WS-MM-ICRA2011}, Bergstrom et
+In order to solve the challenge of object segmentation we need to define the terms - image segmentation and object. 
+
+According to L.Shapiro and G. Stockman~\cite{shapiro2001computer}:
+
+"Image segmentation is the process of partitioning a digital image into multiple segments. The goal of segmentation is to simplify and/or change the representation of an image into something that is more meaningful and easier to analyze."
+
+\begin{figure}[ht]
+%\centering
+\begin{tabular}{cccc}
+
+\multicolumn{2}{c}{\includegraphics[width=0.45\columnwidth]{figures/3objects/after_push.jpg}}
+& \multicolumn{2}{c}{\includegraphics[width=0.45\columnwidth]{figures/3objects/segmented.png}}
+
+\end{tabular}
+\caption{Three white objects segmented correctly showing the generality of the apporach for multiple objects.}
+\label{fig:three_objects}
+\end{figure}
+
+
+ Following this definition one can conclude that the goal of object segmentation is to segment the image in the way that it is partitioned into multiple objects. However, in our case, as an input we use point cloud data from the Kinect sensor that consists of an image and associated set of 3D points that show 3D structure of the environment. Taking all this informtation into consideration our goal is to partition a point cloud into multiple objects.
+
+A simple definition of an object in the sense of computer vision problem was presented by A. Mishra~\cite{mishra2012segmenting}:
+
+"A simple object is defined as a compact region enclosed by the depth and
+contact boundary in the scene".
+
+According to this definition an output of the object segmentation algorithm would be multiple sets of points that form an object. That is, any point within the set belongs to that object's interior. 
+
+As an example output of the object segmentation we point reader's attention to Fig. \ref{fig:three_objects}. This Figure also shows that even though our experiments were conducted on the set of two objects, the algorithm is generic enough to handle multiple objects. 
+
+\subsection{Object Recognition}
+Since the main terms are already definied it is easier to form the problem of object recognition. Once the object is segmented and the robot is aware of its borders it is crucial to be able to recognize what this set of points is. This problem can be understood much wider since we are entering the field of perceptual interpretation. However, in order to keep the problem solvable we understand the recognition of an object as associating the segmented set of points with the data stored in the database of objects. Further implications that stem from information that database contains are not in the scope of this thesis.
+
+\section{Approach} 
+
+In this thesis we concentrate on solving two challenges: 
+
+\begin{itemize} 
+\item segmentation of textureless objects since the textured cased was already covered by us in REF. 
+\item recognition of objects using interactive perception techniques.
+\end{itemize} 
+
+In the next subsections we concentrate on describing our approach with the above mentioned tasks.
+
+\subsection{Interactive Segmentation of Textureless Objects} 
+
+
+Starting from the former one we would like to show that inducing the motion to the scene can solve the problems depicted in Fig. \ref{fig:tracking_dists}. Similar  to Katz  et al.~\cite{Katz-WS-MM-ICRA2011}, Bergstrom et
 al.~\cite{bergstrom11icvs}, and our earlier
 work~\cite{bersch12interactive} we propose a system that uses
-induced motions  in a scene to enable effective
-object  segmentation.   Our  system   employs  a  combination  of  the
-following  complementary techniques: pre-segmentation of a raw point cloud of a given scene from a single camera
-view using part-graph-based hashing~\cite{marton12SC}, estimation
-of a contact  point and a push direction of the robot's end effector~\cite{bersch12interactive}, RGBD feature
-extraction and tracking using particle filtering-based tracking, graph-based feature trajectory 
-clustering algorithm, and dense model reconstruction based on region growing in normal space.
+motion of robot's arm to enable effective
+object  segmentation.
+
+Our system consists of five main steps being:
+
+\begin{itemize} 
+\item Static object pre-segmentation using part-graph-based hashing ~\cite{marton12SC}
+\item Push point estimation using our previous work ~\cite{bersch12interactive}
+\item Extraction of RGDB features using point cloud primitives such as lines, corners, cylinders and circles
+\item Tracking of above mentioned features using Particle-Filter-based algorithm
+\item Graph based trajectory clustering approach
+\item Dense model reconstruction based on region growing in normal space
+\end{itemize} 
+
+
+All of these steps are described in details in Chapter \ref{chapter:Textureless Segmentation}. 
+
+
 There are three important assumptions in our system. First, that each item is a rigid  body and not subject
 to large deformations when  interacting with  the robot's  end  effector or
 other objects. We also assume that the objects are either flat (box-like) or round (cylinder-like),
@@ -108,27 +136,26 @@ that in the tracking step the features do not get more than $50\%$ obstructed.
 
 The evaluation was performed on 17 scenes with challenging arrangement of flat and
 round objects of similar colors, shapes and sizes. $82\%$ of objects
-were segmented correctly in these scenes.  Our system   is
-available  as open source\footnote{\url{http://www.ros.org/wiki/interactive_segmentation_textureless}}
-and can  be deployed  on a  robot equipped with either a 2D-camera and a depth
-camera or Kinect camera and at least one arm.
+were segmented correctly in these scenes. The interactive segmentation system is available online\footnote{\url{http://www.ros.org/wiki/interactive_segmentation_textureless}} with all instructions needed to install and run it on a real robot. The robot has to have a Kinect sensor as well as at least one arm in order to correctly use the system.
+
+\subsection{Interactive Object Recognition} 
+
+In the second challenge being object recognition we follow the approach presented in the segmentation system. 
 
 
-Overall, we present the following main contributions for the
-segmentation of scenes consisting of textureless tabletop
-objects:
-\begin{itemize}
-\item A set of RGBD features suitable for the tracking of
-  flat and round textureless object REF%(\secref{3dfeatures});
-%\item A particle filtering-based tracking algorithm for above features;
-\item A graph-based algorithm  for the clustering of 3D-feature
-trajectories, in which graph edges measure the dissimilarities between the RGBD
-features' distances REF%(\secref{clustering});
-\item The inclusion of a static scene pre-segmentation algorithm
-  and a probabilistic method for the detection of over or under-segmentation REF%(\secref{static-seg});
-\item A dense model reconstruction algorithm that makes use of the already clustered features REF%(\secref{dense_model});
-\item And the integration of all the above into a pipeline using the
-  Robot Operating System (ROS\footnote{\url{www.ros.org}}) as depicted in REF%\figref{pipeline}.
-\end{itemize}
+
+ what do we do here?!?!?!?!
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -16,6 +16,7 @@ Looking at various systems created by different robotics institutes REF it can b
 
 After conducting research in existing implementations we noticed many similar steps that became crucial for our library, those being:
 
+\begin{itemize}
 \item Static Segmentation - to infer which parts of the scene are most likely being segmented incorrectly
 \item Feature Extraction - to extract features that will be tracked
 \item Push Point - to find the best point to interact with objects
@@ -23,6 +24,8 @@ After conducting research in existing implementations we noticed many similar st
 \item Tracker - to track previously extracted features during robot's movement
 \item Trajectory Clustering - to cluster the trajectories of the features that have moved in the same manner
 \item Full Reconstruction - to reconstruct a full model of the object. It takes the sparse representation - clustered features - and reconstructs a dense model of the object.
+\end{itemize}
+
 
 
 
@@ -30,6 +33,6 @@ The library was created based on the abstract factory pattern and it is mainly u
 
 \subsection{Architecture}
 TODO		
-\item UML diagram
-\item screens from visualizer and dyn rec
-\item more about pluginlib and maybe abstract factory
+ UML diagram
+ screens from visualizer and dyn rec
+ more about pluginlib and maybe abstract factory
