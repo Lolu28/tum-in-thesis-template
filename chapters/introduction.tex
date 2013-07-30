@@ -16,48 +16,22 @@ One of the main challenges for nowadays robotics is to bring robots into people'
 confronted with a cluttered unstructured scene\footnote{Following the discussion at the Clutter12
 workshop at RSS 2012 we acknowledge that this is a ``laboratory clutter'' where the degree of difficulty
 is similar to the scenes from the related works but still inferior to the real world clutter.} like the example shown
-in \ref{fig:tracking_dists}.
+in \ref{fig:tracking_dists}. In order to interact with an environment like that a robot has to be able to detect and recognize the objects that are on the table. We would like to show that with the ability to interact with an environment robot has a bigger chance to recognize the objects successfuly, particularly in the presence of objects of similar colors, shapes and sizes. 
 
 
+As the initial step for the system we developed an interactive segmentation pipeline that is meant to be used for objects without any texture. In order to show that this is a challenging task that can not be solved with the state-of-the-art perception algorithms we point reader's attention to Fig. \ref{fig:tracking_dists} where we tested three object segmentation algorithms that operate in the RGDB space. Looking at the results we believe that the performance of robot's perception algorithms can be improved, especially in case of: 
+a) textureless objects (all objects in the scene)
+b) objects of the same color (a coffee mug and a saucer), 
+c) similar shape objects and occlusions (a white and a blue box) 
 
 
-
-
-
-
-
-
-
-
-
-
-
-A service robot operating in human environments may be
-required to perform complex  dexterous manipulation tasks in a variety
-of  conditions.  For example, when setting a table~\cite{iros10kcopman} the robot is likely to be
-confronted with a cluttered unstructured scene\footnote{Following the discussion at the Clutter12
-workshop at RSS 2012 we acknowledge that this is a ``laboratory clutter'' where the degree of difficulty
-is similar to the scenes from the related works but still inferior to the real world clutter.} like the example shown
-in \ref{fig:tracking_dists}.  In order to successfully perform this task,
-the robot must be able  to detect the individual objects.  Without the
-ability  to interact  with the  environment,  it is  difficult  to
-distinguish between the object boundaries and texture patterns, particularly in the presence of objects of similar colors, shapes and sizes. 
-
-To demonstrate this we tested three state-of-the-art segmentation algorithms operating in depth, RGB and RGBD
-space respectively on the given scene. The results are shown in \ref{fig:tracking_dists}. We notice that they are far
-from being optimal in the cases of a) same color objects (a coffee mug and a saucer), 
-b) similar shape objects and occlusions (a white and a blue box), c) stacked objects (an egg and a plate)
-and also in the case of d) a sensor
-default (cutlery in this case appears transparent to the Kinect sensor). Following structure from motion
-approaches, one could observe the scene from various views and apply merging of hypotheses.
-This approach would however fail in the case of non-navigable spaces for the robot.
-While one can certainly fine tune the algorithms' parameters for a certain setup and 
-environment, it is easier and arguably more natural to exploit the robot's embodiment
+In order to improve the existing algorithms we decided to take use of other properties of the robot. It is easier and arguably more natural to exploit the robot's embodiment
 and interaction capabilities in order to obtain a better understanding of its environment.
 Reaching out to get a sense of what is around is the way how infants get to know their
 ``near space'' according to Piaget's theory of spatial cognition in the sensorimotor stage 
 (until the age of 2), and getting a hold of connectivity (i.e. object unity) is an important
 factor in the infant's understanding of objects at that stage \cite{infants}.
+
 
 \setlength{\tabcolsep}{0.1em}
 \begin{figure}[ht]
@@ -83,6 +57,38 @@ factor in the infant's understanding of objects at that stage \cite{infants}.
 \label{fig:tracking_dists}
 \end{figure}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Problem definition and goals}
+\item Segmentation in clutter
+\item Recognition in clutter
+
+\section{Approach}
+\item More details
+\item General approach on clustering and so on	 
+
 \textbf{Our approach:} In this work we focus on proposing a solution for the cases a), b) and c) from above.
 Similar  to Katz  et al.~\cite{Katz-WS-MM-ICRA2011}, Bergstrom et
 al.~\cite{bergstrom11icvs}, and our earlier
@@ -107,6 +113,7 @@ available  as open source\footnote{\url{http://www.ros.org/wiki/interactive_segm
 and can  be deployed  on a  robot equipped with either a 2D-camera and a depth
 camera or Kinect camera and at least one arm.
 
+
 Overall, we present the following main contributions for the
 segmentation of scenes consisting of textureless tabletop
 objects:
@@ -123,15 +130,5 @@ features' distances REF%(\secref{clustering});
 \item And the integration of all the above into a pipeline using the
   Robot Operating System (ROS\footnote{\url{www.ros.org}}) as depicted in REF%\figref{pipeline}.
 \end{itemize}
-
-
-
-\section{Problem definition and goals}
-\item Segmentation in clutter
-\item Recognition in clutter
-
-\section{Approach}
-\item More details
-\item General approach on clustering and so on	 
 
 
