@@ -32,6 +32,9 @@ After conducting research in existing implementations we noticed many similar st
 The library was created based on the abstract factory pattern and it is mainly using pluginlib \footnote{\url{http://ros.org/wiki/pluginlib}} from ROS. The main executable  shows a small user interface together with a visualization tool(visualizer package). The user interface shows possibility to call different steps and implementations of these steps by using a small GUI - dynamic reconfigure package \footnote{\url{http://www.ros.org/wiki/dynamic_reconfigure}}. The details are described in the next section.
 
 \subsection{Architecture}
+
+Pluginlib is a C++ library for loading and unloading plugins from within a ROS package. Plugins are dynamically loadable classes that are loaded from a runtime library (i.e. shared object, dynamically linked library). With pluginlib, one does not have to explicitly link their application against the library containing the classes -- instead pluginlib can open a library containing exported classes at any point without the application having any prior awareness of the library or the header file containing the class definition. Plugins are useful for extending/modifying application behavior without needing the application source code. 
+
 TODO		
  UML diagram
  screens from visualizer and dyn rec
