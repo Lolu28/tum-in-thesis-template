@@ -9,7 +9,7 @@ One of the main challenges for nowadays robotics is to bring robots into people'
 confronted with a cluttered unstructured scene\footnote{Following the discussion at the Clutter12
 workshop at RSS 2012 we acknowledge that this is a ``laboratory clutter'' where the degree of difficulty
 is similar to the scenes from the related works but still inferior to the real world clutter.} like the example shown
-in \ref{fig:tracking_dists}. In order to interact with an environment like that a robot has to be able to detect and recognize the objects that are on the table. We would like to show that with the ability to interact with an environment robot has a bigger chance to recognize the objects successfuly, particularly in the presence of objects of similar colors, shapes and sizes. 
+in \ref{fig:tracking_dists}. In order to interact with an environment like that a robot has to be able to detect and recognize the objects that are on the table. We would like to show that with the ability to interact with an environment robot has a bigger chance to recognize the objects successfully, particularly in the presence of objects of similar colors, shapes and sizes. 
 
 
 As the initial step for the system we developed an interactive segmentation pipeline that is meant to be used for objects without any texture. In order to show that this is a challenging task that can not be solved with the state-of-the-art perception algorithms we point reader's attention to Fig. \ref{fig:tracking_dists} where we tested three object segmentation algorithms that operate in the RGDB space. Looking at the results we believe that the performance of robot's perception algorithms can be improved, especially in case of: 
@@ -64,7 +64,7 @@ In order to solve the challenge of object segmentation we need to define the ter
 
 According to L.Shapiro and G. Stockman~\cite{shapiro2001computer}:
 
-"Image segmentation is the process of partitioning a digital image into multiple segments. The goal of segmentation is to simplify and/or change the representation of an image into something that is more meaningful and easier to analyze."
+"Image segmentation is the process of partitioning a digital image into multiple segments. The goal of segmentation is to simplify and/or change the representation of an image into something that is more meaningful and easier to analyse."
 
 \begin{figure}[ht]
 %\centering
@@ -79,7 +79,7 @@ According to L.Shapiro and G. Stockman~\cite{shapiro2001computer}:
 \end{figure}
 
 
- Following this definition one can conclude that the goal of object segmentation is to segment the image in the way that it is partitioned into multiple objects. However, in our case, as an input we use point cloud data from the Kinect sensor that consists of an image and associated set of 3D points that show 3D structure of the environment. Taking all this informtation into consideration our goal is to partition a point cloud into multiple objects.
+ Following this definition one can conclude that the goal of object segmentation is to segment the image in the way that it is partitioned into multiple objects. However, in our case, as an input we use point cloud data from the Kinect sensor that consists of an image and associated set of 3D points that show 3D structure of the environment. Taking all this information into consideration our goal is to partition a point cloud into multiple objects.
 
 A simple definition of an object in the sense of computer vision problem was presented by A. Mishra~\cite{mishra2012segmenting}:
 
@@ -91,7 +91,7 @@ According to this definition an output of the object segmentation algorithm woul
 As an example output of the object segmentation we point reader's attention to Fig. \ref{fig:three_objects}. This Figure also shows that even though our experiments were conducted on the set of two objects, the algorithm is generic enough to handle multiple objects. 
 
 \subsection{Object Recognition}
-Since the main terms are already definied it is easier to form the problem of object recognition. Once the object is segmented and the robot is aware of its borders it is crucial to be able to recognize what this set of points is. This problem can be understood much wider since we are entering the field of perceptual interpretation. However, in order to keep the problem solvable we understand the recognition of an object as associating the segmented set of points with the data stored in the database of objects. Further implications that stem from information that database contains are not in the scope of this thesis.
+Since the main terms are already defined it is easier to form the problem of object recognition. Once the object is segmented and the robot is aware of its borders it is crucial to be able to recognize what this set of points is. This problem can be understood much wider since we are entering the field of perceptual interpretation. However, in order to keep the problem solvable we understand the recognition of an object as associating the segmented set of points with the data stored in the database of objects. Further implications that stem from information that database contains are not in the scope of this thesis.
 
 \section{Approach} 
 

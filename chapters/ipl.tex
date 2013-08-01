@@ -33,22 +33,12 @@ The library was created based on the abstract factory pattern and it is mainly u
 
 \subsection{Architecture}
 
-In order to describe the architecture it is needed to explain the idea of the pluginlib library that was heavily used in this project. Pluginlib is a C++ library that enables to load and unload other classes (plugins) dynamically without being explicitly linked   
+In order to describe the architecture it is needed to explain the idea of the pluginlib library that was heavily used in this project. Pluginlib is a C++ library that enables to load and unload other classes (plugins) dynamically without being explicitly linked against their implementations. In this way pluginlib can open a library that it was not aware of before running the program. 
 
-Pluginlib is a C++ library for loading and unloading plugins from within a ROS package. Plugins are dynamically loadable classes that are loaded from a runtime library (i.e. shared object, dynamically linked library). With pluginlib, one does not have to explicitly link their application against the library containing the classes -- instead pluginlib can open a library containing exported classes at any point without the application having any prior awareness of the library or the header file containing the class definition. Plugins are useful for extending/modifying application behavior without needing the application source code. 
-
-\begin{figure}[ht]
-%\centering
-
-{\includegraphics[width=1.1\columnwidth, angle=-90]{figures/uml2.pdf}}
-
-\caption{Interactive Perception Library with running visualizer and a small Graphical User Interface to choose the step and its implementation.}
-\label{fig:uml}
-\end{figure}
+This tool gives us a number of possibilities that can be used in the Interactive Perception Library. Having in mind all the steps that we depicted in the previous sections we can dynamically switch between different implementations of each of these steps. For example, if we want to combine two different interactive perception algorithms we can just mix the steps from their pipeline by dynamically loading them. Since the package is provided with a small Graphical User Interface and a visualizer of a loaded point cloud as depicted in Fig. \ref{fig:ipl}, it should be easy to mix different algorithms and see the output.
 
 
-
-\begin{figure}[ht]
+\begin{figure}
 %\centering
 
 {\includegraphics[width=1.1\columnwidth]{figures/ipl.png}}
@@ -57,7 +47,16 @@ Pluginlib is a C++ library for loading and unloading plugins from within a ROS p
 \label{fig:ipl}
 \end{figure}
 
-TODO		
- UML diagram
- screens from visualizer and dyn rec
- more about pluginlib and maybe abstract factory
+The architecture is presented in Fig. \ref{fig:uml}, in the form of an UML class diagram. There is a main class called PluginManager that is responsible for loading different plugins and executing respective steps of the algorithm. It delegates the visualization tasks to the class named Visualizer. The only connection that PluginManager has to the plugins is through the $interactive_perception_interface$ package that consists of all the interfaces for different steps. In addition to that, there are packages responsible for the implementation of the respective step. In Fig. \ref{fig:uml} there are two different implementations for two interfaces - StaticSegmentation and PushPointEstimation. The user can dynamically switch between PushPointImpl and PushPointImpl2 since both of them implement the same generic interface. This design enables other people to benchmark their steps against other algorithms and also to find the combination that fits best to their application.  
+
+\begin{figure}
+%\centering
+{\includegraphics[width=1.1\columnwidth, angle=-90]{figures/uml2.pdf}}
+
+\caption{UML class diagram that shows the main structure of the library.}
+\label{fig:uml}
+\end{figure}
+
+
+
+
