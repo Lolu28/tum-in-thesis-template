@@ -33,7 +33,29 @@ The library was created based on the abstract factory pattern and it is mainly u
 
 \subsection{Architecture}
 
+In order to describe the architecture it is needed to explain the idea of the pluginlib library that was heavily used in this project. Pluginlib is a C++ library that enables to load and unload other classes (plugins) dynamically without being explicitly linked   
+
 Pluginlib is a C++ library for loading and unloading plugins from within a ROS package. Plugins are dynamically loadable classes that are loaded from a runtime library (i.e. shared object, dynamically linked library). With pluginlib, one does not have to explicitly link their application against the library containing the classes -- instead pluginlib can open a library containing exported classes at any point without the application having any prior awareness of the library or the header file containing the class definition. Plugins are useful for extending/modifying application behavior without needing the application source code. 
+
+\begin{figure}[ht]
+%\centering
+
+{\includegraphics[width=1.1\columnwidth, angle=-90]{figures/uml2.pdf}}
+
+\caption{Interactive Perception Library with running visualizer and a small Graphical User Interface to choose the step and its implementation.}
+\label{fig:uml}
+\end{figure}
+
+
+
+\begin{figure}[ht]
+%\centering
+
+{\includegraphics[width=1.1\columnwidth]{figures/ipl.png}}
+
+\caption{Interactive Perception Library with running visualizer and a small Graphical User Interface to choose the step and its implementation.}
+\label{fig:ipl}
+\end{figure}
 
 TODO		
  UML diagram
