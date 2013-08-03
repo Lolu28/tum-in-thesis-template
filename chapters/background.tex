@@ -69,7 +69,14 @@ It is worth noticing that RANSAC algorithm can be used with many different model
 \subsection{3D and 2D Features}
 As mentioned in the previous section RANSAC algorithm is the main tool used to extract 3D features on the objects. The differences between different geometric features that we are using is in the models used in RANSAC. We use a different mathematical representation of a feature, for example, a line or a cylinder, in order to extract it from the point cloud. 3D features are used only in the interactive segmentation of textureless objects part of the system. Our object recognition system employs various detectors and descriptors in the image space to extract and match 2D features.
 
+In order to understand different 2D features that were used in our system it is crucial to be familiar with the concepts behind detectors, descriptors and matchers. We, as humans, have no problems in detecting distinctive features in the images we see. Moreover we can easily realize that there are some features in the image that we have seen before. To reproduce this process for an autonomous system there are multiple components needed since an image is seen by a computer as a simple set of pixel values without any high level meaning. First, the system has to detect points of interest in the image that are distinctive enough to find the same points multiple times. The algorithms that are behind this process are called detectors and their goal is to simply find good features. Having the region detected the next step is to describe the found features such that there is a big chance to find the same features later on under different conditions. The task of describing the found points belongs to a detector. In the next subsections we will describe different detector-descriptor pairs that were used in the object recognition part of the thesis.
 
+\subsubsection{SIFT}
+SIFT stands for Scale Invariant Feature Transform and is one of the most popular descriptor-detector pair.    
+
+
+
+\subsubsection{FAST and FREAK}
 
 
 \subsection{Point Cloud Processing}
