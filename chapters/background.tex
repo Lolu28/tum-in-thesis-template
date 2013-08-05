@@ -72,38 +72,87 @@ As mentioned in the previous section RANSAC algorithm is the main tool used to e
 In order to understand different 2D features that were used in our system it is crucial to be familiar with the concepts behind detectors, descriptors and matchers. We, as humans, have no problems in detecting distinctive features in the images we see. Moreover we can easily realize that there are some features in the image that we have seen before. To reproduce this process for an autonomous system there are multiple components needed since an image is seen by a computer as a simple set of pixel values without any high level meaning. First, the system has to detect points of interest in the image that are distinctive enough to find the same points multiple times. The algorithms that are behind this process are called detectors and their goal is to simply find good features. Having the region detected the next step is to describe the found features such that there is a big chance to find the same features later on under different conditions. The task of describing the found points belongs to a detector. In the next subsections we will describe different detector-descriptor pairs that were used in the object recognition part of the thesis.
 
 \subsubsection{SIFT}
-SIFT stands for Scale Invariant Feature Transform and is one of the most popular descriptor-detector pair. The SIFT detector    
+SIFT~\cite{lowe2004distinctive} stands for Scale Invariant Feature Transform and is one of the most popular descriptor-detector pair. The SIFT features are invariant to scale and rotation as well as invariant to some extend to illumination changes and the viewpoint of the camera.  
 
+The detector is employed in different scales and the algorithm is looking for the highest response in difference of Gaussian which corresponds to the the best scale where the feature was found. In order to detect the local maxima and minima of difference of Gaussian function, the point of interest is compared to its eight neighbors in the current scale and to the respective pixels in the scale one level above and below. As the next step D.Lowe employs filters that remove low contrast and edge responses using Hessian Matrix on difference of Gaussian. After all these steps the found points are considered as being robust enough to be further used.
 
+Once the feature is found, it is crucial to use the feature descriptor to describe it in an distinctive manner.  SIFT detector solves rotational invariance problem by calculating orientations of the feature neighboring pixels and creating histogram of them. After smoothing operations the the peak of smoothed histogram is assigned as the general orientation of the SIFT feature. Moreover, the feature is afterwards rotated such that it can be matched against a similar feature even if they have different orientations in the original image. Thus, the rotational invariance is considered as one of the properties of SIFT.
 
-\subsubsection{FAST and FREAK}
+\begin{figure}
+%\centering
+
+{\includegraphics[width=1\columnwidth]{figures/sift.png}}
+
+\caption{SIFT descriptor. Source:~\cite{lowe2004distinctive}}
+\label{fig:sift}
+\end{figure}
+
+In order to make SIFT invariant to remaining variations - illumination and 3D viewpoint a descriptor of keypoint is created. As shown in Fig. ~\ref{fig:sift} the orientation histogram in 8 directions is computed. The process is based on image gradients and regards every pixel surrounding the keypoint. This representation shows a feature that also contains information about its surroundings which makes it more distinctive under different conditions.
+
+\subsubsection{FAST and FREAK/BRIEF}
+We are not sure if we will be using these features so let's see first.
+
 
 
 \subsection{Point Cloud Processing}
-\subsubsection{Voxel Grid}
+In this section we would like to describe some of the algorithms that we used to process the point clouds received from the Kinect sensor. The definition of the point cloud is provided by R. Rusu in~\cite{Rusu_ICRA2011_PCL} and states the following:
+
+A point cloud is a data structure that provides a representation of the 3D data visible by the depth sensor. This data structure consists of 3D points that have X, Y and Z component and are sampled from the underlying surface.  
+
+Since the received point clouds are not perfect and need some pre-processing we take extensive use of the open source Point Cloud Library (PCL). Algorithms that were especially used in our work are described in the following sections.
+
+\subsubsection{Voxel Grid Filtering}
+It is a very common practice to reduce the number of points in the point cloud before further proceedings. The reason for that is that the process becomes faster and one does not require a lot of memory space to store the data. One of the methods to downsample a point cloud is voxelized grid approach.
+
+A 3D voxel grid is a set of cubes that surround the points in the point cloud. Each of them contains a certain number of points which can be approximately represented by their centroid or the center of the cube. By approximating the points in the cube with one point we decrease number of points in the point cloud significantly. 
+
 \subsubsection{Plane Removal}
+Plane removal algorithm is one of the most popular pre-processing steps in perception algorithms. Using RANSAC algorithm with the model of a plane it is possible to select the biggest plane from the current point cloud. Having the indices of the points that form the biggest plane in the point cloud, it is possible to extract the plane itself and eventually, remove it. 
+
+This process simplifies the further work on the point cloud. For example, having done this step, it is possible to segment the objects based on the euclidean clustering algorithm described in the section below.
+
+
 \subsubsection{Euclidean Clustering}
+The objective of the Euclidean Clustering algorithm is to group points into multiple clusters based on the euclidean distance between neighboring points. The algorithm takes each point and checks if there exist any neighboring points within certain euclidean distance from this point. If so, then these points are added to the same cluster and the procedure continues for each of them. If the found point was already examined then it is not taken into consideration again. If all the points within the set distance were proceeded the cluster is considered as finished and algorithm continues with another set of points. The algorithm runs as long as all the points are clustered. 
+
+Euclidean Clustering algorithm enables simple segmentation of objects in uncluttered scene which can be further used in many applications.   
 
 \subsection{Particle Filter}
+In statistics, a particle filter, also known as a sequential Monte Carlo method (SMC), is a sophisticated model estimation technique based on simulation.[1] Particle filters are usually used to estimate Bayesian models in which the latent variables are connected in a Markov chain — similar to a hidden Markov model (HMM), but typically where the state space of the latent variables is continuous rather than discrete, and not sufficiently restricted to make exact inference tractable (as, for example, in a linear dynamical system, where the state space of the latent variables is restricted to Gaussian distributions and hence exact inference can be done efficiently using a Kalman filter). In the context of HMMs and related models, "filtering" refers to determining the distribution of a latent variable at a specific time, given all observations up to that time; particle filters are so named because they allow for approximate "filtering" (in the sense just given) using a set of "particles" (differently weighted samples of the distribution).
 
-\begin{itemize}
-\item RANSAC
-\item Particle Filter
-\item 3d/2d features
-\item Graph-based segmentation
-\item Rigid body dynamics
-\item Point cloud and point cloud processing
-\end{itemize}
+Particle filters are the sequential (online) analogue of Markov chain Monte Carlo (MCMC) batch methods and are often similar to importance sampling methods. Well-designed particle filters can often be much faster than MCMC. They are often an alternative to the Extended Kalman filter (EKF) or unscented Kalman filter (UKF) with the advantage that, with sufficient samples, they approach the Bayesian optimal estimate, so they can be made more accurate than either the EKF or UKF. However, when the simulated sample is not sufficiently large, they might suffer from sample impoverishment. The approaches can also be combined by using a version of the Kalman filter as a proposal distribution for the particle filter.[citation needed]
 
 
 \section{Used Tools}
 \subsection{Kinect}
+Kinect (codenamed in development as Project Natal) is a motion sensing input device by Microsoft for the Xbox 360 video game console and Windows PCs. Based around a webcam-style add-on peripheral for the Xbox 360 console, it enables users to control and interact with the Xbox 360 without the need to touch a game controller, through a natural user interface using gestures and spoken commands.[9]
+
+The depth sensor consists of an infrared laser projector combined with a monochrome CMOS sensor, which captures video data in 3D under any ambient light conditions.[9][34] The sensing range of the depth sensor is adjustable, and the Kinect software is capable of automatically calibrating the sensor based on gameplay and the player's physical environment, accommodating for the presence of furniture or other obstacles.[35]
 \subsection{PR2}
 \subsection{ROS}
-\subsection{Gazebo}
-\subsection{PCL}
-\subsection{OpenCV}
+Robot Operating System (ROS) is a software framework for robot software development, providing operating system-like functionality on a heterogeneous computer cluster. ROS was originally developed in 2007 under the name switchyard by the Stanford Artificial Intelligence Laboratory in support of the Stanford AI Robot STAIR [2][3] project. As of 2008, development continues primarily at Willow Garage, a robotics research institute/incubator, with more than twenty institutions collaborating in a federated development model.[4][5]
 
+ROS provides standard operating system services such as hardware abstraction, low-level device control, implementation of commonly-used functionality, message-passing between processes, and package management. It is based on a graph architecture where processing takes place in nodes that may receive, post and multiplex sensor, control, state, planning, actuator and other messages. The library is geared toward a Unix-like system (Ubuntu Linux is listed as 'supported' while other variants such as Fedora and Mac OS X are considered 'experimental').
+
+ROS has two basic "sides": The operating system side ros as described above and ros-pkg, a suite of user contributed packages (organized into sets called stacks) that implement functionality such as simultaneous localization and mapping, planning, perception, simulation etc.
+
+ROS is released under the terms of the BSD license, and is open source software. It is free for commercial and research use. The ros-pkg contributed packages are licensed under a variety of open source licenses.
+
+
+\subsection{Gazebo}
+Gazebo is a multi-robot simulator for outdoor environments. Like Stage, it is capable of simulating a population of robots, sensors and objects, but does so in a three-dimensional world. It generates both realistic sensor feedback and physically plausible interactions between objects (it includes an accurate simulation of rigid-body physics).
+
+\subsection{PCL}
+
+ The Point Cloud Library (or PCL) is a large scale, open project [1] for 2D/3D image and point cloud processing. The PCL framework contains numerous state-of-the art algorithms including filtering, feature estimation, surface reconstruction, registration, model fitting and segmentation. These algorithms can be used, for example, to filter outliers from noisy data, stitch 3D point clouds together, segment relevant parts of a scene, extract keypoints and compute descriptors to recognize objects in the world based on their geometric appearance, and create surfaces from point clouds and visualize them -- to name a few.
+
+ 
+
+PCL is released under the terms of the 3-clause BSD license and is open source software. It is free for commercial and research use.
+
+PCL is cross-platform, and has been successfully compiled and deployed on Linux, MacOS, Windows, and Android/iOS. To simplify development, PCL is split into a series of smaller code libraries, that can be compiled separately. This modularity is important for distributing PCL on platforms with reduced computational or size constraints (for more information about each module see the documentation page). Another way to think about PCL is as a graph of code libraries, similar to the Boost set of C++ libraries. Here's an example: 
+\subsection{OpenCV}
+OpenCV (Open Source Computer Vision) is a library of programming functions for realtime computer vision. It uses a BSD license and hence it's free for both academic and commercial use. It has C++, C, Python and Java (Android) interfaces and supports Windows, Linux, Android, iOS and Mac OS. It has more than 2500 optimized algorithms. Adopted all around the world, OpenCV has nearly 7 million downloads growing by nearly 200K/month. Usage ranges from interactive art, to mines inspection, stitching maps on the web on through advanced robotics.
 
 
 
