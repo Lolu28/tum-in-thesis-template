@@ -118,9 +118,12 @@ The objective of the Euclidean Clustering algorithm is to group points into mult
 Euclidean Clustering algorithm enables simple segmentation of objects in uncluttered scene which can be further used in many applications.   
 
 \subsection{Particle Filter}
-In statistics, a particle filter, also known as a sequential Monte Carlo method (SMC), is a sophisticated model estimation technique based on simulation.[1] Particle filters are usually used to estimate Bayesian models in which the latent variables are connected in a Markov chain — similar to a hidden Markov model (HMM), but typically where the state space of the latent variables is continuous rather than discrete, and not sufficiently restricted to make exact inference tractable (as, for example, in a linear dynamical system, where the state space of the latent variables is restricted to Gaussian distributions and hence exact inference can be done efficiently using a Kalman filter). In the context of HMMs and related models, "filtering" refers to determining the distribution of a latent variable at a specific time, given all observations up to that time; particle filters are so named because they allow for approximate "filtering" (in the sense just given) using a set of "particles" (differently weighted samples of the distribution).
+Particle Filter~\cite{Thrun02d} is a method that approximates the posterior probability in controllable but partially observable Markov Models. 
 
-Particle filters are the sequential (online) analogue of Markov chain Monte Carlo (MCMC) batch methods and are often similar to importance sampling methods. Well-designed particle filters can often be much faster than MCMC. They are often an alternative to the Extended Kalman filter (EKF) or unscented Kalman filter (UKF) with the advantage that, with sufficient samples, they approach the Bayesian optimal estimate, so they can be made more accurate than either the EKF or UKF. However, when the simulated sample is not sufficiently large, they might suffer from sample impoverishment. The approaches can also be combined by using a version of the Kalman filter as a proposal distribution for the particle filter.[citation needed]
+The simple idea behind the algorithm is to create a particle for each state that the model could be at and then calculate the importance weight of the particle based on the measurements. For example, in the robot localization problem particles would represent the current position of the robot and their weights would be calculates based on the laser sensor reading that obtains from its sensor. Since the control signals are known it is possible to predict the next position of each particle based on the motion model. Having known the updated position, the expected sensor readings can be predicted as well which leads to the new weight assignments. After assigning the weights re-sampling is employed to obtain more probable set of particles. The probability of a particle being re-sampled is proportional to its importance weight. At the end of this process remain only those particles that most probably indicate the correct state.
+
+In our implementation we use particle-filtering based tracker in order to track the features in textureless object segmentation part.      
+
 
 
 \section{Used Tools}
@@ -131,9 +134,13 @@ Particle filters are the sequential (online) analogue of Markov chain Monte Carl
 
 {\includegraphics[width=0.5\columnwidth]{figures/kinect.jpg}}
 
-\caption{The Kinect sensor. Source: http://www.microsoft.com}
+\caption{The Kinect sensor. Source: \url{http://www.microsoft.com}}
 \label{fig:kinect}
 \end{figure}
+
+
+
+
 
 Kinect (codenamed in development as Project Natal) is a motion sensing input device by Microsoft for the Xbox 360 video game console and Windows PCs. Based around a webcam-style add-on peripheral for the Xbox 360 console, it enables users to control and interact with the Xbox 360 without the need to touch a game controller, through a natural user interface using gestures and spoken commands.[9]
 
@@ -145,7 +152,7 @@ The depth sensor consists of an infrared laser projector combined with a monochr
 
 {\includegraphics[width=0.5\columnwidth]{figures/pr2.jpeg}}
 
-\caption{PR2 robot. Source: http://www.willowgarage.com}
+\caption{PR2 robot. Source: \url{http://www.willowgarage.com}}
 \label{fig:pr2}
 \end{figure}
 
@@ -154,7 +161,7 @@ The PR2 stands for 'personal robot' and it is a humanoid robotics platform creat
 In our system we used the PR2 as the main robotics platform. We took use of robot's sensors as well as actuator by implementing the manipulation strategies on the robot.
 
 \subsection{ROS}
-Robot Operating System (ROS) is a framework designed as an equivalent of an operating system but for robotics applications. 
+Robot Operating System (ROS)\footnote{\url{http://www.ros.org}}. is a framework designed as an equivalent of an operating system but for robotics applications. 
 
 There are two main components of ROS: a) standard operating system-like core functions and b) ros packages that can be created by the open source community. The former component contains various services such as messaging processes or package management whereas the latter one is designed for users to contribute and share their applications. ROS is known for containing multiple robotics applications such as motion planning, perception or control.
 
@@ -164,18 +171,18 @@ Our system uses ROS-infrastructure heavily by exploiting its communication syste
 
 
 \subsection{Gazebo}
-Gazebo is an open source physics simulator that can simulate multiple robots, their sensors, actuators and third party objects. It is also integrated into ROS infrastructure which makes it easier to simulate the real robot's behaviour, including readings from the sensor or motor control. 
+Gazebo\footnote{\url{http://www.gazebosim.org}} is an open source physics simulator that can simulate multiple robots, their sensors, actuators and third party objects. It is also integrated into ROS infrastructure which makes it easier to simulate the real robot's behaviour, including readings from the sensor or motor control. 
 
 In our system Gazebo was used to verify the push point hypothesis with the PR2 robot. It enabled us to test multiple scenarios in very short time without using an actual robot.
 
 
 \subsection{PCL}
-The Point Cloud Library (PCL) is an open source C++ library that contains tools for point cloud processing. It consists of many algorithms that enable to filter the data, extract features, reconstruct surface, register multiple point clouds and object segmentation, among others. The architecture of the library follows object-oriented design patterns hence it is modular and easy to use. PCL work on multiple platforms including Linux, MacOS, Windows and Android. 
+The Point Cloud Library (PCL)\footnote{\url{http://www.pointclouds.org}} is an open source C++ library that contains tools for point cloud processing. It consists of many algorithms that enable to filter the data, extract features, reconstruct surface, register multiple point clouds and object segmentation, among others. The architecture of the library follows object-oriented design patterns hence it is modular and easy to use. PCL work on multiple platforms including Linux, MacOS, Windows and Android. 
 
 Throughout our project PCL was the most frequently used library as enabled us to implement state-of-the-art 3D processing algorithms very fast and efficiently.  
 
 \subsection{OpenCV}
-OpenCV is an Open Source Computer Vision library that contains over 2500 optimized algorithms in Computer Vision. It was used very extensively throughout our system. It is also one of the most popular open source software with 7 million downloads by far. It consists of multiple interfaces such as C++, C and Python that supports all the major platforms. The architecture of the library is rather flat meaning that it contains mainly function calls that highly object oriented design which is much different in comparison to PCL.
+OpenCV\footnote{\url{http://www.opencv.willowgarage.com}} is an Open Source Computer Vision library that contains over 2500 optimized algorithms in Computer Vision. It was used very extensively throughout our system. It is also one of the most popular open source software with 7 million downloads by far. It consists of multiple interfaces such as C++, C and Python that supports all the major platforms. The architecture of the library is rather flat meaning that it contains mainly function calls that highly object oriented design which is much different in comparison to PCL.
 
 Many algorithms from our system including SIFT implementation and image morphology operations were taken from OpenCV Library. 
 
