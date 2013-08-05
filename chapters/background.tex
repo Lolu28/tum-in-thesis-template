@@ -129,30 +129,47 @@ Kinect (codenamed in development as Project Natal) is a motion sensing input dev
 
 The depth sensor consists of an infrared laser projector combined with a monochrome CMOS sensor, which captures video data in 3D under any ambient light conditions.[9][34] The sensing range of the depth sensor is adjustable, and the Kinect software is capable of automatically calibrating the sensor based on gameplay and the player's physical environment, accommodating for the presence of furniture or other obstacles.[35]
 \subsection{PR2}
+
+\begin{figure}
+%\centering
+
+{\includegraphics[width=0.5\columnwidth]{figures/pr2.jpeg}}
+
+\caption{PR2 robot. Source: http://www.willowgarage.com}
+\label{fig:pr2}
+\end{figure}
+
+The PR2 stands for 'personal robot' and it is a humanoid robotics platform created by Willow Garage - a robotics company based in Menlo Park, CA. The platform has two arms and grippers and an omnidirectional base as shown in Fig. \ref{fig:pr2}. Additionally, it contains multiple sensors including Kinect and tactile sensors. 8-core servers provide the robot's computing power and a 2TB hard drive serves as the robot's memory.  
+
+In our system we used the PR2 as the main robotics platform. We took use of robot's sensors as well as actuator by implementing the manipulation strategies on the robot.
+
 \subsection{ROS}
-Robot Operating System (ROS) is a software framework for robot software development, providing operating system-like functionality on a heterogeneous computer cluster. ROS was originally developed in 2007 under the name switchyard by the Stanford Artificial Intelligence Laboratory in support of the Stanford AI Robot STAIR [2][3] project. As of 2008, development continues primarily at Willow Garage, a robotics research institute/incubator, with more than twenty institutions collaborating in a federated development model.[4][5]
+Robot Operating System (ROS) is a framework designed as an equivalent of an operating system but for robotics applications. 
 
-ROS provides standard operating system services such as hardware abstraction, low-level device control, implementation of commonly-used functionality, message-passing between processes, and package management. It is based on a graph architecture where processing takes place in nodes that may receive, post and multiplex sensor, control, state, planning, actuator and other messages. The library is geared toward a Unix-like system (Ubuntu Linux is listed as 'supported' while other variants such as Fedora and Mac OS X are considered 'experimental').
+There are two main components of ROS: a) standard operating system-like core functions and b) ros packages that can be created by the open source community. The former component contains various services such as messaging processes or package management whereas the latter one is designed for users to contribute and share their applications. ROS is known for containing multiple robotics applications such as motion planning, perception or control.
 
-ROS has two basic "sides": The operating system side ros as described above and ros-pkg, a suite of user contributed packages (organized into sets called stacks) that implement functionality such as simultaneous localization and mapping, planning, perception, simulation etc.
+Our system uses ROS-infrastructure heavily by exploiting its communication system that enables us to communicate synchronously as well as asynchronously between different elements of the code. The whole system is wrapped into multiple ROS packages and is shared with ROS open source community.
 
-ROS is released under the terms of the BSD license, and is open source software. It is free for commercial and research use. The ros-pkg contributed packages are licensed under a variety of open source licenses.
+
 
 
 \subsection{Gazebo}
-Gazebo is a multi-robot simulator for outdoor environments. Like Stage, it is capable of simulating a population of robots, sensors and objects, but does so in a three-dimensional world. It generates both realistic sensor feedback and physically plausible interactions between objects (it includes an accurate simulation of rigid-body physics).
+Gazebo is an open source physics simulator that can simulate multiple robots, their sensors, actuators and third party objects. It is also integrated into ROS infrastructure which makes it easier to simulate the real robot's behaviour, including readings from the sensor or motor control. 
+
+In our system Gazebo was used to verify the push point hypothesis with the PR2 robot. It enabled us to test multiple scenarios in very short time without using an actual robot.
+
 
 \subsection{PCL}
+The Point Cloud Library (PCL) is an open source C++ library that contains tools for point cloud processing. It consists of many algorithms that enable to filter the data, extract features, reconstruct surface, register multiple point clouds and object segmentation, among others. The architecture of the library follows object-oriented design patterns hence it is modular and easy to use. PCL work on multiple platforms including Linux, MacOS, Windows and Android. 
 
- The Point Cloud Library (or PCL) is a large scale, open project [1] for 2D/3D image and point cloud processing. The PCL framework contains numerous state-of-the art algorithms including filtering, feature estimation, surface reconstruction, registration, model fitting and segmentation. These algorithms can be used, for example, to filter outliers from noisy data, stitch 3D point clouds together, segment relevant parts of a scene, extract keypoints and compute descriptors to recognize objects in the world based on their geometric appearance, and create surfaces from point clouds and visualize them -- to name a few.
+Throughout our project PCL was the most frequently used library as enabled us to implement state-of-the-art 3D processing algorithms very fast and efficiently.  
 
- 
-
-PCL is released under the terms of the 3-clause BSD license and is open source software. It is free for commercial and research use.
-
-PCL is cross-platform, and has been successfully compiled and deployed on Linux, MacOS, Windows, and Android/iOS. To simplify development, PCL is split into a series of smaller code libraries, that can be compiled separately. This modularity is important for distributing PCL on platforms with reduced computational or size constraints (for more information about each module see the documentation page). Another way to think about PCL is as a graph of code libraries, similar to the Boost set of C++ libraries. Here's an example: 
 \subsection{OpenCV}
-OpenCV (Open Source Computer Vision) is a library of programming functions for realtime computer vision. It uses a BSD license and hence it's free for both academic and commercial use. It has C++, C, Python and Java (Android) interfaces and supports Windows, Linux, Android, iOS and Mac OS. It has more than 2500 optimized algorithms. Adopted all around the world, OpenCV has nearly 7 million downloads growing by nearly 200K/month. Usage ranges from interactive art, to mines inspection, stitching maps on the web on through advanced robotics.
+OpenCV is an Open Source Computer Vision library that contains over 2500 optimized algorithms in Computer Vision. It was used very extensively throughout our system. It is also one of the most popular open source software with 7 million downloads by far. It consists of multiple interfaces such as C++, C and Python that supports all the major platforms. The architecture of the library is rather flat meaning that it contains mainly function calls that highly object oriented design which is much different in comparison to PCL.
+
+Many algorithms from our system including SIFT implementation and image morphology operations were taken from OpenCV Library. 
+
+
 
 
 
