@@ -1,7 +1,33 @@
 \chapter{Interactive Object Recognition}
 \label{chapter:Object Recognition}
 
+\section{Challenges}
+As suggested in \ref{chapter:Introduction} in feature-matching-based object recognition systems we encounter a lot of difficulties that mainly correspond to view-point-variance of the features as well as lighting conditions. In order to prove that hypothesis we implemented an object recognition system that extract the features in the database and live images and matches them together. Based on the number of matches the system can detect which object is being seen in the live image.
+
+\subsection{Lighting Conditions}
+
+During our experiments we noticed that a lot features were flickering even though we did not change position of any object in the image. After investigating this issue we came to the conclusion that it is mainly caused by lighting issues that feature detector cannot find the same feature in two consecutive frames. We examined that by searching for the features and then matching them against the live image. We saved two patches: once where the feature was found, and the second one where it was not found. Fig. REF depicts above described results.
+
+Looking at the difference image it can be clearly seen that there was a significant change in lighting even though we did not change anything. Corner detector did not find the correct feature in the live image simply because this image looks differently which is caused by the change of lighting lighting conditions.
+
+\subsection{View-point-variance}
+
+In order to show view-point-variance of the feature descriptors problem we compared two live images of the same object - one in the same pose as it is in the database and the other one when the object is rotated around Z axis. We tested those pairs with three different detectors and descriptors to ensure that the problem is not connected to a particular detector-descriptor pair. The results are depicted in Fig. REF.
+
+Looking at Fig. REF it is noticeable that the number of matches significantly decreases when the object is rotated. Even with the most rotationally and view-point invariant feature detector-descriptor pair - SIFT - drop of the features equals 35$\%$.
+
+
 \section{Approach}
-\section{System Pipeline}
+
+Following our idea to leverage robot's capabilities in order to improve perception we employ interaction with object as a tool that is likely to partially solve above mentioned challenges. In our approach we use two kinds of movements:
+
+\begin{itemize}
+\item rotation of object to eliminate the influence of view-point-variance of features
+\item translation of object to eliminate the influence of lighting conditions
+\end{itemize}
+
+
+
+
 \section{Results}
 \section{Conclusion}

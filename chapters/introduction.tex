@@ -140,11 +140,22 @@ were segmented correctly in these scenes. The interactive segmentation system is
 
 \subsection{Interactive Object Recognition} 
 
-In the second challenge being object recognition we follow the approach presented in the segmentation system. 
+In the second challenge being object recognition we decided to follow the approach presented in the segmentation system. Using our Interactive Segmentation pipeline we have a very good prior for the recognition of objects. Given that the object is segmented correctly we are able to shrink the problem of multiple object recognition to recognition of one currently segmented object at a time. In our system we show that even random rotations and translations can significantly improve recognition of objects.
+
+There are many systems in the field which came up with different solutions to the problem of reliable and robust object recognition. It is commonly believed that the most successful ones were the ones that were based on feature matching approach. All of them encountered to some extend the same problems, among others:
+
+\begin{itemize}
+\item features are not fully view point invariant
+\item if there is a big difference in lighting between the live image and the image from the database then it is impossible to find correct feature matches
+\item features blink a lot because of the not perfect lighting conditions and noise in the image
+\item amount of data for one object in the database is very big because the pictures have to be taken from different angles
+\end{itemize}
+
+In the chapter \ref{chapter:Object Recognition} we depict the problems and come up with a solution that can partially solve first two of them.
+    
 
 
 
- what do we do here?!?!?!?!
 
 
 
