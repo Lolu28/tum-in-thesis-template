@@ -6,16 +6,66 @@ As suggested in \ref{chapter:Introduction} in feature-matching-based object reco
 
 \subsection{Lighting Conditions}
 
-During our experiments we noticed that a lot features were flickering even though we did not change position of any object in the image. After investigating this issue we came to the conclusion that it is mainly caused by lighting issues that feature detector cannot find the same feature in two consecutive frames. We examined that by searching for the features and then matching them against the live image. We saved two patches: once where the feature was found, and the second one where it was not found. Fig. REF depicts above described results.
+During our experiments we noticed that a lot features were flickering even though we did not change position of any object in the image. After investigating this issue we came to the conclusion that it is mainly caused by lighting issues that feature detector cannot find the same feature in two consecutive frames. We examined that by searching for the features and then matching them against the live image. We saved two patches: once where the feature was found, and the second one where it was not found. Fig. \ref{fig:patches} depicts above described results.
 
 Looking at the difference image it can be clearly seen that there was a significant change in lighting even though we did not change anything. Corner detector did not find the correct feature in the live image simply because this image looks differently which is caused by the change of lighting lighting conditions.
 
-\subsection{View-point-variance}
+\begin{figure}
+%\centering
 
-In order to show view-point-variance of the feature descriptors problem we compared two live images of the same object - one in the same pose as it is in the database and the other one when the object is rotated around Z axis. We tested those pairs with three different detectors and descriptors to ensure that the problem is not connected to a particular detector-descriptor pair. The results are depicted in Fig. REF.
+{\includegraphics[width=1\columnwidth]{figures/patches.png}}
 
-Looking at Fig. REF it is noticeable that the number of matches significantly decreases when the object is rotated. Even with the most rotationally and view-point invariant feature detector-descriptor pair - SIFT - drop of the features equals 35$\%$.
+\caption{Difference between two pairs of images taken without taking any action in between. The first patch of the pair shows the area in the database image where the feature was found. The second patch shows the area in the live image where the corresponding match was found. After subtracting one pair from another and multiplying the difference by the factor of 10, the significant difference in live image patch is visible. There is no difference in the database image patch because it is the same patch for both pairs.  It indicates the influence that lighting has on the image. }
+\label{fig:patches}
+\end{figure}
 
+\subsection{View-point Variance}
+
+In order to show the problem of view-point variance of the feature descriptors we compared two live images of the same object - one in the same pose as it is in the database and the other one when the object is rotated around Z axis. We tested those pairs with three different detectors and descriptors to ensure that the problem is not connected to a particular detector-descriptor pair. The results are depicted in Fig. \ref{fig:sift-features},\ref{fig:freak-features} and \ref{fig:brief-features}.
+
+Looking at Fig. \ref{fig:sift-features},\ref{fig:freak-features} and \ref{fig:brief-features} it is noticeable that the number of matches significantly decreases when the object is rotated. Even with the most rotationally and view-point invariant feature detector-descriptor pair - SIFT - drop of the features equals 35$\%$.
+
+\begin{figure}
+%\centering
+    \begin{tabular}{c}
+ 
+
+\includegraphics[width=0.7\columnwidth]{figures/sift-gpu-no-rotation.png}\\
+\includegraphics[width=0.7\columnwidth]{figures/siftgpu-rotation.png}\\
+    \end{tabular}
+
+
+\caption{Comparison of two pairs of images using SIFT detector and SIFT descriptor. The upper image shows the object in the original pose whereas the lower shows the rotated object. It can be noticed that number of feature matches significantly decreases if the object is rotated. }
+\label{fig:sift-features}
+\end{figure}
+
+\begin{figure}
+%\centering
+    \begin{tabular}{c}
+ 
+
+\includegraphics[width=0.7\columnwidth]{figures/freak-no-rotation.png}\\
+\includegraphics[width=0.7\columnwidth]{figures/freak-rotation.png}\\
+    \end{tabular}
+
+
+\caption{Comparison of two pairs of images using FAST detector and FREAK descriptor. The upper image shows the object in the original pose whereas the lower shows the rotated object. It can be noticed that number of feature matches significantly decreases if the object is rotated. }
+\label{fig:freak-features}
+\end{figure}
+
+\begin{figure}
+%\centering
+    \begin{tabular}{c}
+ 
+
+\includegraphics[width=0.7\columnwidth]{figures/brief-no-rotation.png}\\
+\includegraphics[width=0.7\columnwidth]{figures/brief-rotation.png}\\
+    \end{tabular}
+
+
+\caption{Comparison of two pairs of images using FAST detector and BRIEF descriptor. The upper image shows the object in the original pose whereas the lower shows the rotated object. It can be noticed that number of feature matches significantly decreases if the object is rotated. }
+\label{fig:brief-features}
+\end{figure}
 
 \section{Approach}
 
