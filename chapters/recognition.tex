@@ -72,9 +72,47 @@ Looking at Fig. \ref{fig:sift-features},\ref{fig:freak-features} and \ref{fig:br
 Following our idea to leverage robot's capabilities in order to improve perception we employ interaction with object as a tool that is likely to partially solve above mentioned challenges. In our approach we use two kinds of movements:
 
 \begin{itemize}
-\item rotation of object to eliminate the influence of view-point-variance of features
+\item rotation of object to eliminate the influence of view-point variance of features
 \item translation of object to eliminate the influence of lighting conditions
 \end{itemize}
+
+In the next subsections we present the details regarding both types of transformations.
+
+\subsection{Rotation of Objects}
+In order for a robot to rotate an object with efficiently 
+
+\begin{figure}
+%\centering 
+
+\includegraphics[width=1\columnwidth]{figures/rectangle-angle.png}\\
+
+
+\caption{Object under the influence of two forces. F1 shows the tangential push that will result it in only rotational movement, hence in the force - f1\' tangential to a circle exscribed on the object. F2 shows the proposed pushing strategy - perpendicular to the longer egde. This push results in two forces - f21 tangential coefficient responsible for rotation and f22 - translational coefficient. In this case object will not only rotate but also translate in the direction of f22 force.  }
+\label{fig:angles}
+\end{figure}
+
+
+\begin{figure}
+%\centering
+ 
+
+\includegraphics[width=1\columnwidth]{figures/square-angle.png}
+
+
+\caption{Extreme example of energy loss of the proposed pushing strategy on the squared object. Theta is in this case maximal and equals 135 degrees. It results in a energy loss of 30\%  }
+\label{fig:angles}
+\end{figure}
+
+
+\begin{equation}
+M =  F \times r = F*r*sin(\theta)\\
+\end{equation}
+
+
+
+\subsection{Translation of Objects}
+
+
 
 
 
