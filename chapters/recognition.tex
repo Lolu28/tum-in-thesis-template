@@ -92,7 +92,7 @@ Following our idea to leverage robot's capabilities in order to improve percepti
 \includegraphics[width=0.5\columnwidth]{figures/square-angle.png}
 
 
-\caption{Extreme example of energy loss of the proposed pushing strategy on the squared object. Theta is in this case maximal and equals 135 degrees. It results in a energy loss of 30\%  }
+\caption{Extreme example of energy loss of the proposed pushing strategy on the squared object. Theta is in this case maximal and equals $135 ^\circ$. It results in a energy loss of 30\%  }
 \label{fig:angles-square}
 \end{figure}
 
@@ -109,26 +109,37 @@ Following our idea to leverage robot's capabilities in order to improve percepti
 
 
 \subsection{Rotation of Objects}
-In order for a robot to rotate an object efficiently that is such that the push results in only rotational kinematic energy it is required to maximize the the torgue that acts on the object. As shown in Eq \ref{eq:max-torque} the maximum torgue can be obtained with the biggest $r$ component that the force is acting on and with $sin(\theta) = 1$.
-
-Maximizing $r$ component results in the point that the furthest from the center of mass of the object. Since we assume uniform distribution of mass, the center of mass of the object is in its geometrical center. Hence the best push point to rotate the box-like object is at the corner which is the furthest point from the center of the rectangle.
-
-In order to fulfill the second constraint - $sin(\theta) = 1$ on the box-like object $\theta = 90 degrees$ which results in tangential push as depicted in Fig. \ref{fig:angles-rectangle} - force f1. However, due to geometrical contraints of the robot's gripper it is difficult to execute tangential push. The upper row of Fig. \ref{fig:tangential-example} shows the box-like object with the robot's gripper in the pose for the tangential push. It can be noticed that due to the size of the gripper the actual contact point between the gripper and the object is not at the corner. The other problem that occurs in this kind of push is that the gripper is likely to slip off the object while pushing.
-
-Because of the above mentioned reasons we came up with a push perpendicular to the longer edge of the object. This push is easy to execute with the robot's gripper while still being able to result in rotational movement of the object. The lower row of Fig. \ref{fig:tangential-example} shows the resulting robot's gripper position related to the object. However, in this case the push is not optimal in the sense that $\theta$ is different. In order to evaluate how much energy loss to translational movement we obtain we theorically analysized the worst case scenario. Fig. \ref{fig:angles-square} shows a square object where $\theta$ is maximal thus the least optimal for the function $sin(\theta)$. By simple geometric analysis one can show that $\theta =135 degrees$ which results in $sin(\theta) = 0.71$. The result of this theoretical experiment shows that in the worst case scenario one loses 30\% of the resulting kinematic energy on translational movement. Given the robot's configuartion and the size of its gripper the loss is acceptable as it still results in mostly rotational movement of the object. 
-
+In order for a robot to rotate an object efficiently that is such that the push results in only rotational kinematic energy it is required to maximize the the torgue that acts on the object. As shown in Eq \ref{eq:max-torque} the maximum torgue($M$) can be obtained with the biggest radius ($r$ component) that the force($F$) is acting on and with $sin(\theta) = 1$. Where $\theta$ is the angle between the force and the radius.
 
 \begin{equation}
 M =  F \times r = F*r*sin(\theta)\\
 \label{eq:max-torque}
 \end{equation}
 
+Maximizing $r$ component results in the point that the furthest from the center of mass of the object. Since we assume uniform distribution of mass, the center of mass of the object is in its geometrical center. Hence the best push point to rotate the box-like object is at the corner which is the furthest point from the center of the rectangle.
+
+In order to fulfill the second constraint - $sin(\theta) = 1$ on the box-like object $\theta = 90 ^\circ$ which results in tangential push as depicted in Fig. \ref{fig:angles-rectangle} - force f1. However, due to geometrical contraints of the robot's gripper it is difficult to execute tangential push. The upper row of Fig. \ref{fig:tangential-example} shows the box-like object with the robot's gripper in the pose for the tangential push. It can be noticed that due to the size of the gripper the actual contact point between the gripper and the object is not at the corner. The other problem that occurs in this kind of push is that the gripper is likely to slip off the object while pushing.
+
+Because of the above mentioned reasons we came up with a push perpendicular to the longer edge of the object. This push is easy to execute with the robot's gripper while still being able to result in rotational movement of the object. The lower row of Fig. \ref{fig:tangential-example} shows the resulting robot's gripper position related to the object. However, in this case the push is not optimal in the sense that $\theta$ is different. In order to evaluate how much energy loss to translational movement we obtain we theorically analysized the worst case scenario. Fig. \ref{fig:angles-square} shows a square object where $\theta$ is maximal thus the least optimal for the function $sin(\theta)$. By simple geometric analysis one can show that $\theta =135 ^\circ$ which results in $sin(\theta) = 0.71$. The result of this theoretical experiment shows that in the worst case scenario one loses 30\% of the resulting kinematic energy on translational movement. Given the robot's configuartion and the size of its gripper the loss is acceptable as it still results in mostly rotational movement of the object. 
+
+
+
+
 
 
 
 \section{Results}
+%Experiments showing time with multiple templates
+%Graph of different numbers of matches in relation to degrees
+The testing setup of the system consists of an object that is in front of the Kinect. During the experiment the object is being rotated 360 $^\circ$ according to our movement strategy described in the previous section. The live image is being compared to all the images from the database. Database consists of two images per object. During this process the number of matches is constantly being saved to a file.
+
+Fig. REF shows the number of matches in relation to the orientation of the object. It can be seen that there are certain configurations where the number of matches is significantly greater. These relate to the configurations close to the pose of the object that appear in the image from the database. It shows that by rotating the object in uninformative manner can significantly improve its recognition. 
+
+Fig. REF shows approximate times for the system to process the data during one iteration. An Iteration is considered as generating the matches between the live image and all the images from the database. In Fig. REF it can be noticed that the time of iteration linearly scales to the number of images per object. Thus, inducing motion into the scene and reducing the size of the database has a significant impact on the system performance.
+
 
 
 
 
 \section{Conclusion}
+We have presented an initial implementation of the system that is able to recognize objects based feature matching algorithm. We have proven that inducing motion into the scene significantly improves chances of the object being recognized correctly. In addition to that we showed that interaction with the scene reduces the size of the database which has a significant influence on the speed of the system.  
