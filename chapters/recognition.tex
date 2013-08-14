@@ -133,7 +133,7 @@ Because of the above mentioned reasons we came up with a push perpendicular to t
 \begin{figure}
 %\centering 
 
-\includegraphics[width=1.3\columnwidth]{figures/recognition-results.png}\\
+\includegraphics[width=1.5\columnwidth]{figures/print.pdf}\\
 
 
 \caption{Chart showing matching results between two images of the peets tea from the database and the live image of the peets tea. Tea box was being moved 360$^\circ$ during the matching process. One image from the database shows the peets tea in the orientation 0$^\circ$ and the second one in the orientation 180$^\circ$. One can notice that the picks of the number of matches are in 0$^\circ$, 180$^\circ$ and 360$^\circ$}
@@ -145,7 +145,17 @@ The testing setup of the system consists of an object that is in front of the Ki
 
 Fig. \ref{fig:recognition-results} shows the number of matches in relation to the orientation of the object. It can be seen that there are certain configurations where the number of matches is significantly greater. These relate to the configurations close to the pose of the object that appear in the image from the database. It shows that by rotating the object in uninformative manner can significantly improve its recognition. 
 
-Fig. REF shows approximate times for the system to process the data during one iteration. An Iteration is considered as generating the matches between the live image and all the images from the database. In Fig. REF it can be noticed that the time of iteration linearly scales to the number of images per object. Thus, inducing motion into the scene and reducing the size of the database has a significant impact on the system performance.
+\begin{figure}
+%\centering 
+
+\includegraphics[width=1.5\columnwidth]{figures/thesis-time.png}\\
+
+
+\caption{Chart showing matching results between two images of the peets tea from the database and the live image of the peets tea. Tea box was being moved 360$^\circ$ during the matching process. One image from the database shows the peets tea in the orientation 0$^\circ$ and the second one in the orientation 180$^\circ$. One can notice that the picks of the number of matches are in 0$^\circ$, 180$^\circ$ and 360$^\circ$}
+\label{fig:recognition-time}
+\end{figure}
+
+Approximate time for the system to process the data with 2 images during one iteration equaled $0.53 sec$. An Iteration is considered as generating the matches between the live image and all the images from the database. In Fig. \ref{fig:recognition-time} it can be noticed that the time of iteration linearly scales to the number of images. Thus, inducing motion into the scene and reducing the size of the database has a significant impact on the system performance.
 
 
 
