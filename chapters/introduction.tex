@@ -5,28 +5,40 @@
  
 \section{Motivation}
 \label{sec:intro}
-One of the main challenges for nowadays robotics is to bring robots into people's homes and make them help us to perform simple tasks. However, what we consider as a simple task might be very complex for an autonomous system. For example, when setting a table~\cite{iros10kcopman} the robot is likely to be
+One of the main challenges in robotics today is to bring robots into people's homes and make them help us to perform simple tasks. However, what we consider as a simple task might be very complex for an autonomous system. For example, when setting a table~\cite{iros10kcopman} the robot is likely to be
 confronted with a cluttered unstructured scene\footnote{Following the discussion at the Clutter12
 workshop at RSS 2012 we acknowledge that this is a ``laboratory clutter'' where the degree of difficulty
-is similar to the scenes from the related works but still inferior to the real world clutter.} like the example shown
-in \ref{fig:tracking_dists}. In order to interact with an environment like that a robot has to be able to detect and recognize the objects that are on the table. We would like to show that with the ability to interact with an environment robot has a bigger chance to recognize the objects successfully, particularly in the presence of objects of similar colors, shapes and sizes. 
+is similar to the scenes from the related works but still inferior to the real world clutter~\cite{matei2010manipulation}.} like the example shown
+in \ref{fig:tracking_dists}. In order to interact with an environment like that a robot has to be able to detect and recognize the objects that are on the table. The main
+motivation of this work is to show by leveraging robot's manipulation skills we can significantly improve its perception skills including segmentation and recognition of objects.
+	
+We can divide objects into three categories - textured, textureless and transparent with examples shown in Figure \ref{fig:all-objects}. In our work we address first two of them and we plan to focus on the third one in the future work.
 
+\begin{figure}
+%\centering
 
-As the initial step for the system we developed an interactive segmentation pipeline that is meant to be used for objects without any texture. In order to show that this is a challenging task that can not be solved with the state-of-the-art perception algorithms we point reader's attention to Fig. \ref{fig:tracking_dists} where we tested three object segmentation algorithms that operate in the RGDB space. Looking at the results we believe that the performance of robot's perception algorithms can be improved, especially in case of: 
+{\includegraphics[width=1\columnwidth]{figures/all-objects.jpg}}
+
+\caption{Three categories of objects: textured(left), textureless(middle), transparent(right)}
+\label{fig:all-objects}
+\end{figure}
+
+As the initial step for the system we developed an interactive segmentation pipeline that is meant to be used for objects without any texture. In order to show that this is a challenging task that can not be solved with the state-of-the-art segmentation algorithms we refer reader to Figure \ref{fig:tracking_dists} where we tested three object segmentation algorithms that are used for segmentation of RGBD point clouds. Looking at the results we believe that the performance of robot's perception algorithms can be improved, especially in case of: 
 
 \begin{itemize} 
 \item textureless objects (all objects in the scene)
-\item objects of the same color (a coffee mug and a saucer), 
-\item similar shape objects and occlusions (a white and a blue box) 
+\item objects of the same color (a coffee mug and a saucer)
+\item similar shape objects and occlusions (a white and a blue box);
 \end{itemize}
 
-In order to improve the existing algorithms we decided to take use of other properties of the robot. It is easier and arguably more natural to exploit the robot's embodiment
+
+In order to improve segmentation performance we decided to make use of robot's
+capabilities. It is arguably more natural to exploit the robot's embodiment
 and interaction capabilities in order to obtain a better understanding of its environment.
 Reaching out to get a sense of what is around is the way how infants get to know their
-``near space'' according to Piaget's theory of spatial cognition in the sensorimotor stage 
+``near space'' according to Piaget's theory~\cite{infants} of spatial cognition in the sensorimotor stage 
 (until the age of 2), and getting a hold of connectivity (i.e. object unity) is an important
-factor in the infant's understanding of objects at that stage \cite{infants}.
-
+factor in the infant's understanding of objects at that stage.
 
 \setlength{\tabcolsep}{0.1em}
 \begin{figure}[ht]
@@ -60,11 +72,12 @@ factor in the infant's understanding of objects at that stage \cite{infants}.
 
 \subsection{Object Segmentation} 
 
-In order to solve the challenge of object segmentation we need to define the terms - image segmentation and object. 
+In order to solve the challenge of object segmentation we need to define the terms - image segmentation and object, both in the sense of robot's perception. 
+
 
 According to L.Shapiro and G. Stockman~\cite{shapiro2001computer}:
 
-"Image segmentation is the process of partitioning a digital image into multiple segments. The goal of segmentation is to simplify and/or change the representation of an image into something that is more meaningful and easier to analyse."
+\noindent "Image segmentation is the process of partitioning a digital image into multiple segments. The goal of segmentation is to simplify and/or change the representation of an image into something that is more meaningful and easier to analyse."
 
 \begin{figure}[ht]
 %\centering
@@ -79,41 +92,61 @@ According to L.Shapiro and G. Stockman~\cite{shapiro2001computer}:
 \end{figure}
 
 
- Following this definition one can conclude that the goal of object segmentation is to segment the image in the way that it is partitioned into multiple objects. However, in our case, as an input we use point cloud data from the Kinect sensor that consists of an image and associated set of 3D points that show 3D structure of the environment. Taking all this information into consideration our goal is to partition a point cloud into multiple objects.
+ Following this definition one can conclude that the goal of object segmentation is to segment the image in the way that it is partitioned into multiple objects. In our case we need to take into consideration that as an input we use point cloud data which is a natural extension of an image into 3 dimensional space. Therefore the same definition can be preserved for point clouds. 
 
 A simple definition of an object in the sense of computer vision problem was presented by A. Mishra~\cite{mishra2012segmenting}:
 
-"A simple object is defined as a compact region enclosed by the depth and
+\noindent "A simple object is defined as a compact region enclosed by the depth and
 contact boundary in the scene".
 
-According to this definition an output of the object segmentation algorithm would be multiple sets of points that form an object. That is, any point within the set belongs to that object's interior. 
+According to this definition an output of the object segmentation algorithm is considered as multiple sets of points that form an object. That is, any point within the set belongs to that object's interior. 
 
-As an example output of the object segmentation we point reader's attention to Fig. \ref{fig:three_objects}. This Figure also shows that even though our experiments were conducted on the set of two objects, the algorithm is generic enough to handle multiple objects. 
+As an example output of the object segmentation we refer reader to Figure \ref{fig:three_objects}. This Figure also shows that even though our experiments were conducted on the set of two objects, the algorithm is generic enough to handle multiple objects. In this context we understand objects as objects of daily use.
+
 
 \subsection{Object Recognition}
-Since the main terms are already defined it is easier to form the problem of object recognition. Once the object is segmented and the robot is aware of its borders it is crucial to be able to recognize what this set of points is. This problem can be understood much wider since we are entering the field of perceptual interpretation. However, in order to keep the problem solvable we understand the recognition of an object as associating the segmented set of points with the data stored in the database of objects. Further implications that stem from information that database contains are not in the scope of this thesis.
+
+Since the main terms are already defined we formulate the problem of object recognition. Once the object is segmented and the robot is aware of its boundaries it is crucial to be able to recognize which object it is. The statement of the object recognition is -  
+given a database of objects and an image determine what, if any of the objects are present in the image. In this part of the thesis we concentrate on recognition of textured objects with the same idea that we used before - we leverage robot's manipulation capabilities in order to improve robot's perception.
+
+In order to simplify the problem of model based recognition we constrain the region of interest such that the object is articulated. There are many systems in the field which came up with different solutions to the problem of reliable and robust object recognition. It is commonly believed that the most successful ones were the ones that were based on feature matching approach. All of them encountered to some extend the same problems, among others:
+
+\begin{itemize}
+\item features are not fully view point invariant, e.g. SIFT fails in case of larger than
+$45^\circ$ rotation
+\item  invariance to changing lighting conditions between the live
+image and the one the object was trained on
+\item image noise (lighting mentioned above)
+\item large computational cost due to brute force matching;
+\end{itemize}
+
+The problem of object recognition can be understood much wider since we are entering the field of perceptual interpretation. Further implications that stem from information that database contains are not in the scope of this thesis.
+
+
 
 \section{Approach} 
 
 In this thesis we concentrate on solving two challenges: 
 
 \begin{itemize} 
-\item segmentation of textureless objects since the textured cased was already covered by us in REF. 
-\item recognition of objects using interactive perception techniques.
+\item segmentation of textureless objects since the textured case was presented in~\cite{bersch12interactive} and~\cite{Katz-WS-MM-ICRA2011}
+
+\item textured objects using interactive perception techniques.
 \end{itemize} 
 
-In the next subsections we concentrate on describing our approach with the above mentioned tasks.
+In the next subsections we concentrate on describing our approach for the above mentioned tasks.
 
 \subsection{Interactive Segmentation of Textureless Objects} 
 
 
-Starting from the former one we would like to show that inducing the motion to the scene can solve the problems depicted in Fig. \ref{fig:tracking_dists}. Similar  to Katz  et al.~\cite{Katz-WS-MM-ICRA2011}, Bergstrom et
+Starting from the object segmentation problem 
+one we want to show that inducing the motion to the scene can solve the problems depicted in Figure \ref{fig:tracking_dists}. Similar  to Katz  et al.~\cite{Katz-WS-MM-ICRA2011}, Bergstrom et
 al.~\cite{bergstrom11icvs}, and our earlier
 work~\cite{bersch12interactive} we propose a system that uses
 motion of robot's arm to enable effective
 object  segmentation.
 
-Our system consists of five main steps being:
+Our system consists of five main steps-being:
 
 \begin{itemize} 
 \item Static object pre-segmentation using part-graph-based hashing ~\cite{marton12SC}
@@ -121,7 +154,7 @@ Our system consists of five main steps being:
 \item Extraction of RGDB features using point cloud primitives such as lines, corners, cylinders and circles
 \item Tracking of above mentioned features using Particle-Filter-based algorithm
 \item Graph based trajectory clustering approach
-\item Dense model reconstruction based on region growing in normal space
+\item Dense model reconstruction based on region growing in normal space;
 \end{itemize} 
 
 
@@ -140,21 +173,12 @@ were segmented correctly in these scenes. The interactive segmentation system is
 
 \subsection{Interactive Object Recognition} 
 
-In the second challenge being object recognition we decided to follow the approach presented in the segmentation system. Using our Interactive Segmentation pipeline we have a very good prior for the recognition of objects. Given that the object is segmented correctly we are able to shrink the problem of multiple object recognition to recognition of one currently segmented object at a time. In our system we show that even random rotations and translations can significantly improve recognition of objects.
+In the second challenge being object recognition we decided to build upon the approach presented in the segmentation system. Using our Interactive Segmentation pipeline we have a very good prior for the recognition of objects. Given that the object is segmented correctly we are able to constrain the problem of multiple object recognition to recognition of one currently segmented object at a time. In our system we show that even random rotations and translations can significantly improve recognition of objects.
 
-There are many systems in the field which came up with different solutions to the problem of reliable and robust object recognition. It is commonly believed that the most successful ones were the ones that were based on feature matching approach. All of them encountered to some extend the same problems, among others:
+In our approach we use the rotational movement of an object in order to eliminate the influence of view-point variance of features. We show that by incorporating robot's interaction with the environment we are also able to reduce the size of the database and thus, speed up the processing time of the algorithm.
 
-\begin{itemize}
-\item features are not fully view point invariant
-\item if there is a big difference in lighting between the live image and the image from the database then it is impossible to find correct feature matches
-\item features blink a lot because of the not perfect lighting conditions and noise in the image
-\item amount of data for one object in the database is very big because the pictures have to be taken from different angles
-\end{itemize}
-
-In the chapter \ref{chapter:Object Recognition} we depict the problems and come up with a solution that can partially solve first two of them.
+In the chapter \ref{chapter:Object Recognition} we depict the problems and the initial solution in details as well as show promising results of our approach.
     
-
-
 
 
 
