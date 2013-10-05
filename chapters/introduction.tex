@@ -9,8 +9,29 @@ One of the main challenges in robotics today is to bring robots into people's ho
 confronted with a cluttered unstructured scene\footnote{Following the discussion at the Clutter12
 workshop at RSS 2012 we acknowledge that this is a ``laboratory clutter'' where the degree of difficulty
 is similar to the scenes from the related works but still inferior to the real world clutter~\cite{matei2010manipulation}.} like the example shown
-in \ref{fig:tracking_dists}. In order to interact with an environment like that a robot has to be able to detect and recognize the objects that are on the table. The main
-motivation of this work is to show by leveraging robot's manipulation skills we can significantly improve its perception skills including segmentation and recognition of objects.
+in Figure \ref{fig:tracking_dists}. In order to interact with this type of an environment a robot has to be able to detect and recognize the objects that are on the table. The main
+motivation of this work is to show that by leveraging robot's manipulation skills we can significantly improve its perception skills including segmentation and recognition of objects.
+	
+\setlength{\tabcolsep}{0.1em}
+\begin{figure}[ht]
+%\centering
+\begin{tabular}{cccc}
+\multicolumn{2}{c}{\multirow{-6}{*}{\includegraphics[width=0.5\columnwidth]{figures/teaser/IMG_0395.JPG}
+}} & \includegraphics[width=0.23\columnwidth]{figures/segmentation_others/region_growing_rgb.png} 
+&\includegraphics[width=0.23\columnwidth]{figures/segmentation_others/part-graph-hashing.png} \\
+\multicolumn{2}{c}{} & \includegraphics[width=0.23\columnwidth]{figures/segmentation_others/graph-based.png} &\includegraphics[width=0.23\columnwidth]{pictures/teaser_egg_result-cropped.png} 
+%\multicolumn{2}{c}{\includegraphics[width=0.38\columnwidth]{pictures/113-cropped.png}} 
+\end{tabular}
+\caption{Top-left: The service robot PR2 aiming to segment the scene
+  consisting of textureless object. Results  of  the   scene segmentation
+  using Region  Growing  method~\cite{RGBRegionGrowing} (top-right, NW), Part-Graph-based 
+  Hashing~\cite{marton12SC} method (top-right, NE) and Graph-based  
+  segmentation method~\cite{Felzenszwalb}   (top-right, SW). These methods work in depth, RGB and RGBD 
+  space respectively and all underachieve due to the complexity of this challenging task. 
+  On the other hand blue egg on the blue plate was correctly segmented using the interactive approach presented in this paper (top-right, SE)}
+\label{fig:tracking_dists}
+\end{figure}	
+	
 	
 We can divide objects into three categories - textured, textureless and transparent with examples shown in Figure \ref{fig:all-objects}. In our work we address first two of them and we plan to focus on the third one in the future work.
 
@@ -40,25 +61,7 @@ Reaching out to get a sense of what is around is the way how infants get to know
 (until the age of 2), and getting a hold of connectivity (i.e. object unity) is an important
 factor in the infant's understanding of objects at that stage.
 
-\setlength{\tabcolsep}{0.1em}
-\begin{figure}[ht]
-%\centering
-\begin{tabular}{cccc}
-\multicolumn{2}{c}{\multirow{-6}{*}{\includegraphics[width=0.5\columnwidth]{figures/teaser/IMG_0395.JPG}
-}} & \includegraphics[width=0.23\columnwidth]{figures/segmentation_others/region_growing_rgb.png} 
-&\includegraphics[width=0.23\columnwidth]{figures/segmentation_others/part-graph-hashing.png} \\
-\multicolumn{2}{c}{} & \includegraphics[width=0.23\columnwidth]{figures/segmentation_others/graph-based.png} &\includegraphics[width=0.23\columnwidth]{pictures/teaser_egg_result-cropped.png} 
-%\multicolumn{2}{c}{\includegraphics[width=0.38\columnwidth]{pictures/113-cropped.png}} 
-\end{tabular}
-\caption{Top-left: The service robot PR2 aiming to segment the scene
-  consisting of textureless object. Results  of  the   scene segmentation
-  using Region  Growing  method~\cite{RGBRegionGrowing} (top-right, NW), Part-Graph-based 
-  Hashing~\cite{marton12SC} method (top-right, NE) and Graph-based  
-  segmentation method~\cite{Felzenszwalb}   (top-right, SW). These methods work in depth, RGB and RGBD 
-  space respectively and all underachieve due to the complexity of this challenging task. 
-  On the other hand blue egg on the blue plate was correctly segmented using the interactive approach presented in this paper (top-right, SE)}
-\label{fig:tracking_dists}
-\end{figure}
+
 
 
 
@@ -72,7 +75,7 @@ factor in the infant's understanding of objects at that stage.
 
 \subsection{Object Segmentation} 
 
-In order to solve the challenge of object segmentation we need to define the terms - image segmentation and object, both in the sense of robot's perception. 
+In order to solve the challenge of object segmentation we need to define the terms: "image segmentation" and "object", both in the sense of robot's perception. 
 
 
 According to L.Shapiro and G. Stockman~\cite{shapiro2001computer}:
@@ -139,14 +142,14 @@ In the next subsections we concentrate on describing our approach for the above 
 \subsection{Interactive Segmentation of Textureless Objects} 
 
 
-Starting from the object segmentation problem 
-one we want to show that inducing the motion to the scene can solve the problems depicted in Figure \ref{fig:tracking_dists}. Similar  to Katz  et al.~\cite{Katz-WS-MM-ICRA2011}, Bergstrom et
+Starting from the object segmentation 
+ we want to show that inducing the motion to the scene can solve the problems depicted in Figure \ref{fig:tracking_dists}. Similar  to Katz  et al.~\cite{Katz-WS-MM-ICRA2011}, Bergstrom et
 al.~\cite{bergstrom11icvs}, and our earlier
 work~\cite{bersch12interactive} we propose a system that uses
 motion of robot's arm to enable effective
 object  segmentation.
 
-Our system consists of five main steps-being:
+Our system consists of five main steps, being:
 
 \begin{itemize} 
 \item Static object pre-segmentation using part-graph-based hashing ~\cite{marton12SC}
@@ -177,7 +180,7 @@ In the second challenge being object recognition we decided to build upon the ap
 
 In our approach we use the rotational movement of an object in order to eliminate the influence of view-point variance of features. We show that by incorporating robot's interaction with the environment we are also able to reduce the size of the database and thus, speed up the processing time of the algorithm.
 
-In the chapter \ref{chapter:Object Recognition} we depict the problems and the initial solution in details as well as show promising results of our approach.
+In Chapter \ref{chapter:Object Recognition} we depict the problems and the initial solution in details as well as show promising results of our approach.
     
 
 
