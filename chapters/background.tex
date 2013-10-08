@@ -3,7 +3,7 @@
 This chapter describes algorithms and tools used in this thesis. It contains sufficient information to understand all the tools that we leveraged in interactive segmentation and recognition.
 \section{Used Algorithms}
 \subsection{RANSAC}
-In order to explain other algorithms and tools in this thesis, basic understanding of RANSAC algorithm is needed. RANSAC stands for RAndom SAmple Consensus and it is an iterative algorithm that enables to find parameters of a mathematical model in the set of data containing inliers and more importantly outliers of a given model. The pseudocode of the algorithm is presented in Alg. \ref{alg:ransac}. 
+In order to explain other algorithms and tools in this thesis, basic understanding of RANSAC algorithm~\cite{ransac} is needed. RANSAC stands for RAndom SAmple Consensus and it is an iterative algorithm that enables to find parameters of a mathematical model in the set of data containing inliers and more importantly outliers of a given model. The pseudocode of the algorithm is presented in Algorithm \ref{alg:ransac}. 
 
 \begin{algorithm}[htb!]
 \While {$iterations < k$}
@@ -49,9 +49,9 @@ $this\_error$ := a measure of how well $this\_model$ fits these points\\
   \label{alg:ransac}
 \end{algorithm}
 
-The most common example to explain RANSAC is a line fitting task in the 2D point dataset that contains outliers as shown in Figure \ref{fig:ransac}. In the given dataset the algorithm would randomly pick two points and create a line equation that contains both of them. In the next step number of inliers is counted. Inliers meaning all the points that lie within a certain threshold away from the line. If the current number of inliers is greater that the biggest number of inliers found so far then the current model coefficients are saved. There are different implementation of RANSAC where the algorithm can run until a minimum number of inliers is found or as the difference between them becomes relatively small. As the result one obtains a set of points that are best explained by the given model.
+The most common example to explain RANSAC is a line fitting task in the 2D point dataset that contains outliers as shown in Figure \ref{fig:ransac}. In the given dataset the algorithm randomly picks two points and create a line equation that contains both of them. In the next step the number of inliers is counted. With inliers we denote all the points that lie within a certain threshold away from the line. Algorithm proceeds iteratively - if the current number of inliers is greater than the number of inliers found in the previous iterations then the current model coefficients are saved. There are different implementation of RANSAC where the algorithm runs until a minimum number of inliers is found or as the difference between them becomes relatively small. As the result one obtains a set of points that are best explained by the given model.
 
-It is worth noticing that RANSAC algorithm can be used with many different models. In case of our system we use RANSAC to find the best fit to a line, a corner, a cylinder and a circle model. 
+It is worth noticing that RANSAC algorithm is used with many different models. In case of our system we use RANSAC to find the best fit to a line, a corner, a cylinder and a circle model. 
 
 
 
@@ -69,7 +69,7 @@ It is worth noticing that RANSAC algorithm can be used with many different model
 \subsection{2D and 3D Features}
 %As mentioned in the previous section RANSAC algorithm is the main tool used to extract 3D features. The differences between different geometric features that we use is in the models used in RANSAC. We use a different mathematical representation of a feature, for example, a line or a cylinder, in order to extract it from the point cloud. 3D features are used only in the interactive segmentation of textureless objects part of the system. Our object recognition system employs various detectors and descriptors in the image space to extract and match 2D features.%
 
-In order to understand different 2D features that were used in our system it is crucial to be familiar with the concepts behind detectors, descriptors and matchers. We, as humans, have no problems in detecting distinctive features in the images we see. Moreover we can easily realize that there are some features in the image that we have seen before. To reproduce this process for an autonomous system there are multiple components needed since an image is seen by a computer as a simple set of pixel values without any high level meaning. First, the system has to detect points of interest in the image that are distinctive enough to find the same points multiple times. The algorithms that are behind this process are called detectors and their goal is to simply find good features. Having the region detected the next step is to describe the found features such that there is a big chance to find the same features later on under different conditions. The task of describing the found points belongs to a detector. In the next subsections we will describe a detector-descriptor pair that was used in the object recognition part of the thesis.
+In order to understand different 2D features that were used in our system it is crucial to be familiar with the concepts behind detectors, descriptors and matchers. We, as humans, have no problems in detecting distinctive features in the images we see. Moreover, we can easily realize that there are some features in the image that we have seen before. To reproduce this process for an autonomous system there are multiple components needed since an image is seen by a computer as a simple set of pixel values without any high level meaning. First, the system has to detect points of interest in the image that are distinctive enough to find the same points multiple times. The algorithms that are behind this process are called detectors and their goal is to simply find good features. Having the region detected, the next step is to describe the found features such that there is a big chance to find the same features later on under different conditions. The task of describing the found points belongs to a detector. In the next subsections we will describe a detector-descriptor pair that was used in the object recognition part of the thesis.
 
 \subsubsection{SIFT}
 SIFT~\cite{lowe2004distinctive} stands for Scale Invariant Feature Transform and is one of the most popular descriptor-detector pairs. The SIFT features are invariant to scale and rotation as well as invariant to some extend to illumination changes and the viewpoint of the camera.  
@@ -97,23 +97,23 @@ Once the feature is found, it is crucial to use the feature descriptor to descri
 \label{fig:sift}
 \end{figure}
 
-In order to make SIFT invariant to remaining variations - illumination and 3D viewpoint a descriptor of keypoint is created. As shown in Figure ~\ref{fig:sift} the orientation histogram in 8 directions is computed. The process is based on image gradients and regards every pixel surrounding the keypoint. This representation shows a feature that also contains information about its surroundings which makes it more distinctive under different conditions.
+In order to make SIFT invariant to remaining variations - illumination and 3D viewpoint a descriptor of keypoint is created. As shown in Figure~\ref{fig:sift} the orientation histogram in 8 directions is computed. The process is based on image gradients and regards every pixel surrounding the keypoint. This representation shows a feature that also contains information about its surroundings, which makes it more distinctive under different conditions.
 
 
 \subsection{Point Cloud Processing}
-In this section we would like to describe some of the algorithms that we used to process the point clouds received from the Kinect sensor. The definition of the point cloud is provided by R. Rusu in~\cite{Rusu_ICRA2011_PCL} and states the following:
+In this section we will describe some of the algorithms that we used to process the point clouds received from the Kinect sensor. The definition of the point cloud is provided by R. Rusu in~\cite{Rusu_ICRA2011_PCL} and states the following:
 
 A point cloud is a data structure that provides a representation of the 3D geometry visible by the depth sensor. This data structure consists of 3D points that have X, Y and Z component and are sampled from the underlying surface.  
 
-Since the received point clouds are not perfect and need some pre-processing we take extensive use of the open source Point Cloud Library\footnote{http://pointclouds.org} (PCL). Algorithms that were especially used in our work are described in the following sections.
+Since the received point clouds are not perfect and need some pre-processing we make extensive use of the open source Point Cloud Library\footnote{http://pointclouds.org} (PCL). Algorithms that were particularly used in our work are described in the following sections.
 
 \subsubsection{Voxel Grid Filtering}
 It is a very common practice to reduce the number of points in the point cloud before further proceedings. The reason for that is that the process becomes faster and one does not require a lot of memory space to store the data. One of the methods to downsample a point cloud is voxelized grid approach.
 
-A 3D voxel grid is a set of volume elements over the points in the point cloud. Each of them contains a certain number of points which can be approximately represented by their centroid or the center of the cube. By approximating the points in the cube with one point we decrease number of points in the point cloud significantly. 
+A 3D voxel grid is a set of volume elements over the points in the point cloud. Each of them contains a certain number of points which are approximately represented by their centroid or the center of the cube. By approximating the points in the cube with one point we decrease number of points in the point cloud significantly. 
 
 \subsubsection{Plane Fitting}
-Plane fitting algorithm is one of the most popular pre-processing steps in perception algorithms. Using RANSAC algorithm with the model of a plane it is possible to select the biggest plane from the current point cloud. Having the indices of the points that form the biggest plane in the point cloud, it is possible to extract the plane itself and eventually, remove it. 
+Plane fitting algorithm is one of the most popular pre-processing steps in perception algorithms. By using RANSAC algorithm with the model of a plane it is possible to select the biggest plane from the current point cloud. Having the indices of the points that form the biggest plane in the point cloud, it is possible to extract the plane itself and eventually, remove it. 
 
 In this work we make an assumption that most of the 
 objects are to be found on horizontal surfaces such as counters, tables, etc. With this type of physically plausible environment the plane removal algorithm results in the set of objects which can be processed further by euclidean clustering algorithm. Thus, plane fitting and removal process significantly simplifies the further work on the point cloud.
@@ -128,7 +128,7 @@ Euclidean Clustering algorithm enables simple segmentation of objects in unclutt
 \subsection{Particle Filter}
 Particle Filter~\cite{Thrun02d} is a method that approximates the posterior probability in a controllable but partially observable system with the Markovian property. 
 
-The simple idea behind the algorithm is to create a particle for each state that the model could be at and then calculate the importance weight of the particle based on the measurements. For example, in the robot localization problem particles would represent the current pose of the robot and their weights are calculated based on the laser sensor readings. Since the motion model is known it is possible to predict the next position of each particle based on the motion model. Having known the updated position, the expected sensor readings can be predicted as well which leads to the new weight assignments. After assigning the weights re-sampling is employed to obtain more probable set of particles. The probability of a particle being re-sampled is proportional to its importance weight. It is worth mentioning that there exist other re-sampling techniques such as KLD-based sampling ~\cite{Fox01KLD} which was used in this thesis.  At the end of this process there remain only those particles that most probably indicate the correct state.
+The simple idea behind the algorithm is to create a particle for each state that the model could be at and then to calculate the importance weight of the particle based on the measurements. For example, in the robot localization problem particles represent the current pose of the robot and their weights are calculated based on the laser sensor readings. Since the motion model is known it is possible to predict the next position of each particle based on the motion model. Having established the updated position, the expected sensor readings can be predicted as well which leads to the new weight assignments. After assigning the weights re-sampling is employed to obtain more probable set of particles. The probability of a particle being re-sampled is proportional to its importance weight. It is worth mentioning that there exist other re-sampling techniques such as KLD-based sampling~\cite{Fox01KLD} which was used in this thesis.  At the end of this process there remain only those particles that most probably indicate the correct state.
 
 In our implementation we use particle-filtering based tracker in order to track the features in textureless object segmentation part.      
 
@@ -146,7 +146,7 @@ In our implementation we use particle-filtering based tracker in order to track 
 \label{fig:kinect}
 \end{figure}
 
-Kinect \footnote{\url{http://www.xbox.com/en-US/KINECT}} is a 3D sensing device that is produced by Microsoft with a purpose of being a motion sensing device mainly for the Xbox video game console. It consists of an infra-red emitter and a infra-red receiver as well as a RGB camera. The device receives structured light to compute the depth by virtue of matching of projected and perceived patterns.
+Kinect\footnote{\url{http://www.xbox.com/en-US/KINECT}} is a 3D sensing device that is produced by Microsoft with a purpose of being a motion sensing device mainly for the Xbox video game console. It consists of an infra-red emitter and a infra-red receiver as well as a RGB camera. The device receives structured light to compute the depth by virtue of matching of projected and perceived patterns.
 
 Structured light is the process of projecting a known pattern of pixels onto the observed surface. Since the projected pattern deforms differently on various surfaces it enables  the vision system to establish the depth of the scene.
 
@@ -168,9 +168,9 @@ The PR2 stands for 'personal robot' and it is an android robotics platform creat
 In our system we used the PR2 as the main robotics platform. We made use of robot's sensors as well as actuator by implementing the manipulation strategies on the robot.
 
 \subsection{ROS}
-Robot Operating System (ROS)\footnote{\url{http://www.ros.org}}. is a framework designed as a meta-operating system for robotics applications. 
+Robot Operating System (ROS)\footnote{\url{http://www.ros.org}} is a framework designed as a meta-operating system for robotics applications. 
 
-There are two main components of ROS: a) standard operating system-like core functions and b) ros packages that can be created by the open source community. The former component contains various services such as messaging processes or package management whereas the latter one is designed for users to contribute and share their applications. 
+There are two main components of ROS: a) standard operating system-like core functions and b) ROS packages that can be created by the open source community. The former component contains various services such as messaging processes or package management whereas the latter one is designed for users to contribute and share their applications. 
 
 
 There are three main concepts behind ROS. i)the filesystem level, where the system is split into packages with similar structure, ii)the computation graph level that defines ways of communication between different parts of the system, and iii)the community level which has the goal to enable sharing and exchanging software and other other resources within robotics community. ROS contains multiple libraries for implementation of motion planning, perception or control algorithms.
