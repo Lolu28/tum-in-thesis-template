@@ -74,9 +74,19 @@ In order to understand different 2D features that were used in our system it is 
 \subsubsection{SIFT}
 SIFT~\cite{lowe2004distinctive} stands for Scale Invariant Feature Transform and is one of the most popular descriptor-detector pairs. The SIFT features are invariant to scale and rotation as well as invariant to some extend to illumination changes and the viewpoint of the camera.  
 
-The detector is employed in different scales and the algorithm is looking for the highest response in difference of Gaussians which corresponds to the best scale where the feature was found. In order to detect the local maxima and minima of difference of Gaussians function, the point of interest is compared to its eight neighbors in the current scale and to the respective pixels in the scale one level above and below. As the next step D.Lowe et al. employs filters that remove low contrast and edge responses using Hessian Matrix on difference of Gaussians. After all these steps the found points are considered as being robust enough to be further used.
+The detector is employed in different scales and the algorithm is looking for the highest response in difference of Gaussians which corresponds to the best scale where the feature was found. The algorithm to compute difference of Gaussians is depicted in Figure \ref{fig:dog}. Each level of the shown stack of images corresponds to initial image convolved with the Gaussian function. Two adjacent images from the left are subtracted in order to obtain the difference of Gaussians. In order to detect the local maxima and minima of difference of Gaussians function, the point of interest is compared to its eight neighbors in the current scale and to the respective pixels in the scale one level above and below. As the next step D.Lowe et al. employs filters that remove low contrast and edge responses using Hessian Matrix on difference of Gaussians. After all these steps the found points are considered as being robust enough to be further used.
 
 Once the feature is found, it is crucial to use the feature descriptor to describe it in an distinctive manner.  SIFT descriptor solves rotational invariance problem by calculating orientations of the feature neighboring pixels and creating histogram of them. After smoothing operations the peak of smoothed histogram is assigned as the general orientation of the SIFT feature. Moreover, the feature is afterwards rotated such that it can be matched against a similar feature even if they have different orientations in the original image. Thus, the rotational invariance is considered as one of the properties of SIFT.
+
+\begin{figure}
+\centering
+
+{\includegraphics[width=0.8\columnwidth]{figures/dog.png}}
+
+\caption{Computation of Difference of Gaussians which is used to obtain scale invariant features. Source:~\cite{lowe2004distinctive}}
+\label{fig:dog}
+\end{figure}
+
 
 \begin{figure}
 \centering
