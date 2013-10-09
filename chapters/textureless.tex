@@ -321,7 +321,7 @@ In order to reduce our regions of interests and improve finding of the feature w
 
 In addition to 3D lines we use 3D corners as features on the flat objects category. 3D corners are extracted by using a 3D implementation of Harris Corner Detector from PCL. In this case instead of taking pixel values into consideration and forming a Harris matrix, depth information of the points is used. Therefore, we are able to detect 3D corners in the scene that are not necessarily the same as their 2D Harris corners equivalents. After the corner is detected we subtract the corners that we found from the point cloud and start searching again. We pad found corners with the neighbouring point as well and we use additional plane segmentation check where we check if a padded corner consists of exactly 3 planes.
 
-In the round object category we look for 3D cylinders and circles because they are much more stable and easier to find than previous features on this kind of objects. We take advantage of PCL implementations of both of these features. 3D cylinder extraction algorithm is based on RANSAC and similarly to 3D line approach looks for the best fit to the cylinder model. 3D circle extraction algorithm is implemented using the same idea but with the cirlce model. Also this time we use padding and subtracting of already found parts from the point cloud methods to obtain the final features. 
+In the round object category we look for 3D cylinders and circles because they are much more stable and easier to find than previous features on this kind of objects. We take advantage of PCL implementations of both of these features. 3D cylinder and 3D circle extraction algorithms are based on RANSAC and similarly to 3D line approach they look for the best fit to the respective model. 3D cylinder extraction algorithm contains additional check that is whether point normals are perpendicular to the cylinder axis. Also this time we use padding and subtracting of already found parts from the point cloud methods to obtain the final features. 
 
 At the end of this step we have up to 4 sets of different features depending on the categories that were found in the scene. All of the point clouds are padded since it significantly improves the likelihood function of the tracker that is described in the next section. The features are depicted in Figure \ref{fig:scenes}, columns 2 and 5, 1st and 2nd row. 
 
@@ -348,6 +348,7 @@ Having calculated the likelihood for each pair, we sum them up in order to obtai
 \subsection{Feature Clustering}
 
 \label{sec:clustering}
+ This part of the thesis describes the method to cluster the features that move rigidly with respect to each other and it was done in collaboration with Zoltan Csaba Marton.
 
 \begin{algorithm}[htb!]\footnotesize
   \tcc{\footnotesize{number of tracked features $n$ and number of time steps $m$,
@@ -394,7 +395,14 @@ Having calculated the likelihood for each pair, we sum them up in order to obtai
   \label{alg:cluster_trajectories}
 \end{algorithm}
 
-
+\begin{figure}[tb!]
+   \begin{center}
+     \includegraphics[width=.9\columnwidth]{figures/distribution.png}
+		\vspace{-2ex}
+   \caption{Clustering success rate on 17 scenes for different values of $p_{threshold}$ (see legend) as a function of $d_{threshold}$ (in meters).}
+   \label{fig:clustering}
+ \end{center}
+ \end{figure}
 Having tracked multiple features where some of them may belong to the same object we need an algorithm to cluster these features together. One of the requirements that makes this problem non-trivial is that one feature on an object should be enough to generate a hypothesis about this object. We developed a graph-based solution that clusters the features that moved in the similar manner and separates the features that deviated from their initial trajectory for a long time. In the graph every feature is represented by a node and an edge between two features(nodes) symbolizes the features that can be clustered together. An edge is based on the euclidean distance between the features centroids and the distance between quaternions describing their orientation. At the beginning of the interaction the graph has full connectivity but during the actions taken by the robot some of the edges can be broken - features can move in a different manner.
 The full algorithm is presented in Algorithm \ref{alg:cluster_trajectories}.
 
@@ -408,21 +416,14 @@ shows an evaluation of the clustering algorithm on 17 scenes from Figure \ref{fi
  by applying the whole method iteratively until all the objects are clearly separated.
  
 
-\begin{figure}[tb!]
-   \begin{center}
-     \includegraphics[width=.9\columnwidth]{figures/distribution.png}
-		\vspace{-2ex}
-   \caption{Clustering success rate on 17 scenes for different values of $p_{threshold}$ (see legend) as a function of $d_{threshold}$ (in meters).}
-   \label{fig:clustering}
- \end{center}
- \end{figure}
+
 
 
  
 
 \subsection{Dense Model Reconstruction}
 \label{sec:dense_model}
-
+ This part of the thesis describes the method to reconstruct full model of an object and it was done in collaboration with Ferenc Balint-Benczedi.
 \begin{algorithm}[htb!]\footnotesize
    \tcc{\footnotesize{set of features $F_{clusters}$,
 		      distance threshold $d_{roi\_thresh}$,
@@ -493,14 +494,20 @@ features using euclidean clustering, calculate each of the resulting clusters' c
 then start growing from these. An important condition of the region growing is the 
 assumption that objects are often composed of convex parts~\cite{Pogor}.
 Therefore, we make sure that during region growing two points are assigned to the same region $R_{i}$
-if the angle $eps_{thresh}$ between the vector connecting them and the points normal is close to obtuse
+if the angle $eps_{thresh}$ between the vector connecting them and the points normal is close to obtuse as shown in Figure \ref{fig:dense}
 (considering the sensor noise level\cite{kinect_accuracy}, 89$^\circ$ were used).
 Once all region-feature pairs have been identified, we reconstruct the dense model.
 Since in the trajectory clustering step we already identified the features that belong to the same object,
 having multiple regions for the same object is easily dealt with
 by merging those regions for which the corresponding features belong to the same object into dense models $R_{j}$.
 
-
+\begin{figure}[ht!]
+  \centering \includegraphics[width=0.5\columnwidth]{figures/dense.png}
+  \vspace{2ex}
+  \caption{Dense reconstruction algorithm. The point is considered to be on the object if the angle $eps_{thresh}$ between the vector connecting it to the initial point and the points normal is close to obtuse. 
+  }
+  \label{fig:dense}
+\end{figure}
 
 \section{Evaluation}
 \label{sec:evaluation}
