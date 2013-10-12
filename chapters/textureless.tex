@@ -493,7 +493,7 @@ then start growing from these. An important condition of the region growing is t
 assumption that objects are often composed of convex parts~\cite{Pogor}.
 Therefore, we make sure that during region growing two points are assigned to the same region $R_{i}$
 if the angle $eps_{thresh}$ between the vector connecting them and the points normal is close to obtuse as shown in Figure \ref{fig:dense}
-(considering the sensor noise level\cite{kinect_accuracy}, 89$^\circ$ were used).
+(considering the sensor noise level\footnote{\url{http://www.ros.org/wiki/openni_kinect/kinect_accuracy}}, 89$^\circ$ were used).
 Once all region-feature pairs have been identified, we reconstruct the dense model.
 Since in the trajectory clustering step we already identified the features that belong to the same object,
 having multiple regions for the same object is easily dealt with
