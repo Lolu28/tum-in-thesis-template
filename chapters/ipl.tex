@@ -3,21 +3,21 @@
 
 
 \section{Motivation and Goals}
-Since we understand the world based on functionality and behavior, as a result, manipulation becomes an integral part of perception. In other words, purposeful manipulation depends on the robot's ability to curiously explore its unknown environment through interaction. Based on the increasing popularity of the interactive perception approach we created a common place that can unite researchers' efforts towards better algorithms and systems that concern adding manipulation in the perception loop. In addition to that, we developed a generic framework which can be of great help for sharing different implementations of similar problems. So far we received positive feedback from various institutes that decided to join the initiative, among others: Robotic Institute at Carnegie Mellon University, Robotics and Biology Laboratory at Technical University Berlin, Robotics Group at Robert Bosch LLC, Robotic Intelligence Laboratory at Universitat Jaume I. Having seen the success achieved by similar initiatives(e.g. openslam.org, opencv, pcl, etc.) we want to follow their footsteps in order to create a synergistic community of interactive perception researchers.
+Since we understand the world based on functionality and behavior, as a result, manipulation becomes an integral part of perception. In other words, purposeful manipulation depends on the robot's ability to curiously explore its unknown environment through interaction. Based on the increasing popularity of the interactive perception approach we created a common place that can unite researchers' efforts towards better algorithms and systems that concern adding manipulation in the perception loop. In addition to that, we developed a generic framework which can be of great help for sharing different implementations of similar problems. So far we received positive feedback from various institutes that decided to join the initiative, among others: Robotic Institute at Carnegie Mellon University, Robotics and Biology Laboratory at Technical University Berlin, Robotics Group at Robert Bosch LLC, Robotic Intelligence Laboratory at Universitat Jaume I. Having seen the success achieved by similar initiatives (e.g. openslam.org, opencv, pcl, etc.), we want to follow their footsteps in order to create a synergistic community of interactive perception researchers.
 
-It is worth emphasising and it has been shown in the Chapter \ref{chapter:Related Work} that interactive perception field has gained many more potential applications than the ones presented in this thesis. These areas include interactive perception methods for object segmentation, modeling, grasping, and even learning manipulation skills through interactive perception. Interestingly, these results are beginning to appear independently in the different relevant communities: perception, grasping, manipulation, and learning.
+It is worth emphasising and it has been shown in Chapter \ref{chapter:Related Work} that interactive perception field has gained many more potential applications than the ones presented in this thesis. These areas include interactive perception methods for object segmentation, modeling, grasping, and even learning manipulation skills through interactive perception. Interestingly, these results begin to appear independently in the different relevant communities: perception, grasping, manipulation, and learning.
 
-Having this in mind we created a common, modular tool - Interactive Perception Library \footnote{\url{http://github.com/Lolu28/interactive_perception}} that can address researchers' needs to investigate interactive perception area more deeply and it can enable easier access to existing resources and algorithms. The main goal of this library is to collect all the code from different laboratories being involved in the idea of interactive perception. We developed a framework that enables to switch between different implementations of each module from the interactive perception pipeline at runtime. We decided to implement everything in Robot Operating System since it is easier to support various robots, include datasets and glue different algorithms together. 
+Having this in mind we created a common, modular tool - Interactive Perception Library \footnote{\url{http://github.com/Lolu28/interactive_perception}} that can address researchers' needs to investigate interactive perception area more deeply and can enable easier access to existing resources and algorithms. The main goal of this library is to collect all the code from different laboratories being involved in the idea of interactive perception. We developed a framework that enables to switch between different implementations of each module from the interactive perception pipeline at runtime. We decided to implement everything in Robot Operating System since it is easier to support various robots, include datasets and glue different algorithms together. 
 
 
 \section{Library}
 \subsection{Modules}
 Looking at various systems created by different robotics institutes \todo{: REF} it can be noticed that there is a similar idea lying behind them.  
 
-After conducting about research in existing implementations we noticed many similar modules that became crucial for our library, those being:
+After conducting research in existing implementations we noticed many similar modules that became crucial for our library, those being:
 
 \begin{itemize}
-\item Static Segmentation - to infer which parts of the scene are most likely being segmented incorrectly
+\item Static Segmentation - to infer which parts of the scene are most likely to be segmented incorrectly
 \item Feature Extraction - to extract features that will be tracked
 \item Push Point - to find the best point to interact with objects
 \item Manipulation - to manipulate a robot in order to interact with objects in the scene
@@ -26,9 +26,9 @@ After conducting about research in existing implementations we noticed many simi
 \item Full Reconstruction - to reconstruct a full model of the object. It takes the sparse representation - clustered features - and reconstructs a dense model of the object.
 \end{itemize}
 
-There are many reasons to motivate the choice of the pipeline we developed. Since the interactive perception systems use model-based approach, we incorporated feature extraction module. In order to improve robustness of algorithms we included the static segmentation module which works as a pre-processing step for our system. Having potential applications such as grasping and object recognition in mind, we included dense model reconstruction module.
+There are many reasons to motivate the choice of the pipeline we developed. Since the interactive perception systems use model-based approach, we incorporated feature extraction module. In order to improve robustness of algorithms we included the static segmentation module which works as a pre-processing step for our system. Having in mind potential applications such as grasping and object recognition, we included dense model reconstruction module.
 
-The library was created based on the abstract factory pattern and it mainly uses pluginlib \footnote{\url{http://ros.org/wiki/pluginlib}} from ROS. The main executable shows a simple user interface together with a visualization tool(visualizer ROS package). The user interface shows possibility to call different modules and their particular implementations by using a simple GUI - dynamic reconfigure ROS package \footnote{\url{http://www.ros.org/wiki/dynamic_reconfigure}}. The details are described in the next section.
+The library was created based on the abstract factory pattern and it mainly uses pluginlib \footnote{\url{http://ros.org/wiki/pluginlib}} from ROS. The main executable shows a simple user interface together with a visualization tool (visualizer ROS package). The user interface shows possibility to call different modules and their particular implementations by using a simple GUI - dynamic reconfigure ROS package\footnote{\url{http://www.ros.org/wiki/dynamic_reconfigure}}. The details are described in the next section.
 
 \subsection{Architecture}
 
@@ -36,7 +36,7 @@ In order to describe the architecture it is needed to explain the idea of the pl
 
 This tool gives us a number of possibilities that can be used in the Interactive Perception Library. Having in mind all the modules that we depicted in the previous sections we can dynamically switch between different implementations of each of these modules. For example, if we want to combine two different interactive perception algorithms we can just mix the modules from their pipeline by dynamically loading them. 
 
-In addition to that, the library contains graphical debug tools that enable to check currently loaded point cloud as depicted in Figure \ref{fig:ipl}. It also provides the functionality of visualizing different outputs such as customized point types and point normals.
+In addition, the library contains graphical debug tools that enable to check currently loaded point cloud as depicted in Figure \ref{fig:ipl}. It also provides the functionality of visualizing different outputs such as customized point types and point normals.
 
 \begin{figure}
 %\centering
