@@ -6,12 +6,12 @@ As suggested in Chapter \ref{chapter:Introduction} in feature-matching-based obj
 
 \subsection{Lighting Conditions}
 
-During our experiments we noticed that a lot of features in the live image were flickering even though we did not change position of any object in the image. After investigating this issue we came to the conclusion that it is mainly caused by lighting issues that feature detector cannot find the same feature in two consecutive frames. We examined that by searching for the features in the same image location and then matching them against the live image. We saved two patches: once where the feature was found, and the second one where it was not found. Figure \ref{fig:patches} depicts above described results.
+During our experiments we noticed that a lot of features in the live image were flickering even though we did not change position of any object in the image. After investigating this issue we came to the conclusion that it is mainly caused by sensor noise and lighting issues that feature detector cannot find the same feature in two consecutive frames. We examined that by searching for the features in the same image location and then matching them against the live image. We saved two patches: once where the feature was found, and the second one where it was not found. Figure \ref{fig:patches} depicts above described results.
 
-Looking at the difference image it can be clearly seen that there was a significant change in lighting even though we did not change anything. Corner detector did not find the correct feature in the live image simply because this image looks differently which is caused by the change of lighting conditions.
+Looking at the difference image it can be clearly seen that there was a significant change in the live image even though we did not change anything. Corner detector did not find the correct feature in the live image simply because this image looks differently which is caused by the sensor noise and the change of lighting conditions.
 
 \begin{figure}
-%\centering
+\centering
 
 {\includegraphics[width=1\columnwidth]{figures/patches.png}}
 
@@ -20,7 +20,7 @@ Looking at the difference image it can be clearly seen that there was a signific
 \end{figure}
 
 \begin{figure}
-%\centering
+\centering
     \begin{tabular}{c}
  
 
@@ -34,7 +34,7 @@ Looking at the difference image it can be clearly seen that there was a signific
 \end{figure}
 
 \begin{figure}
-%\centering
+\centering
     \begin{tabular}{c}
  
 
@@ -47,26 +47,26 @@ Looking at the difference image it can be clearly seen that there was a signific
 \label{fig:freak-features}
 \end{figure}
 
-\begin{figure}
+%\begin{figure}
 %\centering
-    \begin{tabular}{c}
+%    \begin{tabular}{c}
  
 
-\includegraphics[width=0.7\columnwidth]{figures/brief-no-rotation.png}\\
-\includegraphics[width=0.7\columnwidth]{figures/brief-rotation.png}\\
-    \end{tabular}
+%\includegraphics[width=0.7\columnwidth]{figures/brief-no-rotation.png}\\
+%\includegraphics[width=0.7\columnwidth]{figures/brief-rotation.png}\\
+%    \end{tabular}
 
 
-\caption{Comparison of two pairs of images using FAST detector and BRIEF descriptor. The upper image shows the object in the original pose whereas the lower shows the rotated object. It can be noticed that number of feature matches significantly decreases if the object is rotated. }
-\label{fig:brief-features}
-\end{figure}
+%\caption{Comparison of two pairs of images using FAST detector and BRIEF descriptor. The upper image shows the object in the original pose whereas the lower shows the rotated object. It can be noticed that number of feature matches significantly decreases if the object is rotated. }
+%\label{fig:brief-features}
+%\end{figure}
 
 
 \subsection{View-point Variance}
 
-In order to show the problem of view-point variance of the feature descriptors we compared two live images of the same object - one in the same pose as it is in the database and the other one when the object is rotated around Z (upright) axis. We tested those pairs with three different detectors and descriptors to ensure that the problem is not connected to a particular detector-descriptor pair. The results are depicted in Figure \ref{fig:sift-features}, \ref{fig:freak-features} and \ref{fig:brief-features}.
+In order to show the problem of view-point variance of the feature descriptors we compared two live images of the same object - one in the same pose as it is in the database and the other one when the object is rotated around Z (upright) axis. We tested those pairs with three different detectors and descriptors to ensure that the problem is not connected to a particular detector-descriptor pair. The results are depicted in Figure \ref{fig:sift-features} and \ref{fig:freak-features}.% and brief-features}.
 
-Looking at Figure \ref{fig:sift-features},\ref{fig:freak-features} and \ref{fig:brief-features} it is noticeable that the number of matches significantly decreases when the object is rotated. Even with the most rotationally and view-point invariant feature detector-descriptor pair - SIFT (see Figure \ref{fig:sift-features}) - drop of the features equals 35$\%$.
+Looking at Figure \ref{fig:sift-features} and \ref{fig:freak-features} it is noticeable that the number of matches significantly decreases when the object is rotated. Even with the most rotationally and view-point invariant feature detector-descriptor pair - SIFT (see Figure \ref{fig:sift-features}) - drop of the features equals 35$\%$.
 
 
 
@@ -75,7 +75,7 @@ Looking at Figure \ref{fig:sift-features},\ref{fig:freak-features} and \ref{fig:
 Following our idea to leverage robot's capabilities in order to improve its perception skills we employ interaction with object as a mean that is likely to partially solve the latter of above mentioned challenges. In our approach we use the rotational movement of the object in order to eliminate the influence of view-point variance of features.
 
 \begin{figure}
-%\centering 
+\centering 
 
 \includegraphics[width=0.5\columnwidth]{figures/rectangle-angle.png}\\
 
@@ -86,7 +86,7 @@ Following our idea to leverage robot's capabilities in order to improve its perc
 
 
 \begin{figure}
-%\centering
+\centering
  
 
 \includegraphics[width=0.5\columnwidth]{figures/square-angle.png}
@@ -97,7 +97,7 @@ Following our idea to leverage robot's capabilities in order to improve its perc
 \end{figure}
 
 \begin{figure}
-%\centering 
+\centering 
 
 \includegraphics[width=0.4\columnwidth]{figures/peets-tangential.jpg}\\
 \includegraphics[width=0.4\columnwidth]{figures/peets-perpendicular.jpg}\\
@@ -118,7 +118,7 @@ M =  F \times r = F*r*sin(\theta)\\
 
 Maximizing $r$ component results in the point that the furthest from the center of mass of the object. Since we assume uniform distribution of mass, the center of mass of the object is in its geometrical center. Hence the best push point to rotate the box-like object is at the corner which is the furthest point from the center of the rectangle.
 
-In order to fulfill the second constraint - $sin(\theta) = 1$ on the box-like object $\theta = 90 ^\circ$ which results in tangential push as depicted in Figure \ref{fig:angles-rectangle} - force f1. However, due to geometrical contraints of the robot's gripper it is difficult to execute tangential push. The upper row of Figure \ref{fig:tangential-example} shows the box-like object with the robot's gripper in the pose for the tangential push. It can be noticed that due to the size of the gripper the actual contact point between the gripper and the object is not at the corner. The other problem that occurs in this kind of push is that the gripper is likely to slip off the object while pushing.
+In order to fulfil the second constraint: $sin(\theta) = 1 \to \theta = 90 ^\circ$ a robot needs to perform a tangential push. The resulting force f1 showing this case on a box-like object is depicted in Figure \ref{fig:angles-rectangle}. . However, due to geometrical constraints of the robot's gripper it is difficult to execute tangential push. The upper row of Figure \ref{fig:tangential-example} shows the box-like object with the robot's gripper in the pose for the tangential push. It can be noticed that due to the size of the gripper the actual contact point between the gripper and the object is not at the corner. The other problem that occurs in this kind of push is that the gripper is likely to slip off the object while pushing.
 
 Because of the above mentioned reasons we propose a push perpendicular to the longer edge of the object. This push is easy to execute with the robot's gripper while still being able to result in rotational movement of the object. The lower row of Figure \ref{fig:tangential-example} shows the resulting robot's gripper position relative to the object. However, in this case the push is not optimal in the sense that $\theta$ is not $90 ^\circ$. In order to evaluate how much energy loss to translational movement we obtain we theoretically analyzed the above described scenario. Figure \ref{fig:angles-square} shows a square object where $\theta$ is maximal thus the least optimal for the function $sin(\theta)$. By simple geometric analysis one can show that $\theta =135 ^\circ$ which results in $sin(\theta) = 0.71$. The result of this theoretical experiment shows that in the worst case scenario one loses 29\% of the resulting kinematic energy on translational movement. Given the robot's configuration and the size of its gripper the loss is acceptable as it still results in mostly rotational movement of the object. 
 
@@ -133,7 +133,7 @@ Because of the above mentioned reasons we propose a push perpendicular to the lo
 \begin{figure}
 %\centering 
 
-\includegraphics[width=1.5\columnwidth]{figures/print.pdf}\\
+\includegraphics[width=1.3\columnwidth]{figures/print2.pdf}\\
 
 
 \caption{Chart showing matching results between two images of the peets tea from the database and the live image of the peets tea. Peets tea was moved 360$^\circ$ during the matching process. One image from the database shows the peets tea in the orientation 0$^\circ$ and the second one in the orientation 180$^\circ$. One can notice that the peaks of the number of matches are in 0$^\circ$, 180$^\circ$ and 360$^\circ$}
@@ -146,9 +146,9 @@ The testing set-up of the system consists of an object that is in front of the K
 Figure \ref{fig:recognition-results} shows the number of matches in relation to the orientation of the object. It can be seen that there are certain configurations where the number of matches is significantly greater. These relate to the configurations close to the pose of the object that appear in the image from the database. It shows that by rotating the object in uninformative manner can significantly improve its recognition. 
 
 \begin{figure}
-%\centering 
+\centering 
 
-\includegraphics[width=1.5\columnwidth]{figures/thesis-time.png}\\
+\includegraphics[width=1.2\columnwidth]{figures/thesis-time.png}\\
 
 
 \caption{The processing time of the object recognition algorithm with different number of images in the database.}
