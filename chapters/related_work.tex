@@ -7,72 +7,20 @@
 \subsection{Vision-based Segmentation/Recognition}
 \subsection{Interactive Perception}
 
-NEEDS TO BE CHANGED
+Traditionally, research in passive perception was concentrated on finding a set of features (e.g. color~\cite{Balch_2000_3584}) or higher order features (e.g. those existing in graph cut approaches~\cite{BoykovGraphCut}) in static and segmented images.
 
-Research in passive perception has traditionally focused on  static 
-images and segmented images based on a  set of features  such as color~\cite{Balch_2000_3584}  
-or higher order  features  such as the ones found in graph  cut  approaches~\cite{BoykovGraphCut}.
+In this thesis we take a different approach by creating an interactive scene segmentation and by including robotic arm manipulation into the perception loop. Fitzpatrick~\cite{fitzpatrick_active_vision} and Kenney et al.~\cite{KenneyInteractive} discussed the problem of segmenting rigid objects from a video stream. These video streams presented objects being moved by the robot (pre-planned arm motion) and used a simple Gaussian model of the color values to deduce a possible motion and the graph cut algorithm for the final object segmentation. Their methods are accurate for textured and textureless objects. The difference between their and our approach is that we did not use the pre-planned arm motion. Instead, our arm motion adapts to the scene and enables us to use the 3D data to segment the object aspirants from the background.
 
-This paper focuses on interactive scene segmentation by adding robotic
-arm manipulation  into the perception  loop.
-Segmentation of rigid objects from a video stream 
-of objects being moved by the robot has been addressed by Fitzpatrick
-~\cite{fitzpatrick_active_vision} and Kenney et al.~\cite{KenneyInteractive}. 
-These works are based on the segmentation of objects from a video stream 
-of a pre-planned arm motion, use a simple Gaussian model of the color values 
-to infer the possible motion and a graph cut algorithm for the final object 
-segmentation. These approaches can deal with textured as well as textureless objects. 
-In contrast, our arm motion is not pre-planned but adapts to the scene
-and we make use of 3D data to segment the object candidates from
-the background.
+The problem of segmenting articulated objects was discussed by Katz et al.~\cite{Katz-WS-MM-ICRA2011}. In this approach, a Lucas-Kanade tracker as well as a set of predictors (short and long distance, color, relative motion, triangulation and fundamental matrix) were used in order to achieve rigid body hypotheses, which took form of a graph. Additionally, they obtained subsequent fixation point on the object which enables segmenting an object based on intensity, color and texture cues. There are some important limitations in this approach. First, the pre-planned arm motion and second, the time needed to break the object hypotheses into subgraphs by using a min-cut algorithm. 
+Another approach to interactive segmentation is presented by Bergstrom et al.~\cite{bergstrom11icvs}. Their methodology requires preliminary labelling using a 3D segmentation through fixation whose outcome is a rough initial segmentation. Here, the robot makes an interaction with the scene aiming to disambiguate the hypotheses. Consequently, points in motion space are clustered by using a two component Gaussian mixture model. In this case, the limitation is that the number of objects per scene will never be greater than two.
+The approaches described above are relevant to the textured objects only. 
 
-Both approaches presented in this paragraph work with the textured objects only. 
-Katz et  al.~\cite{Katz-WS-MM-ICRA2011} address
-the problem of segmenting the articulated objects. A  Lucas-Kanade tracker and a  set of predictors (relative  motion, 
-short  distance, long distance, color,  triangulation and  fundamental matrix) are applied 
- to obtain rigid  body hypotheses (in form of a graph) and  
-a subsequent fixation point  on the object. The latter is used to  
-segment an object based on color, intensity and texture cues. The major limitation 
-of this approach is the pre-planned arm motion and the time needed to break
-the graph of object hypotheses into the subgraphs using a min-cut algorithm.
-Bergstrom  et  al.~\cite{bergstrom11icvs}   propose  an   approach  to
-interactive  segmentation that  requires initial  labeling using  a 3D
-segmentation  through  fixation  which  results  in  a  rough  initial
-segmentation. The robot interacts with the scene to disambiguate
-the hypotheses.   Points in the motion space
-are clustered using a two component Gaussian  mixture model. A limitation
-of the system is in that the number of objects per scene never exceeds 2.
+There are some approaches that try to address the problem of planning the perturbations in order to accumulate a sequence of motion cues. Cheng et al.~\cite{chang11interactive} present one of them. In their research they developed a framework for interactive segmentation of individual objects, adding an interaction strategy. It enables scene state update, an iterative object selection, evaluation and manipulation primitive selection. The latter uses a set of heuristic that maximize the push action. Nevertheless, the contribution of this component to the successful segmentation of the objects is still unclear. The manipulation primitive evaluation step makes use of sparse correspondences from the Lukas-Kanade optical flow tracker. Then, it computes a set of transforms which match against a dense point cloud colorwise. The magnitude of the transform motion and the percentage of dense point matches determine the likelihood ratio of a target being a single item or multiple items. The limitation of this framework, with comparison to our work, is lack of estimation of the corner contact points.
+Gupta et al.~\cite{gupta11primitives}, on the other hand, present the idea of using a set of motion primitives that consist of pick and place, spread and tumble actions in order to sort cluttered piles of single-color objects. They use Euclidean clustering in the distance and the color space to categorize the scenes as uncluttered, cluttered or piled. Both distance and color space have their limitations. Distance-based clustering depends on correctly selected threshold and color-based clustering relies on stable lighting conditions. This system also presumes that the size of the objects (LEGO bricks) is similar. 
 
-Some approaches examine how the perturbations 
-can be planned to accumulate a sequence of motion cues. Gupta et al.~\cite{gupta11primitives}
-use a set of motion primitives consisting of pick and place, spread, and
-tumble actions to sort cluttered piles of single-color objects.
- Euclidean clustering is used in the distance
-and the color space to classify the scenes as uncluttered, cluttered, 
-or piled.  Distance-based clustering is limited as its success is subject
-to  correctly selected threshold. Color-based clustering may fail
-in the presence of sudden lighting changes. Additionally the system
-assumes that the objects (duplo bricks) are of a similar size.
-Chang et al.~\cite{chang11interactive}
-present a framework for interactive segmentation of individual objects
-with an interaction strategy which allows for an iterative object
-selection, manipulation primitive selection and evaluation, and scene state 
-update. The manipulation primitive selection step uses a set of heuristics
-to maximize the push action, however, it is unclear in how much this component contributes to the successful segmentation of the objects. 
-The manipulation primitive evaluation step uses sparse correspondences from the Lucas-Kanade optical flow tracker and 
-computes a set of transforms which are color matched against a dense point cloud.
-A likelihood ratio of a target being a single item or multiple items is determined 
-based on the magnitude of the transform motion and the percentage of
-dense point matches. The major limitation compared to our work is that they
-do not estimate corner contact points. 
+There is a plethora of research that focuses on the estimation of the articulation models for boxes, drawers and similar objects~\cite{Box11Saxena,
+  sturm10rss-workshop}. It is usually the case, that these approaches assume the existence of a large, moving plane that can be reliably detected by using e.g. a RANSAC algorithm on the input point cloud and that  unanimously represents the part of the objects that is searched.
 
-There is a corpus of works dealing with the estimation of the
-articulation models for drawers, boxes, etc.~\cite{Box11Saxena,
-  sturm10rss-workshop}. The common problem for both approaches is in
-that they assume the presence of a large, moving plane which they can
-reliably detect by running e.g. a RANSAC algorithm on the input point
-cloud and which unanimously represents the part of the object they are
-looking for.
 
 \section{Interactive Segmentation for Textured Objects}
 
