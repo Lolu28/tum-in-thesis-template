@@ -72,7 +72,7 @@ Looking at Figure \ref{fig:sift-features} and \ref{fig:freak-features} it is not
 
 \section{Approach}
 
-Following our idea to leverage robot's capabilities in order to improve its perception skills we employ interaction with object as a mean that is likely to partially solve the latter of above mentioned challenges. In our approach we use the rotational movement of the object in order to eliminate the influence of view-point variance of features.
+Following our idea to leverage robot's capabilities in order to improve its perception skills we employ interaction with object as a mean that is likely to partially solve the latter of above mentioned challenges. In our approach we use the rotational movement of the object in order to eliminate the influence of view-point variance of features. Our goal is to keep rotating the object until we put it in the configuration that the system was trained on, thus, we are more likely to find more feature matches and successfully recognize the object. We observed that translational movements do not influence the efficiency of the recognition system. However, it is crucial to translate the object as little as possible while rotating it so that it does not move out of the area that is visible to the robot. In the next section we show our method to efficiently rotate the object without significant energy loss resulting in translational movement.
 
 \begin{figure}
 \centering 
@@ -92,7 +92,7 @@ Following our idea to leverage robot's capabilities in order to improve its perc
 \includegraphics[width=0.5\columnwidth]{figures/square-angle.png}
 
 
-\caption{Extreme example of energy loss of the proposed pushing strategy on the squared object. $\theta$ is in this case maximal and equals $135 ^\circ$. It results in a energy loss of 30\%  }
+\caption{Extreme example of energy loss of the proposed pushing strategy on the squared object. $\theta$ is in this case maximal and equals $135 ^\circ$. It results in a energy loss of 29\%  }
 \label{fig:angles-square}
 \end{figure}
 
@@ -118,12 +118,25 @@ M =  F \times r = F*r*sin(\theta)\\
 
 Maximizing $r$ component results in the point that the furthest from the center of mass of the object. Since we assume uniform distribution of mass, the center of mass of the object is in its geometrical center. Hence the best push point to rotate the box-like object is at the corner which is the furthest point from the center of the rectangle.
 
-In order to fulfil the second constraint: $sin(\theta) = 1 \to \theta = 90 ^\circ$ a robot needs to perform a tangential push. The resulting force f1 showing this case on a box-like object is depicted in Figure \ref{fig:angles-rectangle}. . However, due to geometrical constraints of the robot's gripper it is difficult to execute tangential push. The upper row of Figure \ref{fig:tangential-example} shows the box-like object with the robot's gripper in the pose for the tangential push. It can be noticed that due to the size of the gripper the actual contact point between the gripper and the object is not at the corner. The other problem that occurs in this kind of push is that the gripper is likely to slip off the object while pushing.
+In order to fulfil the second constraint: $sin(\theta) = 1 \to \theta = 90 ^\circ$ a robot needs to perform a tangential push. The resulting force f1 showing this case on a box-like object is depicted in Figure \ref{fig:angles-rectangle}. However, due to geometrical constraints of the robot's gripper it is difficult to execute tangential push. The upper row of Figure \ref{fig:tangential-example} shows the box-like object with the robot's gripper in the pose for the tangential push. It can be noticed that due to the size of the gripper the actual contact point between the gripper and the object is not at the corner. The other problem that occurs in this kind of push is that the gripper is likely to slip off the object while pushing.
 
-Because of the above mentioned reasons we propose a push perpendicular to the longer edge of the object. This push is easy to execute with the robot's gripper while still being able to result in rotational movement of the object. The lower row of Figure \ref{fig:tangential-example} shows the resulting robot's gripper position relative to the object. However, in this case the push is not optimal in the sense that $\theta$ is not $90 ^\circ$. In order to evaluate how much energy loss to translational movement we obtain we theoretically analyzed the above described scenario. Figure \ref{fig:angles-square} shows a square object where $\theta$ is maximal thus the least optimal for the function $sin(\theta)$. By simple geometric analysis one can show that $\theta =135 ^\circ$ which results in $sin(\theta) = 0.71$. The result of this theoretical experiment shows that in the worst case scenario one loses 29\% of the resulting kinematic energy on translational movement. Given the robot's configuration and the size of its gripper the loss is acceptable as it still results in mostly rotational movement of the object. 
+Because of the above mentioned reasons we propose a push perpendicular to the longer edge of the object. This push is easy to execute with the robot's gripper while still being able to result in rotational movement of the object. The lower row of Figure \ref{fig:tangential-example} shows the resulting robot's gripper position relative to the object. However, in this case the push is not optimal in the sense that $\theta$ is not $90 ^\circ$. In order to evaluate how much energy loss to translational movement we obtain we theoretically analyzed the above described scenario. Figure \ref{fig:angles-square} shows a square object where $\theta$ is maximal thus the least optimal for the function $sin(\theta)$. By simple geometric analysis one can show that $\theta =135 ^\circ$ which results in $sin(\theta) = 0.71$. The result of this theoretical experiment shows that in the worst case scenario (squared object produces the worst possible $\theta$) one loses 29\% of the resulting kinematic energy on translational movement. Given the robot's configuration and the size of its gripper the loss is acceptable as it still results in mostly rotational movement of the object. 
+
+Having developed the method to rotate the object, we want to investigate the improvement of the actual object recognition system that is done by inducing the motion of an object into the scene. We claim that rotating the object significantly improves the chances of the object being recognized correctly and also, it makes the feature-based object recognition system more computationally efficient.
+
+\subsection{Object Recognition System}
+
+In this section we show the software architecture that lies behind the object recognition system that we created. The system was divided into 5 ROS packages with different responsibilities:
+\begin{itemize}
+\item Cloud Saver - a ROS package responsible for saving the live image from the Kinect sensor in the database. A user is given a simple user interface where they can see the live image from the Kinect. It has options to save the current image together with the associated point cloud. Using this package we can create the library of images that will be later used as the database of objects that a robot is able to recognize.
+\item PCL I/O - a helping package that is mainly responsible for reading, writing and loading different PCL structures. It is heavily used especially in the Cloud Saver package.
+\item Object Library - the main purpose of this ROS package is to generate the data for different images that were taken with Cloud Saver. It wraps all the data into an object data structure which contains the image and the name of the object and easily extensible to contain more information in the future.
+\item Features - a class in a ROS package that has all the functionality to extract, describe and match different computer vision features. The features that currently implemented in this class hold OpenCV implementations of various detector-descriptor pairs such as: SIFT, SURF, FREAK, FAST, BRIEF, ORB and STAR. It is extensively used throughout the matching phase of the system.
+\item Object Matcher - the main ROS package that matches all the previous elements together. It loads all the data prepared by the Object Library package which forms a library of objects that are used as models in the systems. After all the objects are loaded it calls Features class to compute matches between live images and images in the database. At the end it outputs the score that indicates if the object was recognized and which object it is.
+\end{itemize}
 
 
-
+The packages described above form an object recognition system that enables a user to easily acquire data from a Kinect device, create a library of objects to recognize, and finally, extract, describe and match various computer vision features that will lead to a final result - a recognized object.
 
 
 
@@ -141,6 +154,8 @@ Because of the above mentioned reasons we propose a push perpendicular to the lo
 \end{figure}
 %Experiments showing time with multiple templates
 %Graph of different numbers of matches in relation to degrees
+Since we already introduced the basic idea, the algorithms and the software used in this system, in this section we show how the system is evaluated on real objects.
+
 The testing set-up of the system consists of an object that is in front of the Kinect. During the experiment the object is rotated 360$^\circ$ according to our movement strategy described in the previous section. The live image is compared to all the images from the database. Database consists of two images per object. In the second image the object is rotated 180$^\circ$ with respect to its previous position (which is in the first image). During this process the number of matches is constantly saved to a file. The system is trained on two objects: Peets tea and Lipton tea and evaluated on the former one. The recognition procedure is repeated three times and the results were averaged in order to reduce noise in our measurements. 
 
 Figure \ref{fig:recognition-results} shows the averaged number of matches relative to the orientation of the object. The vertical axis shows the number of matches between the live image and the image described by the respective color (see legend in Figure \ref{fig:recognition-results}). Generally, it can be seen that there are certain configurations where the number of matches is significantly greater. These relate to the configurations close to the pose of the object that appear in the image from the database. It shows that rotating the object in uninformative manner can significantly improve its recognition. 
