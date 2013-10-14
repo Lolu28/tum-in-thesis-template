@@ -2,20 +2,20 @@
 \label{chapter:Object Recognition}
 
 \section{Challenges}
-As suggested in Chapter \ref{chapter:Introduction} in feature-matching-based object recognition systems we encounter a lot of difficulties that mainly stem from view-point-variance of the features as well as lighting conditions. In order to prove that hypothesis, we implemented an object recognition system that extracts the features in the  live images and matches them against features extracted from the image in the database. Based on the number of matches the system can detect which object is being seen in the live image.
+As suggested in Chapter \ref{chapter:Introduction} in feature-matching-based object recognition systems we encounter a lot of difficulties that mainly stem from view-point-variance of the features as well as lighting conditions and noisy sensors. In order to prove that hypothesis, we implemented an object recognition system that extracts the features in the  live images and matches them against features extracted from the images in the database. Based on the number of matches the system can detect which object is being seen in the live image.
 
-\subsection{Lighting Conditions}
+\subsection{Lighting Conditions and Sensor Noise}
 
-During our experiments we noticed that a lot of features in the live image were flickering even though we did not change position of any object in the image. After investigating this issue we came to the conclusion that it is mainly caused by sensor noise and lighting issues that feature detector cannot find the same feature in two consecutive frames. We examined that by searching for the features in the same image location and then matching them against the live image. We saved two patches: once where the feature was found, and the second one where it was not found. Figure \ref{fig:patches} depicts above described results.
+During our experiments we noticed that a lot of features in the live image were flickering even though we did not change position of any object in the image. After investigating this issue we came to the conclusion that it is mainly caused by sensor noise and lighting issues that feature detector cannot find the same feature in two consecutive frames. We examined that by searching for the features in the same image location and then matching them against the live image. We saved two patches: one where the feature in this location was found, and the second one where it was not found. Figure \ref{fig:patches} depicts above described results.
 
-Looking at the difference image it can be clearly seen that there was a significant change in the live image even though we did not change anything. Corner detector did not find the correct feature in the live image simply because this image looks differently which is caused by the sensor noise and the change of lighting conditions.
+Looking at the difference image it can be clearly seen that there was a significant change in the live image even though we did not change anything in our set-up. Corner detector did not find the correct feature in the live image simply because this image looks differently which is caused by the sensor noise and the change of lighting conditions.
 
 \begin{figure}
 \centering
 
 {\includegraphics[width=1\columnwidth]{figures/patches.png}}
 
-\caption{Difference between two pairs of images taken without taking any action to objects in between. The first patch of the pair shows the area in the database image where the feature was found. The second patch shows the area in the live image where the corresponding match was found. After subtracting one pair from another(which was taken a at the same pixel location but the match was not found) and multiplying the difference by the factor of 10, the significant difference in live image patch is visible. There is no difference in the database image patch because it is the same patch for both pairs.  It indicates the influence that lighting and sensor noise have on the image. }
+\caption{Difference between two pairs of images taken without taking any action to objects in between. The first patch of the pair shows the area in the database image where the feature was found. The second patch shows the area in the live image where the corresponding match was found. After subtracting one pair from another(second pair of patches was taken a at the same pixel location but the match was not found) and multiplying the difference by the factor of 10, the significant difference in live image patch is visible. There is no difference in the database image patch because it is the same patch for both pairs.  It indicates the influence that lighting and sensor noise have on the image. }
 \label{fig:patches}
 \end{figure}
 
@@ -64,7 +64,7 @@ Looking at the difference image it can be clearly seen that there was a signific
 
 \subsection{View-point Variance}
 
-In order to show the problem of view-point variance of the feature descriptors we compared two live images of the same object - one in the same pose as it is in the database and the other one when the object is rotated around Z (upright) axis. We tested those pairs with three different detectors and descriptors to ensure that the problem is not connected to a particular detector-descriptor pair. The results are depicted in Figure \ref{fig:sift-features} and \ref{fig:freak-features}.% and brief-features}.
+In order to show the problem of view-point variance of the feature descriptors we compared two live images of the same object - one in the same pose as it is in the database and the other one when the object is rotated around Z (upright) axis. We tested those pairs with two different detectors and descriptors to ensure that the problem is not connected to a particular detector-descriptor pair. The results are depicted in Figure \ref{fig:sift-features} and \ref{fig:freak-features}.% and brief-features}.
 
 Looking at Figure \ref{fig:sift-features} and \ref{fig:freak-features} it is noticeable that the number of matches significantly decreases when the object is rotated. Even with the most rotationally and view-point invariant feature detector-descriptor pair - SIFT (see Figure \ref{fig:sift-features}) - drop of the features equals 35$\%$.
 
@@ -141,9 +141,11 @@ Because of the above mentioned reasons we propose a push perpendicular to the lo
 \end{figure}
 %Experiments showing time with multiple templates
 %Graph of different numbers of matches in relation to degrees
-The testing set-up of the system consists of an object that is in front of the Kinect. During the experiment the object is being rotated 360 $^\circ$ according to our movement strategy described in the previous section. The live image is being compared to all the images from the database. Database consists of two images per object. During this process the number of matches is constantly being saved to a file.
+The testing set-up of the system consists of an object that is in front of the Kinect. During the experiment the object is rotated 360$^\circ$ according to our movement strategy described in the previous section. The live image is compared to all the images from the database. Database consists of two images per object. In the second image the object is rotated 180$^\circ$ with respect to its previous position (which is in the first image). During this process the number of matches is constantly saved to a file. The system is trained on two objects: Peets tea and Lipton tea and evaluated on the former one. The recognition procedure is repeated three times and the results were averaged in order to reduce noise in our measurements. 
 
-Figure \ref{fig:recognition-results} shows the number of matches in relation to the orientation of the object. It can be seen that there are certain configurations where the number of matches is significantly greater. These relate to the configurations close to the pose of the object that appear in the image from the database. It shows that by rotating the object in uninformative manner can significantly improve its recognition. 
+Figure \ref{fig:recognition-results} shows the averaged number of matches relative to the orientation of the object. The vertical axis shows the number of matches between the live image and the image described by the respective color (see legend in Figure \ref{fig:recognition-results}). Generally, it can be seen that there are certain configurations where the number of matches is significantly greater. These relate to the configurations close to the pose of the object that appear in the image from the database. It shows that rotating the object in uninformative manner can significantly improve its recognition. 
+
+One can also notice that both plots in Figure \ref{fig:recognition-results} have smaller picks at the position which is 180$^\circ$ from the original pose of the object in the database. This happens due to the symmetry of some of the features on the object used in that experiment. Those features appear similar if they are rotated by 180$^\circ$, hence we obtain additional matches if the object is rotated by 180$^\circ$ with respect to the pose the algorithm was trained on.
 
 \begin{figure}
 \centering 
@@ -155,11 +157,11 @@ Figure \ref{fig:recognition-results} shows the number of matches in relation to 
 \label{fig:recognition-time}
 \end{figure}
 
-Approximate time for the system to process the data with 2 images during one iteration equalled $0.53 sec$, also in one iteration we generate the matches between the live image and all the images from the database. In Figure \ref{fig:recognition-time} it can be noticed that the time of iteration linearly scales to the number of images. Thus, inducing motion into the scene and reducing the size of the database has a significant impact on the system performance.
+Approximate time for the system to process the data with two 640-480 resolution images during one iteration equalled $0.53 sec$. In one iteration we generate the matches between the live image and all the images from the database. During one iteration there was approximately 100 features found in one image. In Figure \ref{fig:recognition-time} it can be noticed that the time of iteration linearly scales to the number of images. Hence, the computational cost to recognize an object is scaled by the number of images per object in the database. By decreasing the number of images per object, we can radically decrease the computational cost of the object recognition algorithm. Thus, inducing motion into the scene and reducing the size of the database has a significant impact on the system performance.
 
 
 
 
 
 \section{Conclusion}
-We have presented an initial implementation of the system that is able to recognize objects based feature matching algorithm. We have proven that inducing motion into the scene significantly improves chances of the object being recognized correctly. In addition to that we showed that interaction with the scene reduces the size of the database which has a significant influence on the speed of the system.  
+We have presented an initial implementation of the system that is able to recognize objects based on feature matching algorithm. We have proven that inducing motion into the scene significantly improves chances of the object being recognized correctly. In addition to that we showed that interaction with the scene reduces the size of the database which has a significant influence on the speed of the system.  
