@@ -9,9 +9,8 @@ One of the main challenges in robotics today is to bring robots into people's ho
 confronted with a cluttered and unstructured scene\footnote{Following the discussion at the Clutter12
 workshop at RSS 2012, we acknowledge that this is ``laboratory clutter'', where the degree of difficulty
 is similar to the scenes from the related works but still inferior to real world clutter~\cite{matei2010manipulation}.} like the example shown
-in Figure \ref{fig:tracking_dists}~\cite{iros10kcopman}. In order to interact with this type of an environment a robot must be able to detect and recognize the objects that are on the table. The main
-motivation of this work is to show that by leveraging robots' manipulation skills, we can significantly improve its perception skills, including segmentation and recognition of objects.
-	
+in Figure \ref{fig:tracking_dists}~\cite{iros10kcopman}. In order to interact with this type of an environment a robot must be able to detect and recognize the objects that are on the table.
+
 \setlength{\tabcolsep}{0.1em}
 \begin{figure}[ht]
 %\centering
@@ -28,12 +27,17 @@ motivation of this work is to show that by leveraging robots' manipulation skill
   Hashing~\cite{marton12SC} method (right, NE) and Graph-based  
   segmentation method~\cite{Felzenszwalb}   (right, SW). These methods work in depth, RGB and RGBD 
   space respectively and all underachieve, due to the complexity of this task. 
-  However, the blue egg on the blue plate was correctly segmented using the interactive approach presented in this paper (right, SE)}
+  However, the blue egg on the blue plate was correctly segmented using the interactive approach presented in this thesis (right, SE)}
 \label{fig:tracking_dists}
 \end{figure}	
+
+ The main
+motivation of this work is to show that by leveraging robots' manipulation skills, we can significantly improve their perception skills, including segmentation and recognition of objects.
+	
+
 	
 	
-We can divide objects into three categories - textured, textureless and transparent with examples shown in Figure \ref{fig:all-objects}. In our work we address the first two of them and we plan to focus on the third in the future work.
+We can divide objects into three categories - textured, textureless and transparent with examples shown in Figure \ref{fig:all-objects}. In our work we address the first two of them and we plan to focus on the third one in the future work.
 
 \begin{figure}
 %\centering
@@ -47,9 +51,9 @@ We can divide objects into three categories - textured, textureless and transpar
 As an initial step for the system we developed an interactive segmentation pipeline that is meant to be used for objects without any texture. In order to show that this is a challenging task, which can not be solved with state-of-the-art segmentation algorithms, we refer the reader to Figure \ref{fig:tracking_dists} where we tested three object segmentation algorithms that are used for segmentation of RGBD point clouds. Looking at the results we believe that the performance of robots' perception algorithms can be improved, especially regarding: 
 
 \begin{itemize} 
-\item textureless objects (all objects in the scene)
-\item objects of the same color (a coffee mug and a saucer)
-\item similar shaped objects and occlusions (a white and a blue box);
+\item textureless objects (all objects in the scene),
+\item objects of the same color (a coffee mug and a saucer),
+\item similar shaped objects and occlusions (a white and a blue box).
 \end{itemize}
 
 
@@ -116,11 +120,11 @@ In order to simplify the problem of model based recognition we constrain the reg
 
 \begin{itemize}
 \item features are not fully view point invariant, e.g. SIFT fails in case of larger than
-$45^\circ$ rotation
+$45^\circ$ rotation,
 \item  variance to changing lighting conditions between the live
-image and the one the object was trained on
-\item image noise 
-\item large computational cost due to brute force matching;
+image and the one the object was trained on,
+\item image noise ,
+\item large computational cost due to brute force matching.
 \end{itemize}
 
 The problem of object recognition can be understood much wider since we are entering the field of perceptual interpretation. Further implications that stem from information that database contains are not in the scope of this thesis.
@@ -132,12 +136,12 @@ The problem of object recognition can be understood much wider since we are ente
 In this thesis we concentrate on solving two challenges: 
 
 \begin{itemize} 
-\item segmentation of textureless objects (the textured case has been presented in~\cite{bersch12interactive} and~\cite{Katz-WS-MM-ICRA2011})
+\item segmentation of textureless objects (the textured case has been presented in~\cite{bersch12interactive} and~\cite{Katz-WS-MM-ICRA2011}),
 
 \item recognition of textured objects using interactive perception techniques.
 \end{itemize} 
 
-In the rest of this section we concentrate on describing our approach for these tasks.
+In the rest of this section we describe our approach for these tasks.
 
 \subsection{Interactive Segmentation of Textureless Objects} 
 
@@ -152,12 +156,12 @@ object  segmentation.
 Our system consists of the following steps:
 
 \begin{itemize} 
-\item Static object pre-segmentation using part-graph-based hashing ~\cite{marton12SC}
-\item Push point estimation based on our previous work ~\cite{bersch12interactive}
-\item Extraction of RGB-D features using point cloud primitives such as lines, corners, cylinders and circles
-\item Tracking of RGB-D features using Particle-Filter-based algorithm
-\item Graph based trajectory clustering
-\item Dense model reconstruction based on region growing in normal space;
+\item Static object pre-segmentation using part-graph-based hashing ~\cite{marton12SC},
+\item Push point estimation based on our previous work ~\cite{bersch12interactive},
+\item Extraction of RGB-D features using point cloud primitives such as lines, corners, cylinders and circles,
+\item Tracking of RGB-D features using Particle-Filter-based algorithm,
+\item Graph based trajectory clustering,
+\item Dense model reconstruction based on region growing in normal space.
 \end{itemize} 
 
 
@@ -176,7 +180,7 @@ were segmented correctly in these scenes. The interactive segmentation system is
 
 \subsection{Interactive Object Recognition} 
 
-For object recognition we decided to build upon the approach presented in the segmentation system. Using our interactive segmentation pipeline we obtain a very good prior for the recognition of objects. Given that the object is segmented correctly, we are able to constrain the problem of multiple object recognition to recognition of one currently segmented object at a time. In our system we show that even random rotations and translations can significantly improve recognition of objects.
+For object recognition challenge we decided to build upon the approach presented in the segmentation system. Using our interactive segmentation pipeline we obtain a very good prior for the recognition of objects. Given that the object is segmented correctly, we are able to constrain the problem of multiple object recognition to recognition of one currently segmented object at a time. In our system we show that even random rotations and translations can significantly improve recognition of objects.
 
 In our approach we use the rotational movement of an object in order to eliminate the influence of view-point variance of features. We show that by incorporating robot interaction with the environment we are also able to reduce the size of the database and thus, speed up the processing time of the algorithm.
 
