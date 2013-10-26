@@ -22,10 +22,10 @@
  In the first step we obtain an RGBD point cloud from the Kinect sensor. In the second step we perform static object
  pre-segmentation which results in a set of categorized object hypotheses $O$,
  with the category being either flat or round, and a list of object parts $P_{o}$ that every object 
- $o \in O$ consists of. Having obtained the object hypotheses $O$ we infer which hypothesis
+ $o \in O$ consists of. Having obtained the object hypotheses $O$, we infer which hypothesis
  is segmented  correctly. For
  that we count the  number of parts that the respective object hypotheses $O$ 
- consists of and then sample from the Poisson distribution according to the Equation \ref{eq:poisson}.
+ consists of, and then sample from the Poisson distribution according to the Equation \ref{eq:poisson}.
  After obtaining the probability of the scene being segmented correctly we 
 decide if the interactive segmentation algorithm will be used or not. It is worth mentioning that the system is able to perform with a different static segmentation algorithm that can be used as an indicator if we need to use the interactive segmentation algorithm.
 
@@ -74,18 +74,18 @@ decide if the interactive segmentation algorithm will be used or not. It is wort
 
 
 
- The information obtained from the categorization algorithm is also used in the next step - based on the object category we decide what kind of RGBD feature needs to be extracted and tracked afterwards. Having obtained one of the categories being flat or round, we extract different RGBD features: lines and corners for the flat objects or cylinders and circles for the round ones. As the next step we look for the best point to push the objects by looking at concave and convex corners in a top-down image of the scene and we execute the arm motion movement at the previously found corner. We move the arm in $1cm$ intervals until we reach a maximum of $5$ 
+ The information obtained from the categorization algorithm is also used in the next step - based on the object category we decide what kind of RGBD feature needs to be extracted and tracked afterwards. Having obtained one of the categories being flat or round, we extract different RGBD features: lines and corners for the flat objects or cylinders and circles for the round ones. As the next step, we look for the best point to push the objects by looking at concave and convex corners in a top-down image of the scene and we execute the arm motion movement at the previously found corner. We move the arm in $1cm$ intervals until we reach a maximum of $5$ 
   pushes. All of the features are tracked during the interaction 
  and the trajectories of feature centroids  are  saved as 6 degrees of freedom transformations. 
  
   
 %In sixth  row of  \figref{scenes} the
 % relative distances between centroids over the time are depicted. 
-In the fourth step we apply a graph-based algorithm for trajectory clustering that operates on the saved centroids mentioned above. At the end of this step we obtain a set of grouped features where each group of features is considered to belong to the same object. In this way features that have moved in the same manner are clustered as one feature. 
+In the fourth step, we apply a graph-based algorithm for trajectory clustering that operates on the saved centroids mentioned above. At the end of this step we obtain a set of grouped features where each group of features is considered to belong to the same object. In this way, features that have moved in the same manner are clustered as one feature. 
 
- In the fifth and the last step the dense model is reconstructed using the region growing algorithm 
+ In the fifth and last step, the dense model is reconstructed using the region growing algorithm 
 where the centroids of tracked and clustered RGBD features are
-used as seed points. As an output we obtain a dense representation of the objects in the scene that may be further used for grasping or object recognition algorithms.
+used as seed points. As an output, we obtain a dense representation of the objects in the scene that may be further used for grasping or object recognition algorithms.
 
 \section{Pre-processing Steps}
 
@@ -93,7 +93,7 @@ used as seed points. As an output we obtain a dense representation of the object
 \subsection{Static Pre-segmentation of Objects}
 \label{sec:static-seg}
 
-In order to determine if the use of the interactive segmentation algorithm is necessary we need to deploy a static segmentation algorithm that will return the probability of the scene being segmented correctly. With the aid of static segmentation we can then verify if a scene can be considered as recognized or a robot has to investigate further in order to segment the objects of interest. Due to our requirement of the likelihood of an object being segmented correctly we decided to use the classification method presented in \cite{marton12SC} based on part-graph-based hashing.
+In order to determine if the use of the interactive segmentation algorithm is necessary, we need to deploy a static segmentation algorithm that will return the probability of the scene being segmented correctly. With the aid of static segmentation, we can then verify if a scene can be considered as recognized or if a robot has to investigate further in order to segment the objects of interest. Due to our requirement of the likelihood of an object being segmented correctly, we decided to use the classification method presented in \cite{marton12SC} based on part-graph-based hashing.
 
 The basic idea of the classification method we use is that
 segmenting objects accurately does not always work
@@ -103,12 +103,12 @@ to compute features, and their combinations build up the
 objects. If the used feature is additive, the feature that
 would be computed for the object is the same as the sum
 of the features of its parts.
-There are of course multiple ways of combining parts
-and not all of them create a valid object. However, it can be
-tested if a combination is correct by checking if the
+There are, of course, multiple ways of combining parts,
+and not all of them create a valid object. However, one can
+test if a combination is correct by checking if the
 combined feature vector is known. 
 
-In order to obtain a final object hypothesis we group the resulting labelled parts with geometric categories together and compare the results with the training data. By using above mentioned method not only we retrieve the classification result and its probability but also we gain important information regarding the class of objects we deal with. The further use of this information is explained in section \ref{sec:3dfeatures}.
+In order to obtain a final object hypothesis, we group the resulting labelled parts with geometric categories together and compare the results with the training data. By using above mentioned method not only do we retrieve the classification result and its probability, but also we gain important information regarding the class of objects we deal with. The further use of this information is explained in section \ref{sec:3dfeatures}.
 
 
 
@@ -160,9 +160,9 @@ In order to obtain a final object hypothesis we group the resulting labelled par
 \label{sec:part-graphs}
 
 This section briefly describes the algorithm behind the above mentioned work \cite{marton12SC}.
-As the first step of the Part Graphs-based Classification algorithm the scene is split into parts based on the low curvature of the points. The result of this step can be seen in Figure \ref{fig:scenes} column 3. For each of the parts the GRSD- feature(Global Radius-based Surface Descriptor~\cite{irosws11vosch}) is computed. 
- As described in \cite{irosws11vosch}, the authors adapted the GRSD feature to be additive by simplifying it to simple histogram of neighborhoods of surfaces of different type, neglecting the ray-tracing step. After computing the GRSD features the authors created a connectivity matrix based on the distance between the previously extracted parts. Authors created then the groups' hash codes by using all possible groupings in the connectivity matrix and the isomorphic graph metrics. Eventually, based on the hash code the classifier is chosen. For a detailed description of this approach 
-please refer to work of Marton et al.~\cite{marton12SC}.
+For the first step of the Part Graphs-based Classification algorithm, the scene is split into parts based on the low curvature of the points. The result of this step can be seen in Figure \ref{fig:scenes}, column 3. For each of the parts the GRSD- feature(Global Radius-based Surface Descriptor~\cite{irosws11vosch}) is computed. 
+ As described in \cite{irosws11vosch}, the authors adapted the GRSD feature to be additive by simplifying it to a simple histogram of neighborhoods of surfaces of different types, neglecting the ray-tracing step. After computing the GRSD features, the authors created a connectivity matrix based on the distance between the previously extracted parts. Authors then created the groups' hash codes by using all possible groupings in the connectivity matrix and the isomorphic graph metrics. Eventually, based on the hash code the classifier is chosen. For a detailed description of this approach 
+please refer to the work of Marton et al.~\cite{marton12SC}.
  
 The authors trained the classifier on a subset of the dataset from~\cite{lai11db}. Based on that the objects are classified into six categories:  sphere, box, rectangular/flat, cylinder, disk/plate and other.
 Having obtained these results from the algorithm we merge categories together such that we end up only with 3 of them: i)boxes and flats being considered as \emph{flat} category ii)cylinders, spheres, disks being considered as \emph{round} and iii)\emph{other}. 
@@ -171,9 +171,9 @@ Having obtained these results from the algorithm we merge categories together su
 \subsubsection{Verification of Correctness of Segmentation}
 \label{sec:probabilities}
 
-Taking into consideration the number of parts described in the previous section we come up with a method that classifies the objects based on the parts they consist of. Also, if an object was categorized as belonging to a certain category we can estimate how probable the result of this categorization is. This way in addition to information of the object category being round or flat we obtain the probability of an object being classified correctly.
+Taking into consideration the number of parts described in the previous section, we come up with a method that classifies the objects based on the parts they consist of. Also, if an object was categorized as belonging to a certain category, we can estimate how probable the result of this categorization is. This way, in addition to information of the object category being round or flat we obtain the probability of an object being classified correctly.
 
-In order to specify the average number of parts that a certain category of objects consist of we present in Figure \ref{fig:poisson} of the number of different object parts, generated in the training stage. It can be noticed that this distribution can be approximate with a Poisson distribution which results in an average error of 1.7\% (and at most roughly 9\%). Equation \ref{eq:poisson} describes how the probability of being an object of a certain category is dependent on the number of parts the object is broken up into. 
+In order to specify the average number of parts that a certain category of objects consist of, we present in Figure \ref{fig:poisson} of the number of different object parts, generated in the training stage. Notice that this distribution can be approximate with a Poisson distribution which results in an average error of 1.7\% (and at most roughly 9\%). Equation \ref{eq:poisson} describes how the probability of being an object of a certain category is dependent on the number of parts the object is broken up into. 
 In Equation \ref{eq:poisson} $\lambda$ describes the mean of number of parts.
 
 \begin{equation}
@@ -181,9 +181,9 @@ In Equation \ref{eq:poisson} $\lambda$ describes the mean of number of parts.
 P(k~parts~forming~a~single~object) = \lambda^k \exp{-\lambda} / k!
 \end{equation}
 
-With the aid of above described probability we can take the classification result from the Part Graph-based Classification algorithm and the number of parts that the object of interest consists of in the current scene into consideration and obtain the probability of the object being classified correctly. With this simple method we use classification probability as an indicator if the interactive segmentation algorithm should be deployed.  
+With the aid of the above described probability we can take the classification result from the Part Graph-based Classification algorithm and the number of parts that the object of interest consists of in the current scene into consideration and obtain the probability of the object being classified correctly. With this simple method we use classification probability as an indicator of whether or not the interactive segmentation algorithm should be deployed.  
 
-In order to better explain the algorithm we refer reader to an example shown in the first row of Figure \ref{fig:scenes}. In the column 4 it can be noticed that the category of the object is flat. We can also notice that there is 6 parts that the object consists of (column 3). Looking up the probability from the Poisson distribution explained before we see that that the probability of a flat object consisting of 6 parts is below the threshold - $0.3$, thus it is an indicator for a need to use our interactive segmentation algorithm.
+In order to better explain the algorithm, we refer the reader to an example shown in the first row of Figure \ref{fig:scenes}. In column 4 it can be noticed that the category of the object is flat. We can also notice that there are 6 parts of which the object consists (column 3). Looking up the probability from the Poisson distribution explained before, we see that that the probability of a flat object consisting of 6 parts is below the threshold - $0.3$, thus it is an indicator for a need to use our interactive segmentation algorithm.
 
 
 
@@ -200,8 +200,8 @@ In order to better explain the algorithm we refer reader to an example shown in 
 Once the over or under segmented region of interest has been identified 
 according to the above generated distribution, the  appropriate contact
 points  between the objects in   the   scene  and   the   robot's   end   
-effector is determined. Furthermore, the  direction   the robot's  end
-effector should move to must be chosen.
+effector is determined. Furthermore, the  direction in which  the robot's  end
+effector should move must be chosen.
 
 The contact points where the objects are pushed need to
 be such that the push results in different objects moving
@@ -210,12 +210,12 @@ In  this thesis we apply our previously developed approach based on
 the local concavities~\cite{bersch12interactive}. The outcome
 of a push depends largely on the arrangement of objects but
 intuition suggests (and it is confirmed by our simulation in the next section) that pushing at corners of objects will
-result in not only translation but also rotation of the pushed object. On the other hand, pushing at the
+result in not only translation, but also rotation of the pushed object. On the other hand, pushing at the
 sides of an object may result only in translation and any
 neighboring objects can also move together with it as a
 rigid body. Object corners are, therefore, good candidates for
 contact points for pushes irrespective of the object configuration. Also, since most
-commonly  encountered  household   items  have  convex  outlines,  when
+commonly  encountered  household   items  have  convex  outlines  when
 observed  from  above,  our  system  uses  local
 concavities in the  2D contour of an object group  as an indicator for
 boundaries between the objects.
@@ -232,15 +232,15 @@ the next section.
  \end{center}
  \end{figure}
 
-In order to detect concave and convex corners we developed the following algorithm. Firstly, we artificially translate and rotate the camera image such that it looks as taken directly from above the scene. From this point an image and a point cloud are taken to determine potential push points for the robot. Having the point cloud information, we use Plane Segmentation algorithm from the PCL to segment the biggest plane in the scene - a table. We refine the images by using simple morphological operations - opening and closing. After these steps we obtain black and white images where everything but objects is black, an example is depicted in Figure \ref{fig:corners}. 
+In order to detect concave and convex corners we developed the following algorithm. Firstly, we artificially translate and rotate the camera image such that it looks as if it were taken directly from above the scene. From this point an image and a point cloud are taken to determine potential push points for the robot. Having the point cloud information, we use the Plane Segmentation algorithm from the PCL to segment the biggest plane in the scene - a table. We refine the images by using simple morphological operations - opening and closing. After these steps, we obtain black and white images where everything but objects is black, an example is depicted in Figure \ref{fig:corners}. 
 
-Taking this image as an output we use Shi-Tomasi corner detector to determine corner positions and their orientation. As the implementation details of the corner-based pushing go beyond the scope of this thesis, we refer the reader to work of Bersch et al.~\cite{bersch12interactive} for details.
+Taking this image as an output, we use the Shi-Tomasi corner detector to determine corner positions and their orientation. As the implementation details of the corner-based pushing go beyond the scope of this thesis, we refer the reader to the work of Bersch et al.~\cite{bersch12interactive} for details.
 
 \subsubsection{Push Point Heuristic Validation}
 We carried  out several simulations  in physics-based simulator Gazebo\footnote{\url{http://gazebosim.org/}} to validate  our corner
 pushing heuristic. To verify that  pushing at corners is  indeed more
 effective, we  spawned different  scenes in Gazebo  with two  or three
-closely  placed objects. Objects were flat and round, in different orientations 
+closely  placed objects. Objects were flat and round, in different orientations, 
 and arranged such that they were in solid contact or in single point contact. Solid  contact refers to  both objects being in  contact with
 each  other,  whereby  the  contact  area  is  larger  than  a  single
 line.
@@ -256,11 +256,11 @@ the objects. Based on the  recorded object poses, the locations of all
 the  features were  computed  after  every push.  This  enabled us  to
 compute the simulated optical flows. The feature trajectories obtained in this way were
 then clustered using our previously developed segmentation for textured objects algorithm~\cite{bersch12interactive}.
-We used this algorithm because of the character of the features - there are many different forms of textureless features and it is difficult to develop a general solution whereas Shi-Tomasi features are a good representatives for many textured tracking algorithms.  The contact points for the
+We used this algorithm because of the character of the features - there are many different forms of textureless features and it is difficult to develop a general solution whereas Shi-Tomasi features are good representatives for many textured tracking algorithms.  The contact points for the
 pushes  which resulted in  a successful  segmentation of  objects were
 then  observed  and  the  number  of  successful  corner  pushes  were
 counted. A push  was classified as a corner push  if the contact point
-is less than $1cm$ away from an object corner.
+is less than $1cm$ away from an object's corner.
 
 \begin{figure}[h!]
   \begin{center}
@@ -281,18 +281,17 @@ is less than $1cm$ away from an object corner.
 
 We carried out 5 runs\footnote{Please mind that since Gazebo uses an ODE engine 
 which is based on linear complementarity problem constraint formulation and since the
-simulation is defendant on the CPU load, the runs are not fully deterministic.} 
-on every of 24 different  scenes (11 scenes  with 2
+simulation is dependent on the CPU load, the runs are not fully deterministic.} 
+on each of the 24 different  scenes (11 scenes  with 2
 objects, 13  scenes with  3 objects), which resulted in an average  of 381.5
 push sequences for a scene out of which an average of 14.9 pushes were
 successful in segmenting  all the objects in the  scene correctly. Out
-of these, 7.25  pushes were corner pushes. There were an average  of 10
+of these, 7.25  pushes were corner pushes. There was an average  of 10
 object corners in each scene. From this it follows that there were on average
-70 corner pushes and 311.5 other pushes. This gives the segmentation success of $10\%$
+70 corner pushes and 311.5 other pushes. This gives the segmentation success rate of $10\%$
 for the corner pushes and $2.4\%$ for the non-corner ones. The reason for the low
-overall segmentation result compared to the real scenes above is on the one hand in that the scenes in the simulation
-included the single contact points between the objects and on the other hand in 
-that various non-favorable orientations per contact point were computed and executed.
+overall segmentation result compared to the real scenes above is, on one hand, in that the scenes in the simulation
+included the single contact points between the objects and on the other hand, various non-favorable orientations per contact point were computed and executed.
 We observed  that corner pushing was successful  in all  the scenes, while  side pushing  was successful
 only  when  the  objects were in single point contact. 
 When the  objects were next to each other  and similar in size,
@@ -306,20 +305,20 @@ corner pushing irrespective of object arrangement.
 \section{Textureless Object Segmentation}
 \label{sec:textureless}
 
-The main challenge in dealing with textureless objects is finding good and stable features. In our approach we decided to make use of the information we have from the previous steps namely the category of the object. Since there is no texture on the object we have to base our features on mainly the depth information. We employ 3D features provided by the PCL but we seek for different features in respective categories. In the flat category it is more likely that an object has sharp edges and is more box-like, therefore we use 3D lines and 3D corners on this category of objects. In the round category it is more likely to have cylindrical objects as a mug or a bowl, therefore, we employ 3D circles and 3D cylinders as the features in this case.
+The main challenge in dealing with textureless objects is finding good and stable features. In our approach, we decided to make use of the information we have from the previous steps, namely the category of the object. Since there is no texture on the object we have to base our features mainly on the depth information. We employ 3D features provided by the PCL, but we seek different features in respective categories. In the flat category it is more likely that an object has sharp edges and is more box-like, therefore we use 3D lines and 3D corners on this category of objects. In the round category it is more likely to have cylindrical objects as a mug or bowl, therefore, we employ 3D circles and 3D cylinders as the features in this case.
 
-Feature extraction part of our algorithm forms an input for the feature tracking part which is a crucial part of the system. Therefore, it is very important to extract stable features that can be tracked over the time of interaction with a robot.
+The feature extraction part of our algorithm forms an input for the feature tracking part which is a crucial part of the system. Therefore, it is very important to extract stable features that can be tracked over the time of interaction with a robot.
 
 
 
 
 \subsection{RGBD Features}
 \label{sec:3dfeatures}
-In order to reduce our regions of interests and improve finding of the feature we look only at these parts of a point cloud with a high curvature value. 3D line extraction algorithm takes as an input all the edges extracted from the initial point cloud. As the next step we use RANSAC algorithm to find the best fit between the line model and the filtered input point cloud. Algorithm proceeds similarly as described in Chapter \ref{chapter:Background} - if the current number of inliers is greater than the number of inliers found in the previous iterations then the current line coefficients are saved. The algorithm runs until the number of inliers exceeds a certain threshold. Having extracted set of lines we pad each of them with neighbouring points that are within a radius of $5cm$ in order to form a edge that ideally consists of two planes. We want to use edges rather than thin lines because edges form more distinctive geometrical models, hence they are easier to track. After this process we employ one additional check to eliminate edges consisting of more than 2 planes, namely we use Plane Segmentation Algorithm from PCL to determine how many planes the edge consists of. If the number of planes is bigger than 2 then we eliminate the edge from the tracking set.
+In order to reduce our regions of interest and improve the finding of the feature we look only at those parts of a point cloud with a high curvature value. The 3D line extraction algorithm takes as an input, all the edges extracted from the initial point cloud. As the next step we use the RANSAC algorithm to find the best fit between the line model and the filtered input point cloud. The algorithm proceeds similarly as described in Chapter \ref{chapter:Background} - if the current number of inliers is greater than the number of inliers found in the previous iterations, then the current line coefficients are saved. The algorithm runs until the number of inliers exceeds a certain threshold. Having extracted a set of lines we pad each of them with neighbouring points that are within a radius of $5cm$ in order to form a edge that ideally consists of two planes. We want to use edges rather than thin lines because edges form more distinctive geometrical models, so they are easier to track. After this process we employ one additional check to eliminate edges consisting of more than 2 planes, namely we use tthe Plane Segmentation Algorithm from PCL to determine how many planes an edge consists of. If the number of planes is bigger than 2 then we eliminate the edge from the tracking set.
 
-In addition to 3D lines we use 3D corners as features on the flat objects category. 3D corners are extracted by using a 3D implementation of Harris Corner Detector from PCL. In this case instead of taking pixel values into consideration and forming a Harris matrix, depth information of the points is used. Therefore, we are able to detect 3D corners in the scene that are not necessarily the same as their 2D Harris corners equivalents. After the corner is detected we subtract the corners that we found from the point cloud and start searching again. We pad found corners with the neighbouring point as well and we use additional plane segmentation check where we check if a padded corner consists of exactly 3 planes.
+In addition to 3D lines, we use 3D corners as features on the flat objects category. 3D corners are extracted by using a 3D implementation of the Harris corner detector from PCL. In this case instead of taking pixel values into consideration and forming a Harris matrix, depth information of the points is used. Therefore, we are able to detect 3D corners in the scene that are not necessarily the same as their 2D Harris corner equivalents. After the corner is detected, we subtract the corners that we found from the point cloud and start searching again. We pad found corners with the neighbouring point as well and we use additional plane segmentation check where we check if a padded corner consists of exactly 3 planes.
 
-In the round object category we look for 3D cylinders and circles because they are much more stable and easier to find than previous features on this kind of objects. We take advantage of PCL implementations of both of these features. 3D cylinder and 3D circle extraction algorithms are based on RANSAC and similarly to 3D line approach they look for the best fit to the respective model. 3D cylinder extraction algorithm contains additional check that is whether point normals are perpendicular to the cylinder axis. Also this time we use padding and subtracting of already found parts from the point cloud methods to obtain the final features. 
+In the round object category, we look for 3D cylinders and circles because they are much more stable and easier to find than previous features on these kind of objects. We take advantage of PCL implementations of both of these features. The 3D cylinder and the 3D circle extraction algorithms are based on RANSAC and similarly to the 3D line approach they look for the best fit to the respective model. The 3D cylinder extraction algorithm contains additional check, which is whether point normals are perpendicular to the cylinder axis or not. Also, this time we use padding and subtracting of already found parts from the point cloud methods to obtain the final features. 
 
 At the end of this step we have up to 4 sets of different features depending on the categories that were found in the scene. All of the point clouds are padded since it significantly improves the likelihood function of the tracker that is described in the next section. The features are depicted in Figure \ref{fig:scenes}, columns 2 and 5, 1st and 2nd row. 
 
@@ -328,9 +327,9 @@ At the end of this step we have up to 4 sets of different features depending on 
 
 \subsection{Particle Filtering-based Tracking of RGBD Point Clouds}
 \label{sec:tracking}
-The tracked features from the previous step are used as a reference models for the Particle Filtering-based Tracker that is implemented in PCL\footnote{https://github.com/PointCloudLibrary/pcl/tree/master/tracking}. The tracking algorithm itself consists of various steps. At the beginning the reference model is passed and multiple hypotheses are generated. In order to generate a probable hypothesis two different motion models are weighted and used as a prediction of the point position: constant velocity model and constant position model. Based on the ratio between these two models different particles are spawned where each of the particles represents a hypothesis of the object's position. At the end of this step a re-sampling technique described in~\cite{Walker} is applied. 
+The tracked features from the previous step are used as reference models for the Particle Filtering-based Tracker that is implemented in PCL\footnote{https://github.com/PointCloudLibrary/pcl/tree/master/tracking}. The tracking algorithm itself consists of various steps. At the beginning, the reference model is passed and multiple hypotheses are generated. In order to generate a probable hypothesis, two different motion models are weighted and used as a prediction of the point position: constant velocity model and constant position model. Based on the ratio between these two models, different particles are spawned where each of the particles represents a hypothesis of the object's position. At the end of this step, a re-sampling technique described in~\cite{Walker} is applied. 
 
-In the next step the similarity between pairs of the data points is computed. Pairs are selected by searching for the nearest neighbours between the reference point cloud and the real time point cloud obtained by the tracker. Similarity between the point pairs ($p_{j},q_{j}$) depends on two factors that describe the surface and the color of the point: i) the euclidean distance between two points ($l_{euclidean}$) and ii) distance in HSV (Hue, Saturation, Value) color space between the two neighbours ($l_{color}$). In order to obtain the likelihood of a given particle the similarity factors are computed and weighted: $\alpha, \beta = 0.5$ in our case. The likelihood is computed as shown below.
+In the next step the similarity between pairs of the data points is computed. Pairs are selected by searching for the nearest neighbours between the reference point cloud and the real time point cloud obtained by the tracker. Similarity between the point pairs ($p_{j},q_{j}$) depends on two factors that describe the surface and the color of the point: i) the euclidean distance between two points ($l_{euclidean}$) and ii) distance in HSV (Hue, Saturation, Value) color space between the two neighbours ($l_{color}$). In order to obtain the likelihood of a given particle, the similarity factors are computed and weighted: $\alpha, \beta = 0.5$ in our case. The likelihood is computed as shown below.
 
 \begin{eqnarray}
   l_{j} = l_{euclidean}(p_{j},q_{j})l_{color}(p_{j},q_{j}) \nonumber \\
@@ -346,7 +345,7 @@ Having calculated the likelihood for each pair, we sum them up in order to obtai
 \subsection{Feature Clustering}
 
 \label{sec:clustering}
- This part of the thesis describes the method to cluster the features that move rigidly with respect to each other and it was done in collaboration with Zoltan Csaba Marton.
+ This part of the thesis describes the method used to cluster the features that move rigidly with respect to each other and it was done in collaboration with Zoltan Csaba Marton.
 
 \begin{algorithm}[htb!]\footnotesize
   \tcc{\footnotesize{number of tracked features $n$ and number of time steps $m$,
@@ -401,7 +400,7 @@ Having calculated the likelihood for each pair, we sum them up in order to obtai
    \label{fig:clustering}
  \end{center}
  \end{figure}
-Having tracked multiple features where some of them can belong to the same object, we need an algorithm to cluster these features together. One of the requirements that makes this problem non-trivial is that one feature on an object should be enough to generate a hypothesis about this object. We developed a graph-based solution that clusters the features that moved in the similar manner and separates the features that deviated from their initial trajectory for a long time. In the graph every feature is represented by a node. An edge between two features(nodes) symbolizes the features that can be clustered together. An edge is based on the euclidean distance between the features centroids and the distance between quaternions describing their orientation. At the beginning of the interaction the graph has full connectivity, but during the actions taken by the robot some of the edges can be broken - features can move in a different manner.
+Having tracked multiple features where some of them can belong to the same object, we need an algorithm to cluster these features together. One of the requirements that makes this problem non-trivial is that one feature on an object should be enough to generate a hypothesis about this object. We developed a graph-based solution that clusters the features that moved in a similar manner and separates the features that deviated from their initial trajectory for a long time. In the graph every feature is represented by a node. An edge between two features(nodes) symbolizes the features that can be clustered together. An edge is based on the euclidean distance between the features' centroids and the distance between quaternions describing their orientation. At the beginning of the interaction, the graph has full connectivity, but during the actions taken by the robot, some of the edges can be broken - features can move in a different manner.
 The full algorithm is presented in Algorithm \ref{alg:cluster_trajectories}.
 
 There are two important parameters used in the above described graph-based clustering algorithm: i) $d_{threshold}$ - maximum number of consecutive violations of the relative distance violations threshold and ii) $p_{threshold}$ - percentage of number of violations to the theoretic maximum number of frames.
@@ -493,7 +492,7 @@ then start growing from these. An important condition of the region growing is t
 assumption that objects are often composed of convex parts~\cite{Pogor}.
 Therefore, we make sure that during region growing two points are assigned to the same region $R_{i}$
 if the angle $eps_{thresh}$ between the vector connecting them and the points normal is close to obtuse as shown in Figure \ref{fig:dense}
-(considering the sensor noise level\footnote{\url{http://www.ros.org/wiki/openni_kinect/kinect_accuracy}}, 89$^\circ$ were used).
+(considering the sensor noise level\footnote{\url{http://www.ros.org/wiki/openni_kinect/kinect_accuracy}}, 89$^\circ$ was used).
 Once all region-feature pairs have been identified, we reconstruct the dense model.
 Since in the trajectory clustering step we already identified the features that belong to the same object,
 having multiple regions for the same object is easily dealt with
@@ -517,17 +516,17 @@ Though our system can iteratively
 cope with multi-object scenes, we performed the evaluation on two-object
 scenes with the  finite number  of scene
 configurations that  can occur. These configurations  can be split in  three different
-ways, namely: i)  size, ii) shape, and iii)  arrangement.  A scene may
+ways: i)  size, ii) shape, and iii)  arrangement.  A scene may
 consist  of two  objects  of different  sizes  or the  same size.  The
-objects may  be either both  flat or round  or a combination  of these
+objects may  be either both  flat or both round  or a combination  of these
 two.  They  may  also  occur  in  different  arrangements: i) completely
 separated, ii) only  touching, iii) one on  top of the other,  or iv) in solid
 contact. Some configurations are
-infeasible for our approach.  For example a flat  object and a
-round  object cannot  be of the  same  size, or  round object  on top  of
+infeasible for our approach.  For example, a flat  object and a
+round  object cannot  be of the  same  size and a round object  on top  of
 another  round object  cannot be  pushed (one  mug on  top  of another
 mug). It is also not possible to  have a round object that is in solid
-contact with  another round  object. For this  case we  consider solid
+contact with  another round  object. For this  case, we  consider solid
 contact as  being two objects touching  with more than  one line, for
 example in scene number 17 where also  the handle of the mug  touches the juice box.  
 
@@ -547,16 +546,16 @@ them using static segmentation techniques.
 Average time to segment one scene from Figure \ref{fig:evaluation1} amounted to $12.5s$ 
 with the pre-segmentation taking $1.5s$, feature extraction $3.5s$, pushing 
 $6s$ (tracking runs at $25fps$ for up to 10 features) and dense model reconstruction $1.5s$.
-Apart from tracking all modules perform linearly with the
+Apart from tracking, all modules perform linearly with the
 number of  features and objects  respectively and can thus  easily be
-used for larger and more complex  scenes. For all the scenes the push
-point estimation algorithm was used, the only exception being the 'on
+used for larger and more complex  scenes. For all the scenes, the push
+point estimation algorithm was used. The only exception was the 'on
 top'  arrangements for which the algorithm does not generalize. 
-For this reason and since the scope of the thesis is on the priors from
-the static segmentation, RGBD features for
+For this reason, and since the scope of the thesis is on the priors from
+the static segmentation and RGBD features for
 textureless objects and the final dense model reconstruction, we performed
 the experiments by manually inducing motions into the corners of the scenes.
-In  our  future work we  will address  finding a generalized  push point algorithm.
+In  our  future work, we  will address  finding a generalized  push point algorithm.
 \vspace{-0.5ex}
 \subsection{Results}
 All  the  experiments were  performed  three  times  for each  of  the
@@ -564,7 +563,7 @@ All  the  experiments were  performed  three  times  for each  of  the
 \ref{tab:chart_result} which  shows the segmentation success rate  for every scene. 
 The  corresponding figures for this data  can be found in  Figure \ref{fig:evaluation1}. 
 The algorithm was never able to segment the scene number 8 and performed poorly for scenes
-6 and 13. In these cases the contact surface of the two objects is large and the objects are of the same size.
+6 and 13. In these cases, the contact surface of the two objects is large and the objects are of the same size.
 Erroneous reconstruction happens due to a lack of a sufficiently good boundary estimation
 near the touching surface, and therefore the region growing does not terminate.
 This could be alleviated by integrating texture/color-based segmentation methods,
@@ -573,7 +572,7 @@ which we plan to investigate in the future.
 It  is  important to  note  that  the  overall
 segmentation   was    successful   in   more   than    82\%   of   the
 experiments.  Table \ref{tab:result_percentage}  shows that the more
-objects differ  and the less in  contact they are  the more successful
+objects differ  and the less in  contact they are,  the more successful
 the  segmentation becomes.  Our
 algorithm  performs extremely well in the  'on top'  arrangement which  is very
 challenging for the static segmentation techniques.
@@ -673,7 +672,7 @@ solid contact) & on top\\ \hline Success rate[\%] & \centering 82,4 & \centering
     \label{fig:evaluation1}
 \end{figure}
 
-We refer  reader to all  the scenes with
+We refer the  reader to all scenes with
 the round objects. 
 It can be noted that
 the Kinect sensor from the used viewpoint (mounted on the head of the human size PR2 robot) always
@@ -685,23 +684,23 @@ the system presented in this
 thesis can easily deal with such scenes without a model by clustering the two
 parts of the mug since they move rigidly with respect to each other.
 
- For  the scene in  bottom row  of Figure \ref{fig:scenes}  we can  observe that
+ For  the scene in the bottom row  of Figure \ref{fig:scenes},  we can  observe that
  there is only one feature on the left object.  All   the  clustering  algorithms  trying  to
  explicitly cluster  at least one  pair of features with  the constant
  relative  distance over  time would have failed  in this  case.  Using  the
- graph-based clustering method we are able to disconnect the two nodes
+ graph-based clustering method, we are able to disconnect the two nodes
  of  the  graph  and infer  that  there  is a single feature-object association.
 
 
 
 \section{Conclusion}
 \label{sec:conclusion}
-We have  presented a novel interactive segmentation  system suitable for
+We have  presented a novel interactive segmentation  system, suitable for
 the segmentation of textureless  objects in cluttered tabletop scenes.
 Integrated  in the  system are  the static  pre-segmentation  based on
 geometrical   categorization,  a  push   point and direction estimation, 
-RGBD features  suitable for tracking of
-textureless objects,  the graph-based trajectory  clustering algorithm
+RGBD features  suitable for the tracking of
+textureless objects,  the graph-based trajectory  clustering algorithm,
 and the  dense model reconstruction.  A rigorous  evaluation of the
 system on a  set of 17 scenes showed successful segmentation in $82\%$ of the cases.  
 The results show the applicability of our system

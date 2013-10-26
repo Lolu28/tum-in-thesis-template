@@ -10,6 +10,26 @@
 %Segmentation/Identitation of new objects - ICRA 2013
 
 
+%General recognition system (TangMillerSingh) - combining 3d data and sift
+
+%Object search using high level information -ICRA2013preprint
+
+%Object recognition combining rgb and d - kernel descriptors - icra 11b
+
+%new features combining rgb and d - drost20123
+
+%bag of words approaches cciw2013
+
+%labeling objects using online datasets - 3d objects labeling ICRA
+
+%Datasets - K. Lai, L. Bo, X. Ren, and D. Fox. A large-scale hierarchical multi-
+%view RGB-D object dataset. In Proc. of the IEEE International Conference on Robotics and Automation (ICRA), 2011. CALTECH
+
+
+%textureless object - LINEMOD method - Hinterstoisser and improved
+
+%transparent objects - p35
+
 In this part of the thesis we want to show a big picture of research that has been done in the areas of static object segmentation and static object recognition. 
 
 One of the most successful approaches in static segmentation has been shown by Marton et al.~\cite{marton12SC} where the authors presented an algorithm that makes use of over-segmentation of objects and part-graph-based hashing. In our work we use their algorithm as a prior for the interactive segmentation pipeline (it is described in detail in Chapter \ref{chapter:Textureless Segmentation}). Zhan et al.~\cite{RGBRegionGrowing} described a different approach where the emphasis is put on colorimetrical and spatial relations between the extracted regions of a point cloud. The regions are first formed using a kd-tree based region growing algorithm that searches k nearest neighbors of a given point. The last step of the algorithm merges and refines the regions obtained in the first step. There has been also a number of graph-based algorithms that approach the object segmentation problem. Felzenschwalb and Huttenlocher~\cite{Felzenszwalb} presented a graph-based algorithm revolving around a predicate that measures the likelihood of a boundary between two regions.
@@ -33,31 +53,7 @@ Drost and Ilic~\cite{drost20123d} presented an object detection approach based o
 
 There is also a lot of research on other categories of objects that were mentioned in Chapter \ref{chapter:Introduction}: a system that is able to robustly detect textureless objects presented by Hinterstoisser et al.~\cite{hinterstoisser2011multimodal}, an algorithm that enables robots to recognize and estimate the pose of transparent objects showed by Lysenkov et al.~\cite{lysenkov2012recognition}, to name but a few. 
 
-
-%General recognition system (TangMillerSingh) - combining 3d data and sift
-
-%Object search using high level information -ICRA2013preprint
-
-%Object recognition combining rgb and d - kernel descriptors - icra 11b
-
-%new features combining rgb and d - drost20123
-
-%bag of words approaches cciw2013
-
-%labeling objects using online datasets - 3d objects labeling ICRA
-
-%Datasets - K. Lai, L. Bo, X. Ren, and D. Fox. A large-scale hierarchical multi-
-%view RGB-D object dataset. In Proc. of the IEEE International Conference on Robotics and Automation (ICRA), 2011. CALTECH
-
-
-%textureless object - LINEMOD method - Hinterstoisser and improved
-
-%transparent objects - p35
-
-
-
-
-
+\newpage
 
 \subsection{Interactive Perception}
 
