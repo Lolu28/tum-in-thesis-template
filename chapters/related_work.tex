@@ -3,31 +3,57 @@
 
 
 \section{Literature}
-\subsection{Robotics Systems}
 \subsection{Vision-based Segmentation/Recognition}
 
-Segmentation - folder: oversegmentation and hashing - ferko
-Segmentation/Identitation of new objects - ICRA 2013
+%Traditionally, research in passive perception was concentrated on finding a set of features (e.g. color~\cite{Balch_2000_3584}) or higher order features (e.g. those existing in graph cut approaches~\cite{BoykovGraphCut}) in static and segmented images.
 
-General recognition system (TangMillerSingh) - combining 3d data and sift
-
-Object search using high level information -ICRA2013preprint
-
-Object recognition combining rgb and d - sparse distance learning
-
-new features combining rgb and d - drost20123
-
-bag of words approaches cciw2013
-
-labeling objects using online datasets - 3d objects labeling ICRA
-
-Datasets - K. Lai, L. Bo, X. Ren, and D. Fox. A large-scale hierarchical multi-
-view RGB-D object dataset. In Proc. of the IEEE International Conference on Robotics and Automation (ICRA), 2011. CALTECH
+%Segmentation/Identitation of new objects - ICRA 2013
 
 
-textureless object - LINEMOD method - Hinterstoisser and improved
+In this part of the thesis we want to show a big picture of research that has been done in the areas of static object segmentation and static object recognition. 
 
-transparent objects - p35
+One of the most successful approaches in static segmentation has been shown by Marton et al.~\cite{marton12SC} where the authors presented an algorithm that makes use of over-segmentation of objects and part-graph-based hashing. In our work we use their algorithm as a prior for the interactive segmentation pipeline (it is described in detail in Chapter \ref{chapter:Textureless Segmentation}). Zhan et al.~\cite{RGBRegionGrowing} described a different approach where the emphasis is put on colorimetrical and spatial relations between the extracted regions of a point cloud. The regions are first formed using a kd-tree based region growing algorithm that searches k nearest neighbors of a given point. The last step of the algorithm merges and refines the regions obtained in the first step. There has been also a number of graph-based algorithms that approach the object segmentation problem. Felzenschwalb and Huttenlocher~\cite{Felzenszwalb} presented a graph-based algorithm revolving around a predicate that measures the likelihood of a boundary between two regions.
+
+The exemplary results of all three static segmentation algorithms described above are shown in Figure \ref{fig:tracking_dists}.  
+
+Another example of a graph-based image segmentation algorithm was presented in a work by Boykov and Kolmogorov~\cite{BoykovGraphCut} where the authors evaluate different min-cut/max-flow algorithms in order to approximate the energy minimization in low-level vision. 
+
+A different approach to the image segmentation problem was presented by Ouadfel and Batouche~\cite{ouadfel2003mrf}. The authors developed an algorithm that is based on an ant colony system. The main idea behind the ant colony approach is that in order to improve image regions labelling, ant-inspired communication techniques between local agents are leveraged. Cooperation between ants uses the idea of pheromone updates where ants leave their trace in order to enable other ants to follow them.  
+ 
+Similarly to the topic of static object segmentation there has been done a vast amount of research in the area of object recognition. 
+
+One of the most efficient and robust object recognition systems was developed by Tang et al.~\cite{tang2012textured}. It is worth mentioning that the system took the 1st place in the ICRA 2011 Solutions in Perception instance recognition challenge. The system can be divided into several steps. In the training phase a full object model is created, then it is transformed into a mesh, and finally, the RGB data is projected onto the object model acquired in the previous steps. The authors decided to use SIFT (described in detail in Chapter \ref{chapter:Background}) features and color histograms in order to fully describe the textural property of the object. In the testing phase plane extraction and euclidean clustering algorithms are employed in order to segment the object. As next steps color model matching and SIFT feature matching are performed to recognize the object. The algorithm also performs geometric pose estimation as well as final scene verification and refinement using global scene consistency checks. 
+
+A different approach was discussed by Weijer and Khan~\cite{van2013fusing} where the authors compare various bag-of-words based recognition algorithms. The algorithm represents an image as a set of local regions where each of them is represented as a visual vocabulary. Different objects correspond to different histograms (called bags-of-words) over the created vocabulary. An extracted bag-of-words histogram can be compared to all the histograms stored in the memory and thus, an object can be labelled as one of the previously seen objects. 
+
+There has also been plethora of research that concentrates on the shape of objects rather than their texture. 
+
+Such an approach was presented by Teo et al.~\cite{teoembedding} where the authors tackle the problem of object search which has a similar formulation to the object recognition problem. The algorithm uses a modified version of the image torque~\cite{nishigaki2012image} which is augmented by using high level knowledge of the target object's properties. The input of the torque operator contains the visible edges and it calculates how close they are to form a closed, convex contour.
+
+Drost and Ilic~\cite{drost20123d} presented an object detection approach based on surface descriptors. The authors use geometric edges (extracted from the intensity image and filtered using the range image) in order to build a rotational and scale invariant surface descriptor. As the evaluation showed the system is particularly robust with respect to occlusions.  
+
+There is also a lot of research on other categories of objects that were mentioned in Chapter \ref{chapter:Introduction}: a system that is able to robustly detect textureless objects presented by Hinterstoisser et al.~\cite{hinterstoisser2011multimodal}, an algorithm that enables robots to recognize and estimate the pose of transparent objects showed by Lysenkov et al.~\cite{lysenkov2012recognition}, to name but a few. 
+
+
+%General recognition system (TangMillerSingh) - combining 3d data and sift
+
+%Object search using high level information -ICRA2013preprint
+
+%Object recognition combining rgb and d - kernel descriptors - icra 11b
+
+%new features combining rgb and d - drost20123
+
+%bag of words approaches cciw2013
+
+%labeling objects using online datasets - 3d objects labeling ICRA
+
+%Datasets - K. Lai, L. Bo, X. Ren, and D. Fox. A large-scale hierarchical multi-
+%view RGB-D object dataset. In Proc. of the IEEE International Conference on Robotics and Automation (ICRA), 2011. CALTECH
+
+
+%textureless object - LINEMOD method - Hinterstoisser and improved
+
+%transparent objects - p35
 
 
 
@@ -36,9 +62,9 @@ transparent objects - p35
 
 \subsection{Interactive Perception}
 
-Traditionally, research in passive perception was concentrated on finding a set of features (e.g. color~\cite{Balch_2000_3584}) or higher order features (e.g. those existing in graph cut approaches~\cite{BoykovGraphCut}) in static and segmented images.
 
-In this thesis we take a different approach by creating an interactive scene segmentation and by including robotic arm manipulation into the perception loop. Fitzpatrick~\cite{fitzpatrick_active_vision} and Kenney et al.~\cite{KenneyInteractive} discussed the problem of segmenting rigid objects from a video stream. These video streams presented objects being moved by the robot (pre-planned arm motion) and used a simple Gaussian model of the color values to deduce a possible motion and the graph cut algorithm for the final object segmentation. Their methods are accurate for textured and textureless objects. The difference between their and our approach is that we did not use the pre-planned arm motion. Instead, our arm motion adapts to the scene and enables us to use the 3D data to segment the object aspirants from the background.
+
+In this thesis we take a different approach to the ones presented at the beginning of this section. We create an interactive scene segmentation and by including robotic arm manipulation into the perception loop. Fitzpatrick~\cite{fitzpatrick_active_vision} and Kenney et al.~\cite{KenneyInteractive} discussed the problem of segmenting rigid objects from a video stream. These video streams presented objects being moved by the robot (pre-planned arm motion) and used a simple Gaussian model of the color values to deduce a possible motion and the graph cut algorithm for the final object segmentation. Their methods are accurate for textured and textureless objects. The difference between their and our approach is that we did not use the pre-planned arm motion. Instead, our arm motion adapts to the scene and enables us to use the 3D data to segment the object aspirants from the background.
 
 The problem of segmenting articulated objects was discussed by Katz et al.~\cite{Katz-WS-MM-ICRA2011}. In this approach, a Lucas-Kanade tracker as well as a set of predictors (short and long distance, color, relative motion, triangulation and fundamental matrix) were used in order to achieve rigid body hypotheses, which took form of a graph. Additionally, they obtained subsequent fixation point on the object which enables segmenting an object based on intensity, color and texture cues. There are some important limitations in this approach. First, the pre-planned arm motion and second, the time needed to break the object hypotheses into subgraphs by using a min-cut algorithm. 
 Another approach to interactive segmentation is presented by Bergstrom et al.~\cite{bergstrom11icvs}. Their methodology requires preliminary labelling using a 3D segmentation through fixation whose outcome is a rough initial segmentation. Here, the robot makes an interaction with the scene aiming to disambiguate the hypotheses. Consequently, points in motion space are clustered by using a two component Gaussian mixture model. In this case, the limitation is that the number of objects per scene will never be greater than two.
