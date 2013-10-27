@@ -3,32 +3,32 @@
 
 \section{Summary}
 
-In this thesis we first presented an interactive segmentation system that works with textureless objects of preferably box-like or cylindrical shapes. The system consists of multiple steps that involve various algorithms such as initial classification, feature extraction and tracking, push point estimation, trajectory clustering and the dense model reconstruction. The whole system was thoroughly evaluated on multiple scenes and showed significant improvement compared to static segmentation techniques.
+In this thesis, we first presented an interactive segmentation system that works with textureless objects of preferably box-like or cylindrical shapes. The system consists of multiple steps that involve various algorithms such as initial classification, feature extraction and tracking, push point estimation, trajectory clustering, and the dense model reconstruction. The whole system was thoroughly evaluated on multiple scenes and showed significant improvement compared to static segmentation techniques.
 
-In the second part of the thesis we showed the initial work on object recognition system that leveraged the same idea of robot interacting with its surrounding. The implemented system is based on feature matching algorithm. Our evaluation proves that bringing an object to its original pose significantly improves the probability of the object being recognized correctly. We also showed theoretical background for the rotational push that can be easily implemented on the robot while still remaining efficient in bringing the object into its original pose. 
+In the second part of the thesis we showed preliminary work on an object recognition system that also leverages the idea of a robot interacting with its surroundings in order to improve its perception. The implemented system is based on the feature matching algorithm. Our evaluation proves that bringing an object to the pose stored in the database significantly improves the probability of the object being recognized correctly. We also showed theoretical background for the rotational push that can be easily implemented on the robot while still remaining efficient in bringing the object into its original pose. 
 
-Finally, we presented the interactive perception software framework that enables to combine the community effort in the interactive perception field. Generic and modular infrastructure makes it possible to run different algorithms within the same system pipeline that is similar in most of the recent interactive perception systems.
+Finally, we presented an interactive perception software framework that enables researches to combine the community effort in the interactive perception field. Generic and modular infrastructure makes it possible to run different algorithms within the same system pipeline, which is similar in most of the recent interactive perception systems.
 
-All together this thesis shows a shift towards the idea of including the manipulation in the perception loop and it presents promising results while following this approach. 
+In summary, this thesis shows a shift towards the idea of including manipulation in the perception loop and it presents promising results while following this approach. 
 
 
 \section{Future Work}
 We divide this section into 3 parts pertaining to three major contributions of this thesis.
 
 \subsection{Interactive Segmentation of Textureless Objects}
-Though the results of the presented system are very promising, there is still several improvements to be made. First, we
+Though the results of the presented system are very promising, there are still several improvements to be made. First, we
 will solve the problem depicted in scene number 8 in Figure \ref{fig:evaluation1} by integrating color and the texture-based segmentation techniques.
 Second, we plan to improve our pushing heuristic such that we
-can deal with the ’on top’ arrangement. This can be done by
+can deal with the ``on top'' arrangement. This can be done by
 looking for 3D corners as pushing points. One can also use a
-different heuristic such as the singulation method presented by
+different pushing heuristic such as the singulation method presented by
 Chang et al.~\cite{chang11interactive}. Lastly, we will also address heavy occlusions
 and self-occlusions of RGBD features in the tracking step.
 
 
 \subsection{Interactive Object Recognition}
-Since the initial work has been done, there are multiple improvements that can be investigated more thoroughly. We plan to test translational motion of the objects in order to check if it solves other issues presented in Chapter \ref{chapter:Object Recognition}. We also want to combine translation and rotation into one movement that can be executed in more informative manner in order to bring an object to its original pose. In order to do so, we want to use transformation estimate between the live point cloud and the point cloud that will be saved in the database. Moreover, we plan to use tactile sensor information to implement a particle filter approach to not only determine the semantic type but also to estimate its physical properties. Finally, we want to take bigger advantage of interactive segmentation system and combine those two systems together in order to have one interactive perception pipeline that can segment and recognize objects at the same time. 
+We plan to test translational motion of objects in order to check if it solves other issues presented in Chapter \ref{chapter:Object Recognition}. We also want to combine translation and rotation into one movement that can be executed in a more informative manner in order to bring an object to the pose stored in the database. In order to do so, we want to use a transformation estimate between the live point cloud and the point cloud that will be saved in the database. Moreover, we plan to use tactile sensor information to implement a particle filter approach to not only determine the semantic type, but also to estimate physical properties of the object. Finally, we want to take bigger advantage of interactive segmentation system and combine those two systems together in order to have the interactive perception pipeline that can segment and recognize objects at the same time. 
 
 
 \subsection{Interactive Perception Library}
-The core architecture of the library has been already developed. Currently, we focus on creating the community of people involved in interactive perception field. We also plan to develop evaluation tools and object database that can be of great help to other researchers working on the topic of interactive perception.
+The core architecture of the library has been already developed. Currently, we focus on creating an interactive perception community. We also plan to develop evaluation tools and an object database that can be of great help to other researchers working on the topic of interactive perception.
