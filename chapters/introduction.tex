@@ -13,7 +13,7 @@ in Figure \ref{fig:tracking_dists}~\cite{iros10kcopman}. In order to interact wi
 
 \setlength{\tabcolsep}{0.1em}
 \begin{figure}[ht]
-%\centering
+\centering
 \begin{tabular}{cccc}
 \multicolumn{2}{c}{\multirow{-6}{*}{\includegraphics[width=0.5\columnwidth]{figures/teaser/IMG_0395.JPG}
 }} & \includegraphics[width=0.23\columnwidth]{figures/segmentation_others/region_growing_rgb.png} 
@@ -40,7 +40,7 @@ motivation of this work is to show that by leveraging robots' manipulation skill
 We can divide objects into three categories - textured, textureless and transparent with examples shown in Figure \ref{fig:all-objects}. In our work we address the first two of them and we plan to focus on the third one in the future work.
 
 \begin{figure}
-%\centering
+\centering
 
 {\includegraphics[width=1\columnwidth]{figures/all-objects.jpg}}
 
@@ -87,7 +87,7 @@ According to L. Shapiro and G. Stockman~\cite{shapiro2001computer}:
 \noindent ``Image segmentation is the process of partitioning a digital image into multiple segments. The goal of segmentation is to simplify and/or change the representation of an image into something that is more meaningful and easier to analyse.''
 
 \begin{figure}[ht]
-%\centering
+\centering
 \begin{tabular}{cccc}
 
 \multicolumn{2}{c}{\includegraphics[width=0.45\columnwidth]{figures/3objects/after_push.jpg}}
@@ -114,7 +114,7 @@ As an example output of the object segmentation we refer the reader to Figure \r
 \subsection{Object Recognition}
 
 Once the object is segmented and the robot is aware of its boundaries, it is crucial to be able to recognize which object it is. The statement of the object recognition is -  
-given a database of objects and an image, determine which, if any of the objects are present in the image. In this part of the thesis we concentrate on recognition of textured objects with the same idea that we used before - we leverage robots' manipulation capabilities in order to improve robots' perception.
+given a database of objects and an image, determine which, if any of the objects are present in the image. In this part of the thesis we focus on recognition of textured objects with the same idea that we used before - we leverage robots' manipulation capabilities in order to improve robots' perception.
 
 In order to simplify the problem of model based recognition we constrain the region of interest such that the object is articulated. There are many systems in the field which came up with different solutions to the problem of reliable and robust object recognition. It is commonly believed that the most successful ones are the ones based on feature matching approach. All of them encountered to some extent the same problems, among others:
 
@@ -133,7 +133,7 @@ The problem of object recognition can be understood much wider since we are ente
 
 \section{Approach} 
 
-In this thesis we concentrate on solving two challenges: 
+In this thesis we focus on solving two challenges: 
 
 \begin{itemize} 
 \item segmentation of textureless objects (the textured case has been presented in~\cite{bersch12interactive} and~\cite{Katz-WS-MM-ICRA2011}),
