@@ -73,10 +73,32 @@ There is a plethora of research that focuses on the estimation of the articulati
 
 
 \subsection{Interactive Segmentation for Textured Objects}
-In our previous work~\cite{polishthesis,bersch12interactive} we developed an interactive segmentation algorithm for textured objects. The idea behind this system is similar to the interactive segmentation system for textureless objects described in this thesis.
+In my previous master thesis conducted at Warsaw University of Technology~\cite{polishthesis} I was working on the problem of interactive segmentation algorithm for textured objects. In addition, the preliminary work on interactive segmentation for textureless objects was introduced. The main difference in this work is: 
+
+\begin{itemize} 
+\item a thorough evaluation of the interactive segmentation of textureless objects system conducted on multiple scenes, 
+\item additional algorithms such as dense model reconstruction, and substantial improvements to the ones presented before, 
+\item validation of our push heuristic proven by experiments in a simulator,
+\item preliminary work on the interactive object recognition method, 
+\item introduction of Interactive Perception Library and the concept of the Interactive Perception community. 
+\end{itemize} 
+
+
+
+%In my previous master thesis conducted at ... I was working on ... The difference in this work is a b and c.
+%
+%In contrast to our previous work, we investigate here ...  " "Our previous work did not include a,b,c ,...
+%
+%In our previous work~\cite{polishthesis,bersch12interactive} we developed an interactive segmentation algorithm for textured objects. The idea behind this system is similar to the interactive segmentation system for textureless objects described in this thesis.
+%
+
+%
+%In our previous work~\cite{bersch12interactive} we focused on an interactive segmentation system for textured objects. 
+
+The idea behind the system for textured objects~\cite{bersch12interactive} is similar to the interactive segmentation system for textureless objects described in this thesis.
 
 Firstly, we extract 2D features which are then tracked while the robot actively induces
 motions into a scene using its arm. Then we employ a novel RANSAC-like clustering algorithm in order to assign tracked feature trajectories to the corresponding objects. The number of objects is uknown a priori. The approach was also evaluated on the real robot in a number of scenes.
-
-In those works we also introduced our initial idea of the system that is able to segment objects without texture. This is continued as the main subject (together with additional contributions such as Interactive Object Recognition and Interactive Perception Library) of this thesis.  
+%
+%In those works we also introduced our initial idea of the system that is able to segment objects without texture. This is continued as the main subject (together with additional contributions such as Interactive Object Recognition and Interactive Perception Library) of this thesis.  
 
