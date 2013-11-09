@@ -35,20 +35,20 @@ decide if the interactive segmentation algorithm will be used or not. It is wort
 
 \begin{figure*}[t!]  %\renewcommand*{\thesubfigure}{} 
   \begin{centering} 
-    \begin{tabular}{p{0.166\textwidth}p{0.186\textwidth}p{0.186\textwidth}p{0.196\textwidth}p{0.186\textwidth}p{0.166\textwidth}}
-    \includegraphics[height=1.5cm]{figures/scene1/image_before.jpg}
-&    \includegraphics[height=1.5cm]{figures/scene1/pcl_before.png}
-&    \includegraphics[height=1.5cm]{figures/scene1/segments.png}
-&    \includegraphics[height=1.5cm]{figures/scene1/labels.png}
-&    \includegraphics[height=1.5cm]{figures/scene1/pcl_after.png}    
-&    \includegraphics[height=1.5cm]{figures/scene1/distances.png}\\
+    \begin{tabular}{p{0.151\textwidth}p{0.171\textwidth}p{0.171\textwidth}p{0.181\textwidth}p{0.171\textwidth}p{0.166\textwidth}}
+    \includegraphics[height=1.35cm]{figures/scene1/image_before.jpg}
+&    \includegraphics[height=1.35cm]{figures/scene1/pcl_before.png}
+&    \includegraphics[height=1.35cm]{figures/scene1/segments.png}
+&    \includegraphics[height=1.35cm]{figures/scene1/labels.png}
+&    \includegraphics[height=1.35cm]{figures/scene1/pcl_after.png}    
+&    \includegraphics[height=1.35cm]{figures/scene1/distances.png}\\
 
-    \includegraphics[height=1.5cm]{figures/scene2/image_before1.jpg}
-&    \includegraphics[height=1.5cm]{figures/scene2/pcl_before1.png}
-&    \includegraphics[height=1.5cm]{figures/scene2/segments1.png}    
-&    \includegraphics[height=1.5cm]{figures/scene2/labels1.png}
-&    \includegraphics[height=1.5cm]{figures/scene2/pcl_after1.png}  
-&    \includegraphics[height=1.5cm]{figures/scene2/distances.png}
+    \includegraphics[height=1.35cm]{figures/scene2/image_before1.jpg}
+&    \includegraphics[height=1.35cm]{figures/scene2/pcl_before1.png}
+&    \includegraphics[height=1.35cm]{figures/scene2/segments1.png}    
+&    \includegraphics[height=1.35cm]{figures/scene2/labels1.png}
+&    \includegraphics[height=1.35cm]{figures/scene2/pcl_after1.png}  
+&    \includegraphics[height=1.35cm]{figures/scene2/distances.png}
 
 %     \includegraphics[height=1.65cm]{scene3/image_before.jpg}
 % &    \includegraphics[height=1.65cm]{scene3/pcl_before.png}
@@ -57,8 +57,8 @@ decide if the interactive segmentation algorithm will be used or not. It is wort
 % &    \includegraphics[height=1.65cm]{scene3/pcl_after.png}    
 % &    \includegraphics[height=1.65cm]{scene3/distances.png}
   \end{tabular}
-		\vspace{-2ex}
-    \caption{Two test scenes in the top and bottom row respectively. First column:
+		%\vspace{-2ex}
+    \caption[Two test scenes for our pipeline.]{Two test scenes in the top and bottom row respectively. First column:
       original scenes; second column: extracted RGBD features before the
       interaction; third column: parts $P$ from the static segmentation;
       fourth column: object hypotheses $O$ from the static segmentation; fifth column:
@@ -227,7 +227,7 @@ the next section.
    \begin{center}
      \includegraphics[width=.9\columnwidth]{figures/corners.png}
 		\vspace{-2ex}
-   \caption{Corners and their directions after morphological operations. 1st row - image of the scene. 2nd row, 1st column - Corners detected from the top-view image. 2nd row, 2nd column - Directions detected from the top-down image. }
+   \caption[Corners and their directions after morphological operations.]{Corners and their directions after morphological operations. 1st row - image of the scene. 2nd row, 1st column - Corners detected from the top-view image. 2nd row, 2nd column - Directions detected from the top-down image. }
    \label{fig:corners}
  \end{center}
  \end{figure}
@@ -266,7 +266,9 @@ is less than $1cm$ away from an object's corner.
   \begin{center}
     \includegraphics[width=0.3\textwidth]{figures/push_directions.pdf}  
     \includegraphics[width=0.3\textwidth]{figures/rviz_empty9_crop.pdf} 
-    \caption{Screenshots from  the Gazebo  simulation of a  two object
+    \caption[Screenshots from  the Gazebo  simulation of a  two object
+      scene   and  the   corresponding  visualization   of  the
+      segmentation result.]{Screenshots from  the Gazebo  simulation of a  two object
       scene (left)   and  the   corresponding  visualization   of  the
       segmentation result. The black arrows in the left image show the
       7 push  directions for a single  contact point. The  dots on the
@@ -314,7 +316,7 @@ The feature extraction part of our algorithm forms an input for the feature trac
 
 \subsection{RGBD Features}
 \label{sec:3dfeatures}
-In order to reduce our regions of interest and improve the finding of the feature we look only at those parts of a point cloud with a high curvature value. The 3D line extraction algorithm takes as an input, all the edges extracted from the initial point cloud. As the next step we use the RANSAC algorithm to find the best fit between the line model and the filtered input point cloud. The algorithm proceeds similarly as described in Chapter \ref{chapter:Background} - if the current number of inliers is greater than the number of inliers found in the previous iterations, then the current line coefficients are saved. The algorithm runs until the number of inliers exceeds a certain threshold. Having extracted a set of lines we pad each of them with neighbouring points that are within a radius of $5cm$ in order to form a edge that ideally consists of two planes. We want to use edges rather than thin lines because edges form more distinctive geometrical models, so they are easier to track. After this process we employ one additional check to eliminate edges consisting of more than 2 planes, namely we use tthe Plane Segmentation Algorithm from PCL to determine how many planes an edge consists of. If the number of planes is bigger than 2 then we eliminate the edge from the tracking set.
+In order to reduce our regions of interest and improve the finding of the feature we look only at those parts of a point cloud with a high curvature value. The 3D line extraction algorithm takes as an input, all the edges extracted from the initial point cloud. As the next step we use the RANSAC algorithm to find the best fit between the line model and the filtered input point cloud. The algorithm proceeds similarly as described in Chapter \ref{chapter:Background} - if the current number of inliers is greater than the number of inliers found in the previous iterations, then the current line coefficients are saved. The algorithm runs until the number of inliers exceeds a certain threshold. Having extracted a set of lines we pad each of them with neighbouring points that are within a radius of $5cm$ in order to form an edge that ideally consists of two planes. We want to use edges rather than thin lines because edges form more distinctive geometrical models, so they are easier to track. After this process we employ one additional check to eliminate edges consisting of more than 2 planes, namely we use tthe Plane Segmentation Algorithm from PCL to determine how many planes an edge consists of. If the number of planes is bigger than 2 then we eliminate the edge from the tracking set.
 
 In addition to 3D lines, we use 3D corners as features on the flat objects category. 3D corners are extracted by using a 3D implementation of the Harris corner detector from PCL. In this case instead of taking pixel values into consideration and forming a Harris matrix, depth information of the points is used. Therefore, we are able to detect 3D corners in the scene that are not necessarily the same as their 2D Harris corner equivalents. After the corner is detected, we subtract the corners that we found from the point cloud and start searching again. We pad found corners with the neighbouring point as well and we use additional plane segmentation check where we check if a padded corner consists of exactly 3 planes.
 
@@ -501,7 +503,7 @@ by merging those regions for which the corresponding features belong to the same
 \begin{figure}[ht!]
   \centering \includegraphics[width=0.5\columnwidth]{figures/dense.png}
   \vspace{2ex}
-  \caption{Dense reconstruction algorithm. The point is considered to be on the object if the angle $eps_{thresh}$ between the vector connecting it to the initial point and the point's normal is close to obtuse. 
+  \caption[Dense reconstruction algorithm.]{Dense reconstruction algorithm. The point is considered to be on the object if the angle $eps_{thresh}$ between the vector connecting it to the initial point and the point's normal is close to obtuse. 
   }
   \label{fig:dense}
 \end{figure}
@@ -604,10 +606,12 @@ solid contact) & on top\\ \hline Success rate[\%] & \centering 82,4 & \centering
 \end{table}
 
 \begin{figure}[h!]  %\renewcommand*{\thesubfigure}{}
-  \hspace*{-2.6cm}  
-    \begin{tabular}{ccccccccc}
+  %\hspace*{-2.6cm}  
+  \centering 
+
+    \begin{tabular}{ccccccc}
       \hline
-      1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 \\
+      1 & 2 & 3 & 4 & 5 & 6 & 7 \\
       \hline
       \hline
     \includegraphics[height=1.5cm]{pictures/11.jpg}&
@@ -616,58 +620,93 @@ solid contact) & on top\\ \hline Success rate[\%] & \centering 82,4 & \centering
     \includegraphics[height=1.5cm]{pictures/41.jpg}&
     \includegraphics[height=1.5cm]{pictures/51.jpg}&
     \includegraphics[height=1.5cm]{pictures/61.jpg}&
-    \includegraphics[height=1.5cm]{pictures/71.jpg}&
-    \includegraphics[height=1.5cm]{pictures/81.jpg}&
-    \includegraphics[height=1.5cm]{pictures/91.jpg}\\ \includegraphics[height=1.5cm]{pictures/12.jpg}&
+    \includegraphics[height=1.5cm]{pictures/71.jpg}\\
+    %\includegraphics[height=1.5cm]{pictures/81.jpg}&
+    %\includegraphics[height=1.5cm]{pictures/91.jpg}\\ 
+    \includegraphics[height=1.5cm]{pictures/12.jpg}&
     \includegraphics[height=1.5cm]{pictures/22.jpg}&
     \includegraphics[height=1.5cm]{pictures/32.jpg}&
     \includegraphics[height=1.5cm]{pictures/42.jpg}&
     \includegraphics[height=1.5cm]{pictures/52.jpg}&
     \includegraphics[height=1.5cm]{pictures/62.jpg}&
-    \includegraphics[height=1.5cm]{pictures/72.jpg}&
-    \includegraphics[height=1.5cm]{pictures/82.jpg}&
-    \includegraphics[height=1.5cm]{pictures/92.jpg}\\ \includegraphics[height=1.5cm]{pictures/13.png}&
+    \includegraphics[height=1.5cm]{pictures/72.jpg}\\
+    %\includegraphics[height=1.5cm]{pictures/82.jpg}&
+    %\includegraphics[height=1.5cm]{pictures/92.jpg}\\ 
+    \includegraphics[height=1.5cm]{pictures/13.png}&
     \includegraphics[height=1.5cm]{pictures/23.png}&
     \includegraphics[height=1.5cm]{pictures/33.png}&
     \includegraphics[height=1.5cm]{pictures/43.png}&
     \includegraphics[height=1.5cm]{pictures/53.png}&
     \includegraphics[height=1.5cm]{pictures/63.png}&
-    \includegraphics[height=1.5cm]{pictures/73.png}&
-    \includegraphics[height=1.5cm]{pictures/83.png}&
-    \includegraphics[height=1.5cm]{pictures/93.png}\\
+    \includegraphics[height=1.5cm]{pictures/73.png}\\
+    %\includegraphics[height=1.5cm]{pictures/83.png}&
+    %\includegraphics[height=1.5cm]{pictures/93.png}\\
     \end{tabular}
-      \hspace*{-2.5cm}  
-    \begin{tabular}{cccccccc}
+     % \hspace*{-2.5cm}  
+    \begin{tabular}{ccccc}
       \hline
-      10 & 11 & 12 & 13 & 14 & 15 & 16 & 17\\
+      8 & 9 & 10 & 11 & 12 \\
       \hline
       \hline
+    %\includegraphics[height=1.5cm]{pictures/71.jpg}&
+    \includegraphics[height=1.5cm]{pictures/81.jpg}&
+    \includegraphics[height=1.5cm]{pictures/91.jpg}& 
     \includegraphics[height=1.5cm]{pictures/101.jpg}&
     \includegraphics[height=1.5cm]{pictures/111.jpg}&
-    \includegraphics[height=1.5cm]{pictures/121.jpg}&
+    \includegraphics[height=1.5cm]{pictures/121.jpg}\\
+    %\includegraphics[height=1.5cm]{pictures/131.jpg}&
+    %\includegraphics[height=1.5cm]{pictures/141.jpg}&
+    %\includegraphics[height=1.5cm]{pictures/151.jpg}&
+    %\includegraphics[height=1.5cm]{pictures/161.jpg}&
+    %\includegraphics[height=1.5cm]{pictures/171.jpg}\\ 
+    %\includegraphics[height=1.5cm]{pictures/72.jpg}&
+    \includegraphics[height=1.5cm]{pictures/82.jpg}&
+    \includegraphics[height=1.5cm]{pictures/92.jpg}&     
+    \includegraphics[height=1.5cm]{pictures/102.jpg}&
+    \includegraphics[height=1.5cm]{pictures/112.jpg}&
+    \includegraphics[height=1.5cm]{pictures/122.jpg}\\
+    %\includegraphics[height=1.5cm]{pictures/132.jpg}&
+    %\includegraphics[height=1.5cm]{pictures/142.jpg}&
+    %\includegraphics[height=1.5cm]{pictures/152.jpg}&
+    %\includegraphics[height=1.5cm]{pictures/162.jpg}&
+    %\includegraphics[height=1.5cm]{pictures/172.jpg}\\ 
+    %\includegraphics[height=1.5cm]{pictures/73.png}&
+    \includegraphics[height=1.5cm]{pictures/83.png}&
+    \includegraphics[height=1.5cm]{pictures/93.png}&
+    \includegraphics[height=1.5cm]{pictures/103.png}&
+    \includegraphics[height=1.5cm]{pictures/113.png}&
+    \includegraphics[height=1.5cm]{pictures/123.png}\\
+    %\includegraphics[height=1.5cm]{pictures/133.png}&
+    %\includegraphics[height=1.5cm]{pictures/143.png}&
+    %\includegraphics[height=1.5cm]{pictures/153.png}&
+    %\includegraphics[height=1.5cm]{pictures/163.png}&
+    %\includegraphics[height=1.5cm]{pictures/173.png}\\
+    \end{tabular}
+	\begin{tabular}{ccccc}
+      \hline
+      13 & 14 & 15 & 16 & 17 \\
+      \hline
+      \hline
     \includegraphics[height=1.5cm]{pictures/131.jpg}&
-    \includegraphics[height=1.5cm]{pictures/141.jpg}&
+    \includegraphics[height=1.5cm]{pictures/141.jpg}& 
     \includegraphics[height=1.5cm]{pictures/151.jpg}&
     \includegraphics[height=1.5cm]{pictures/161.jpg}&
-    \includegraphics[height=1.5cm]{pictures/171.jpg}\\ \includegraphics[height=1.5cm]{pictures/102.jpg}&
-    \includegraphics[height=1.5cm]{pictures/112.jpg}&
-    \includegraphics[height=1.5cm]{pictures/122.jpg}&
+    \includegraphics[height=1.5cm]{pictures/171.jpg}\\    
     \includegraphics[height=1.5cm]{pictures/132.jpg}&
     \includegraphics[height=1.5cm]{pictures/142.jpg}&
     \includegraphics[height=1.5cm]{pictures/152.jpg}&
     \includegraphics[height=1.5cm]{pictures/162.jpg}&
-    \includegraphics[height=1.5cm]{pictures/172.jpg}\\ \includegraphics[height=1.5cm]{pictures/103.png}&
-    \includegraphics[height=1.5cm]{pictures/113.png}&
-    \includegraphics[height=1.5cm]{pictures/123.png}&
+    \includegraphics[height=1.5cm]{pictures/172.jpg}\\ 
     \includegraphics[height=1.5cm]{pictures/133.png}&
     \includegraphics[height=1.5cm]{pictures/143.png}&
     \includegraphics[height=1.5cm]{pictures/153.png}&
     \includegraphics[height=1.5cm]{pictures/163.png}&
     \includegraphics[height=1.5cm]{pictures/173.png}\\
     \end{tabular}
-    	\caption{Results  of the  segmentation for  17  scenes.  1st/4th
-          image row:  Image before  the push  for scenes.   2nd/5th:
-          Image after the push for scenes.  3rd/6th: Point cloud
+
+    	\caption[Results  of the  segmentation for  17  scenes.]{Results  of the  segmentation for  17  scenes.  1st/4th/7th
+          image row:  Image before  the push  for scenes.   2nd/5th/8th:
+          Image after the push for scenes.  3rd/6th/9th: Point cloud
           after dense model reconstruction for scenes.}
     \label{fig:evaluation1}
 \end{figure}

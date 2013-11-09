@@ -17,7 +17,7 @@ Figure \ref{fig:patches} shows two pairs of such feature patches taken at two co
 
 {\includegraphics[width=1\columnwidth]{figures/patches.png}}
 
-\caption{Difference between two pairs of images for a stationary object. The first patch of the pair is the feature patch from the database image. The second patch in the pair is the feature patch from the input image. The second pair shows the image patch in the same location but for a frame where there was no match of this feature.  One of the pairs was subtracted from the other to make a difference image.  The difference image was then multiplied by a factor of 10. This shows a significant difference between database and input patches. There is no difference in the database image patch because it is the same patch for both pairs.  This indicates the influence that lighting and sensor noise have on the image.}
+\caption[Difference between two pairs of images for a stationary object.]{Difference between two pairs of images for a stationary object. The first patch of the pair is the feature patch from the database image. The second patch in the pair is the feature patch from the input image. The second pair shows the image patch in the same location but for a frame where there was no match of this feature.  One of the pairs was subtracted from the other to compute a difference image.  The difference image was then multiplied by a factor of 10. This shows a significant difference between database and input patches. There is no difference in the database image patch because it is the same patch for both pairs.  This indicates the influence that lighting and sensor noise have on the image.}
 \label{fig:patches}
 \end{figure}
 
@@ -31,7 +31,7 @@ Figure \ref{fig:patches} shows two pairs of such feature patches taken at two co
     \end{tabular}
 
 
-\caption{Comparison of two pairs of images being matched using SIFT detector and SIFT descriptor. The upper image shows the object in the original pose and the lower shows the rotated object. It is apparent that the number of feature matches significantly decreases if the object is rotated. }
+\caption[Comparison of two pairs of images being matched using SIFT detector and SIFT descriptor.]{Comparison of two pairs of images being matched using SIFT detector and SIFT descriptor. The upper image shows the object in the original pose and the lower shows the rotated object. It is apparent that the number of feature matches significantly decreases if the object is rotated. }
 \label{fig:sift-features}
 \end{figure}
 
@@ -45,7 +45,7 @@ Figure \ref{fig:patches} shows two pairs of such feature patches taken at two co
     \end{tabular}
 
 
-\caption{Comparison of two pairs of images being matched using FAST detector and FREAK descriptor. The upper image shows the object in the original pose and the lower shows the rotated object. It is apparent that the number of feature matches significantly decreases if the object is rotated. }
+\caption[Comparison of two pairs of images being matched using FAST detector and FREAK descriptor.]{Comparison of two pairs of images being matched using FAST detector and FREAK descriptor. The upper image shows the object in the original pose and the lower shows the rotated object. It is apparent that the number of feature matches significantly decreases if the object is rotated. }
 \label{fig:freak-features}
 \end{figure}
 
@@ -85,7 +85,7 @@ We observed that translational movements do not influence the efficiency of the 
 \includegraphics[width=0.5\columnwidth]{figures/rectangle-angle.png}\\
 
 
-\caption{Object under the influence of two forces. f1 shows the tangential push that will result only in the force - f1' tangential to a circle overlaid on the object (it causes only rotational movement). f2 shows the proposed pushing strategy - perpendicular to the longer edge. This push results in two forces; f21, the tangential coefficient responsible for rotation and f22, the coefficient responsible for translation. In this case the object will not only rotate but also translate in the direction of f22 force.  }
+\caption[Object under the influence of two forces.]{Object under the influence of two forces. f1 shows the tangential push that will result only in the force - f1' tangential to a circle overlaid on the object (it causes only rotational movement). f2 shows the proposed pushing strategy - perpendicular to the longer edge. This push results in two forces; f21, the tangential coefficient responsible for rotation and f22, the coefficient responsible for translation. In this case the object will not only rotate but also translate in the direction of f22 force.  }
 \label{fig:angles-rectangle}
 \end{figure}
 
@@ -110,7 +110,7 @@ We observed that translational movements do not influence the efficiency of the 
 \includegraphics[width=0.5\columnwidth]{figures/square-angle.png}
 
 
-\caption{Example of worst case energy loss for the proposed pushing strategy on a square object. $\theta$ is maximal in this case at $135 ^\circ$. This results in an energy loss of 29\%.  }
+\caption[Example of worst case energy loss for the proposed pushing strategy on a square object.]{Example of worst case energy loss for the proposed pushing strategy on a square object. $\theta$ is maximal in this case at $135 ^\circ$. This results in an energy loss of 29\%.  }
 \label{fig:angles-square}
 \end{figure}
 
@@ -155,7 +155,7 @@ The packages described above form an object recognition system that enables a us
 \includegraphics[width=1.3\columnwidth]{figures/print2.pdf}\\
 
 
-\caption{Results of feature matching between the two images of the Peets tea box from the database and the input image of the same tea box. The box was rotated 360$^\circ$ during the matching process. There are two images of the Peets tea box in the database; one rotated by 0$^\circ$ and the other one rotated by 180$^\circ$. One can note that the peaks of the number of matches are at 0$^\circ$, 180$^\circ$ and 360$^\circ$.}
+\caption[Results of feature matching between the two images of the Peets tea box from the database and the input image of the same tea box.]{Results of feature matching between the two images of the Peets tea box from the database and the input image of the same tea box. The box was rotated 360$^\circ$ during the matching process. There are two images of the Peets tea box in the database; one rotated by 0$^\circ$ and the other one rotated by 180$^\circ$. One can note that the peaks of the number of matches are at 0$^\circ$, 180$^\circ$ and 360$^\circ$.}
 \label{fig:recognition-results}
 \end{figure}
 %Experiments showing time with multiple templates

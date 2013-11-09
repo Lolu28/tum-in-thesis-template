@@ -108,7 +108,7 @@ A point cloud is a data structure that provides a representation of the 3D geome
 Since the received point clouds are not perfect and need some pre-processing, we make extensive use of the open source Point Cloud Library\footnote{http://pointclouds.org} (PCL). Algorithms that were used in our work are described in the following sections.
 
 \subsubsection{Voxel Grid Filtering}
-It is a very common practice to reduce the number of points in the point cloud before further proceedings. The reason for this is that the process becomes faster and one does not require a lot of memory to store the data. One of the methods to downsample a point cloud is voxelized grid approach.
+It is a very common practice to reduce the number of points in the point cloud before further proceedings. The reason for this is that the process becomes faster and one does not require much memory to store the data. One of the methods to downsample a point cloud is voxelized grid approach.
 
 A 3D voxel grid is a set of volume elements over the points in the point cloud. Each of them contains a certain number of points which are approximately represented by their centroid or the center of the cube. By approximating the points in the cube with one point we decrease number of points in the point cloud significantly. 
 
@@ -125,16 +125,16 @@ The objective of the Euclidean Clustering algorithm is to group points into mult
 
 The Euclidean Clustering algorithm enables simple segmentation of objects in an uncluttered scene which can be further used in many applications.   
 
-\subsection{Particle Filter}
+\subsection{The Particle Filter}
 Particle Filter~\cite{Thrun02d} is a method that approximates the posterior probability in a controllable, but partially observable system with the Markovian property. 
 
-The simple idea behind the algorithm is to create a particle for each state in which the model could be and then to calculate the importance weight of the particle based on the measurements. For example, in the robot localization problem particles represent the current pose of the robot and their weights are calculated based on the laser sensor readings. Since the motion model is known, it is possible to predict the next position of each particle based on the motion model. Having established the updated position, the expected sensor readings can be predicted as well, which leads to the new weight assignments. After assigning the weights, re-sampling is employed to obtain a more probable set of particles. The probability of a particle being re-sampled is proportional to its importance weight. It is worth mentioning that there exist other re-sampling techniques such as KLD-based sampling~\cite{Fox01KLD}, which was used in this thesis.  At the end of this process there remain only those particles that most probably indicate the correct state.
+The idea behind the algorithm is to create a particle for each state in which the model could be and then to calculate the importance weight of the particle based on the measurements. For example, in the robot localization problem particles represent the current pose of the robot and their weights are calculated based on the laser sensor readings. Since the motion model is known, it is possible to predict the next position of each particle based on the motion model. Having established the updated position, the expected sensor readings can be predicted as well, which leads to the new weight assignments. After assigning the weights, re-sampling is employed to obtain a more probable set of particles. The probability of a particle being re-sampled is proportional to its importance weight. It is worth mentioning that there exist other re-sampling techniques such as KLD-based sampling~\cite{Fox01KLD}, which was used in this thesis.  At the end of this process there remain only those particles that most probably indicate the correct state.
 
 In our implementation we use a particle-filtering based tracker in order to track the features in the textureless object segmentation part.      
 
 
 
-\section{Used Tools}
+\section{Used Hardware and Software}
 \subsection{Kinect}
 
 \begin{figure}

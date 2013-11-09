@@ -21,7 +21,7 @@ in Figure \ref{fig:tracking_dists}~\cite{iros10kcopman}. In order to interact wi
 \multicolumn{2}{c}{} & \includegraphics[width=0.23\columnwidth]{figures/segmentation_others/graph-based.png} &\includegraphics[width=0.23\columnwidth]{pictures/teaser_egg_result-cropped.png} 
 %\multicolumn{2}{c}{\includegraphics[width=0.38\columnwidth]{pictures/113-cropped.png}} 
 \end{tabular}
-\caption{Left: The service robot PR2 aims to segment the scene
+\caption[Results of the scene segmentation using static segmentation algorithms.]{Left: The service robot PR2 aims to segment the scene
   consisting of textureless objects. Results  of  the   scene segmentation
   using Region  Growing~\cite{RGBRegionGrowing} (right, NW), Part-Graph-based 
   Hashing~\cite{marton12SC} method (right, NE) and Graph-based  
@@ -48,7 +48,7 @@ We can divide objects into three categories - textured, textureless and transpar
 \label{fig:all-objects}
 \end{figure}
 
-As an initial step for the system we developed an interactive segmentation pipeline that is meant to be used for objects without any texture. In order to show that this is a challenging task, which can not be solved with state-of-the-art segmentation algorithms, we refer the reader to Figure \ref{fig:tracking_dists} where we tested three object segmentation algorithms that are used for segmentation of RGBD point clouds. Looking at the results we believe that the performance of robots' perception algorithms can be improved, especially regarding: 
+As an initial step for the system we developed an interactive segmentation pipeline that is meant to be used for objects without any texture. In order to show that this is a challenging task, which can not be solved with state-of-the-art segmentation algorithms, we refer the reader to Figure \ref{fig:tracking_dists} where we tested three object segmentation algorithms that are used for segmentation of RGBD point clouds. Looking at the results we see that current approaches cannot deal well with the following: 
 
 \begin{itemize} 
 \item textureless objects (all objects in the scene),
@@ -56,7 +56,7 @@ As an initial step for the system we developed an interactive segmentation pipel
 \item similar shaped objects and occlusions (a white and a blue box).
 \end{itemize}
 
-
+In this thesis, we develop novel solutions to tackle these challenges.
 In order to improve segmentation performance we decided to make use of robots'
 capabilities. It is arguably more natural to exploit the robot's embodiment
 and interaction capabilities in order to obtain a better understanding of its environment.
@@ -186,6 +186,16 @@ In our approach we use the rotational movement of an object in order to eliminat
 
 In Chapter \ref{chapter:Object Recognition} we depict the problems and the initial solution in detail as well as show promising results of our approach.
     
+\section{Collaborations}
+
+We want to emphasize and thank all the collaborators that have contributed to this work. We make use of their code and ideas:
+
+\begin{itemize} 
+\item Christian Bersch had the initial idea of interactive perception and was the main author of the interactive segmentation system for textured objects,
+\item Megha Gupta developed Gazebo simulation for an evaluation of our pushing heuristic,
+\item Ferenc Balint-Benczedi implemented the dense model reconstruction algorithm as well as was one of the authors of the static segmentation algorithm that we make use of in our pre-segmentation step,
+\item Zoltan Csaba-Marton developed the graph-based trajectory clustering algorithm which we use in our system. He was also one of the authors of the static segmentation algorithm we use.
+\end{itemize}
 
 
 
