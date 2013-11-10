@@ -22,7 +22,7 @@
  In the first step we obtain an RGBD point cloud from the Kinect sensor. In the second step we perform static object
  pre-segmentation which results in a set of categorized object hypotheses $O$,
  with the category being either flat or round, and a list of object parts $P_{o}$ that every object 
- $o \in O$ consists of. Having obtained the object hypotheses $O$, we infer which hypothesis
+ $o \in O$ consists of. This step influences the choice of the features to be extracted. Having obtained the object hypotheses $O$, we infer which hypothesis
  is segmented  correctly. For
  that we count the  number of parts that the respective object hypotheses $O$ 
  consists of, and then sample from the Poisson distribution according to the Equation \ref{eq:poisson}.
@@ -74,7 +74,7 @@ decide if the interactive segmentation algorithm will be used or not. It is wort
 
 
 
- The information obtained from the categorization algorithm is also used in the next step - based on the object category we decide what kind of RGBD feature needs to be extracted and tracked afterwards. Having obtained one of the categories being flat or round, we extract different RGBD features: lines and corners for the flat objects or cylinders and circles for the round ones. As the next step, we look for the best point to push the objects by looking at concave and convex corners in a top-down image of the scene and we execute the arm motion movement at the previously found corner. We move the arm in $1cm$ intervals until we reach a maximum of $5$ 
+ The information obtained from the categorization algorithm is also used in the next step - based on the object category we decide what kind of RGBD feature needs to be extracted and tracked afterwards. Having obtained one of the categories being flat or round, we extract different RGBD features: lines and corners for the flat objects or cylinders and circles for the round ones. We decided for these features as they are proven to be stable for objects without texture. As the next step, we look for the best point to push the objects by looking at concave and convex corners in a top-down image of the scene and we execute the arm motion movement at the previously found corner. We move the arm in $1cm$ intervals until we reach a maximum of $5$ 
   pushes. All of the features are tracked during the interaction 
  and the trajectories of feature centroids  are  saved as 6 degrees of freedom transformations. 
  
